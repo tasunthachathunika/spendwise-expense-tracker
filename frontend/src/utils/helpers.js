@@ -1,0 +1,86 @@
+// Format currency in Sri Lankan Rupees (Rs. 250,000)
+export const formatCurrency = (amount, prefix = 'Rs. ') => {
+  const num = Math.abs(Number(amount) || 0);
+  const formatted = num.toLocaleString('en-US');
+  return `${prefix}${formatted}`;
+};
+
+// Format signed currency (+Rs. 250,000 / -Rs. 145,000)
+export const formatSignedCurrency = (amount, type) => {
+  const num = Math.abs(Number(amount) || 0);
+  const formatted = num.toLocaleString('en-US');
+  if (type === 'Income') return `+Rs. ${formatted}`;
+  if (type === 'Expense') return `-Rs. ${formatted}`;
+  return Number(amount) < 0 ? `-Rs. ${formatted}` : `Rs. ${formatted}`;
+};
+
+// Format date
+export const formatDate = (date, opts = {}) => {
+  const d = new Date(date);
+  if (isNaN(d)) return '—';
+  return d.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    ...opts,
+  });
+};
+
+// Format date for input[type="date"]
+export const toInputDate = (date) => {
+  if (!date) return '';
+  const d = new Date(date);
+  if (isNaN(d)) return '';
+  return d.toISOString().split('T')[0];
+};
+
+// Get month name
+export const monthName = (month) => {
+  return new Date(2000, month - 1, 1).toLocaleString('default', { month: 'long' });
+};
+
+// Get initials from name
+export const getInitials = (name = '') => {
+  return name
+    .split(' ')
+    .slice(0, 2)
+    .map((n) => n[0])
+    .join('')
+    .toUpperCase();
+};
+
+// Category icon map
+export const categoryIcon = (category = '') => {
+  const map = {
+    Food: '🍔', Groceries: '🛒', Transport: '🚗', Fuel: '⛽',
+    Shopping: '🛍️', Entertainment: '🎬', Health: '💊', Medical: '🏥',
+    Education: '📚', Rent: '🏠', Housing: '🏠', Utilities: '💡',
+    Travel: '✈️', Gym: '💪', Salary: '💼', Freelance: '💻',
+    Investment: '📈', Business: '🏢', Gift: '🎁', Other: '📦',
+  };
+  return map[category] || '💰';
+};
+
+// Chart color palette (Warm Cream Light / Monarch spec: orange, amber, sky, violet, pink, teal, grey)
+export const CHART_COLORS = [
+  '#ea580c', // Orange
+  '#d97706', // Amber
+  '#0284c7', // Sky
+  '#7c3aed', // Violet
+  '#db2777', // Pink
+  '#0d9488', // Teal
+  '#78716c', // Grey (Other)
+];
+
+// Default expense categories
+export const EXPENSE_CATEGORIES = [
+  'Food', 'Groceries', 'Transport', 'Fuel', 'Shopping',
+  'Entertainment', 'Health', 'Medical', 'Education', 'Rent',
+  'Utilities', 'Travel', 'Gym', 'Subscriptions', 'Other',
+];
+
+// Default income categories
+export const INCOME_CATEGORIES = [
+  'Salary', 'Freelance', 'Business', 'Investment', 'Gift',
+  'Rental Income', 'Bonus', 'Other',
+];

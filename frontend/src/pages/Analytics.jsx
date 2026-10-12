@@ -1,0 +1,213 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  PieChart, 
+  Pie, 
+  Cell, 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  Legend, 
+  ResponsiveContainer,
+  LineChart,
+  Line
+} from 'recharts';
+import api from '../utils/api';
+import { formatCurrency, CHART_COLORS } from '../utils/helpers';
+import toast from 'react-hot-toast';
+
+const Analytics = () => {
+  const currentYear = new Date().getFullYear();
+  const [selectedYear, setSelectedYear] = useState(currentYear);
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchAnalytics = async () => {
+    try {
+      setLoading(true);
+      const res = await api.get(`/dashboard/analytics?year=${selectedYear}`);
+      if (res.data.success) {
+        setData(res.data);
+      }
+    } catch (err) {
+      toast.error('Failed to load financial analytics');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAnalytics();
+  }, [selectedYear]);
+
+  if (loading && !data) {
+    return (
+      <div className="page-loading">
+        <div className="spinner spinner-lg"></div>
+        <span>Generating analytics reports...</span>
+      </div>
+    );
+  }
+
+  const { expenseByCategory = [], monthlyData = [] } = data || {};
+
+  // Format data for Pie Chart
+  const pieData = expenseByCategory.map((item) => ({
+    name: item._id,
+    value: item.total,
+  }));
+
+  // Format monthly trend data
+  const trendData = monthlyData.map((m) => ({
+    month: m.monthName,
+    expense: m.expense,
+    income: m.income,
+    net: m.income - m.expense,
+  }));
+
+  const customTooltipFormatter = (value) => formatCurrency(value);
+
+  return (
+    <div>
+      <div className="page-header">
+        <div>
+          <h2 className="page-title">Financial Analytics</h2>
+          <p className="page-subtitle">Visual performance metrics for cashflow, spending, and habits</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <label className="text-xs font-semibold text-gray-400">Year:</label>
+          <select
+            className="filter-select"
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+          >
+            {[currentYear - 2, currentYear - 1, currentYear, currentYear + 1].map((y) => (
+              <option key={y} value={y}>{y}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Row 1: Donut (Expense by category) & Bar (Income vs Expense) */}
+      <div className="charts-grid">
+        {/* Pie/Donut Chart: Expense by Category */}
+        <div className="chart-card">
+          <h3 className="chart-title">Expense Breakdown by Category</h3>
+          <p className="chart-subtitle">Distribution of top spending categories</p>
+          
+          {pieData.length === 0 ? (
+            <div className="empty-state py-12">
+              <span className="text-3xl mb-2">📊</span>
+              <p className="text-sm text-gray-400">No expense records available yet.</p>
+            </div>
+          ) : (
+            <div style={{ width: '100%', height: 320 }}>
+              <ResponsiveContainer>
+                <PieChart>
+                  <Pie
+                    data={pieData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={70}
+                    outerRadius={105}
+                    paddingAngle={4}
+                    dataKey="value"
+                  >
+                    {pieData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                    formatter={customTooltipFormatter}
+                    contentStyle={{ backgroundColor: '#1a1d27', borderColor: '#2a2d3e', borderRadius: '10px' }}
+                  />
+                  <Legend 
+                    layout="horizontal" 
+                    verticalAlign="bottom" 
+                    align="center"
+                    wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+        </div>
+
+        {/* Bar Chart: Income vs Expense */}
+        <div className="chart-card">
+          <h3 className="chart-title">Income vs. Expense</h3>
+          <p className="chart-subtitle">Monthly comparison for {selectedYear}</p>
+
+          <div style={{ width: '100%', height: 320 }}>
+            <ResponsiveContainer>
+              <BarChart data={monthlyData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#232f48" vertical={false} />
+                <XAxis dataKey="monthName" stroke="#94a3b8" fontSize={12} tickLine={false} />
+                <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} tickFormatter={(val) => `$${val}`} />
+                <Tooltip 
+                  formatter={customTooltipFormatter}
+                  contentStyle={{ backgroundColor: '#161f30', borderColor: '#232f48', borderRadius: '10px' }}
+                />
+                <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
+                <Bar dataKey="income" name="Income" fill="#10b981" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="expense" name="Expense" fill="#f43f5e" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
+      {/* Row 2: Full-width Line Chart: Monthly Spending & Cashflow Trend */}
+      <div className="chart-card mt-6">
+        <h3 className="chart-title">Monthly Spending & Net Flow Trend</h3>
+        <p className="chart-subtitle">Evaluate how spending evolves month-over-month throughout {selectedYear}</p>
+
+        <div style={{ width: '100%', height: 350 }}>
+          <ResponsiveContainer>
+            <LineChart data={trendData} margin={{ top: 20, right: 30, left: 10, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#232f48" vertical={false} />
+              <XAxis dataKey="month" stroke="#94a3b8" fontSize={12} tickLine={false} />
+              <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} tickFormatter={(val) => `$${val}`} />
+              <Tooltip 
+                formatter={customTooltipFormatter}
+                contentStyle={{ backgroundColor: '#161f30', borderColor: '#232f48', borderRadius: '10px' }}
+              />
+              <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
+              <Line 
+                type="monotone" 
+                dataKey="expense" 
+                name="Expenses" 
+                stroke="#f43f5e" 
+                strokeWidth={3}
+                dot={{ r: 4, fill: '#f43f5e' }}
+                activeDot={{ r: 6 }}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="income" 
+                name="Income" 
+                stroke="#10b981" 
+                strokeWidth={3}
+                dot={{ r: 4, fill: '#10b981' }}
+                activeDot={{ r: 6 }}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="net" 
+                name="Net Savings" 
+                stroke="#38bdf8" 
+                strokeWidth={2}
+                strokeDasharray="4 4"
+                dot={{ r: 3, fill: '#38bdf8' }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Analytics;

@@ -1,0 +1,11 @@
+{
+  "name": "spendwise-root",
+  "version": "1.0.0",
+  "description": "SpendWise - Personal Expense & Budget Tracker",
+  "scripts": {
+    "server": "npm run dev --prefix backend",
+    "client": "npm run dev --prefix frontend",
+    "dev": "npm run server",
+    "start": "npm start --prefix backend"
+  }
+}
