@@ -220,21 +220,21 @@ const LandingPage = () => {
         {/* Professional Ambient Hero Background Image */}
         <div className="absolute inset-0 pointer-events-none select-none z-0 overflow-hidden">
           <img
-            src={isDark ? '/hero_fintech_bg.jpg' : '/hero_light_bg.jpg'}
-            alt="SpendWise Luxury Fintech Background"
-            className="w-full h-full object-cover object-center transition-all duration-700"
-            style={{
-              opacity: isDark ? 0.4 : 0.7,
-              filter: isDark ? 'contrast(1.15) brightness(0.95)' : 'contrast(1.05) saturate(1.1)',
-            }}
+            src="/hero_lifestyle_desk.jpg"
+            alt="SpendWise Personal Finance Lifestyle"
+            className={`w-full h-full object-cover object-right md:object-right transition-all duration-700 ${
+              isDark 
+                ? 'opacity-30 brightness-90 contrast-125' 
+                : 'opacity-90 contrast-[1.03] saturate-[1.08]'
+            }`}
           />
-          {/* Smooth radial and vertical gradient fade for flawless readability & seamless blending */}
+          {/* Directional gradient overlays to ensure seamless blend with page background & 100% text readability */}
           <div 
             className="absolute inset-0"
             style={{
               background: isDark
-                ? 'radial-gradient(circle at 50% 30%, rgba(10, 14, 23, 0.45) 0%, rgba(10, 14, 23, 0.8) 65%, #0a0e17 100%), linear-gradient(to bottom, transparent 60%, #0a0e17 100%)'
-                : 'radial-gradient(circle at 50% 30%, rgba(253, 249, 239, 0.35) 0%, rgba(253, 249, 239, 0.75) 65%, #fdf9ef 100%), linear-gradient(to bottom, transparent 60%, #fdf9ef 100%)',
+                ? 'linear-gradient(to right, #0a0e17 0%, rgba(10, 14, 23, 0.96) 42%, rgba(10, 14, 23, 0.65) 70%, rgba(10, 14, 23, 0.85) 100%), linear-gradient(to bottom, transparent 60%, #0a0e17 100%)'
+                : 'linear-gradient(to right, #fdf9ef 0%, rgba(253, 249, 239, 0.96) 45%, rgba(253, 249, 239, 0.35) 75%, rgba(253, 249, 239, 0.6) 100%), linear-gradient(to bottom, transparent 65%, #fdf9ef 100%)',
             }}
           />
         </div>
@@ -243,83 +243,86 @@ const LandingPage = () => {
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[350px] bg-brand/15 rounded-full blur-[120px] pointer-events-none"></div>
         <div className="absolute top-1/3 right-10 w-[300px] h-[250px] bg-info/10 rounded-full blur-[100px] pointer-events-none"></div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           
-          {/* Pill Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand/10 border border-brand/25 text-brand text-xs font-semibold mb-6 shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-brand animate-ping"></span>
-            <span>💎 Personal Finance & Wealth Clarity</span>
-          </div>
+          {/* Left-Aligned Headline & CTA Area for Editorial Lifestyle Layout */}
+          <div className="text-center lg:text-left lg:max-w-2xl py-6 lg:py-10">
+            {/* Pill Badge */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand/10 border border-brand/25 text-brand text-xs font-semibold mb-6 shadow-sm">
+              <span className="w-2 h-2 rounded-full bg-brand animate-ping"></span>
+              <span>💎 Personal Finance & Wealth Clarity</span>
+            </div>
 
-          {/* Main Headline */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-ink tracking-tight max-w-4xl mx-auto leading-[1.15]">
-            Your Home Base for{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand via-brand-light to-info">
-              Financial Clarity
-            </span>
-          </h1>
+            {/* Main Headline */}
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[4rem] font-extrabold text-ink tracking-tight leading-[1.12]">
+              Your Home Base for{' '}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand via-brand-light to-info">
+                Financial Clarity
+              </span>
+            </h1>
 
-          {/* Subheadline */}
-          <p className="mt-6 text-base sm:text-lg md:text-xl text-ink-soft max-w-2xl mx-auto leading-relaxed">
-            SpendWise brings all your expenses, income streams, and monthly budgets into one unified, distraction-free dashboard. Know where every rupee goes.
-          </p>
+            {/* Subheadline */}
+            <p className="mt-6 text-base sm:text-lg md:text-xl text-ink-soft leading-relaxed max-w-xl mx-auto lg:mx-0">
+              SpendWise brings all your expenses, income streams, and monthly budgets into one unified, distraction-free dashboard. Know where every rupee goes.
+            </p>
 
-          {/* Hero CTAs */}
-          <div className="mt-9 flex flex-col sm:flex-row items-center justify-center gap-4">
-            {isAuthenticated ? (
-              <Link
-                to="/dashboard"
-                className="w-full sm:w-auto bg-brand hover:bg-brand-dark text-white font-semibold text-base px-8 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 transform hover:-translate-y-0.5"
-              >
-                <span>Go to Your Dashboard</span>
-                <ArrowRight className="w-5 h-5 stroke-[2.5]" />
-              </Link>
-            ) : (
-              <>
+            {/* Hero CTAs */}
+            <div className="mt-9 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+              {isAuthenticated ? (
                 <Link
-                  to="/register"
-                  className="w-full sm:w-auto bg-brand hover:bg-brand-dark text-white font-semibold text-base px-7 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 transform hover:-translate-y-0.5"
+                  to="/dashboard"
+                  className="w-full sm:w-auto bg-brand hover:bg-brand-dark text-white font-semibold text-base px-8 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 transform hover:-translate-y-0.5"
                 >
-                  <span>Start Tracking Free</span>
+                  <span>Go to Your Dashboard</span>
                   <ArrowRight className="w-5 h-5 stroke-[2.5]" />
                 </Link>
+              ) : (
+                <>
+                  <Link
+                    to="/register"
+                    className="w-full sm:w-auto bg-brand hover:bg-brand-dark text-white font-semibold text-base px-7 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 transform hover:-translate-y-0.5"
+                  >
+                    <span>Start Tracking Free</span>
+                    <ArrowRight className="w-5 h-5 stroke-[2.5]" />
+                  </Link>
 
-                <Link
-                  to="/login"
-                  className="w-full sm:w-auto bg-bg-card hover:bg-bg-hover text-ink border border-line hover:border-line-light font-bold text-base px-6 py-3.5 rounded-xl transition flex items-center justify-center gap-2"
-                >
-                  <Sparkles className="w-4 h-4 text-brand" />
-                  <span>Sign In to Dashboard</span>
-                </Link>
-              </>
-            )}
-          </div>
+                  <Link
+                    to="/login"
+                    className="w-full sm:w-auto bg-bg-card hover:bg-bg-hover text-ink border border-line hover:border-line-light font-bold text-base px-6 py-3.5 rounded-xl transition flex items-center justify-center gap-2"
+                  >
+                    <Sparkles className="w-4 h-4 text-brand" />
+                    <span>Sign In to Dashboard</span>
+                  </Link>
+                </>
+              )}
+            </div>
 
-          {/* Social Proof Strip */}
-          <div className="mt-12 flex flex-wrap items-center justify-center gap-6 text-xs text-ink-muted">
-            <div className="flex items-center gap-1.5">
-              <div className="flex text-amber-400">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-3.5 h-3.5 fill-current" />
-                ))}
+            {/* Social Proof Strip */}
+            <div className="mt-12 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs text-ink-muted">
+              <div className="flex items-center gap-1.5">
+                <div className="flex text-amber-400">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-3.5 h-3.5 fill-current" />
+                  ))}
+                </div>
+                <span className="font-semibold text-ink">4.9/5 Rating</span>
+                <span>by modern developers & students</span>
               </div>
-              <span className="font-semibold text-ink">4.9/5 Rating</span>
-              <span>by modern developers & students</span>
-            </div>
-            <span className="hidden sm:inline text-line">•</span>
-            <div className="flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4 text-brand" />
-              <span>Zero-knowledge data isolation</span>
-            </div>
-            <span className="hidden sm:inline text-line">•</span>
-            <div className="flex items-center gap-1.5">
-              <Zap className="w-4 h-4 text-info" />
-              <span>Real-time LKR (Rs.) Tracking</span>
+              <span className="hidden sm:inline text-line">•</span>
+              <div className="flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-brand" />
+                <span>Zero-knowledge data isolation</span>
+              </div>
+              <span className="hidden sm:inline text-line">•</span>
+              <div className="flex items-center gap-1.5">
+                <Zap className="w-4 h-4 text-info" />
+                <span>Real-time LKR (Rs.) Tracking</span>
+              </div>
             </div>
           </div>
 
           {/* ─── 4. Interactive Dashboard Hero Preview (App Mockup) ───────── */}
-          <div className="mt-14 relative max-w-5xl mx-auto">
+          <div className="mt-12 sm:mt-16 relative max-w-5xl mx-auto">
             {/* Ambient card back-glow */}
             <div className="absolute -inset-1.5 bg-gradient-to-r from-brand/30 via-info/20 to-brand/30 rounded-3xl blur-xl opacity-75"></div>
 
