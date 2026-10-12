@@ -25,10 +25,12 @@ import {
   Moon
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
 
 const LandingPage = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { isDark, toggleTheme } = useTheme();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   const scrollToSection = (id) => {
@@ -42,25 +44,8 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen bg-bg-primary text-ink selection:bg-brand selection:text-brand-dark flex flex-col font-sans overflow-x-hidden">
       
-      {/* ─── 1. Top Announcement Bar ──────────────────────────────────── */}
-      <div className="bg-bg-secondary/90 border-b border-line px-4 py-2 text-xs text-ink-soft flex items-center justify-center sm:justify-between sticky top-0 z-50 backdrop-blur-md">
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-brand/10 text-brand border border-brand/20">
-            NEW
-          </span>
-          <span className="truncate">
-            ✨ SpendWise v1.0 is live — Take complete control of your finances today.
-          </span>
-        </div>
-        <div className="hidden sm:flex items-center gap-4 text-ink-muted text-[11px]">
-          <span>Dark Mode Native</span>
-          <span>•</span>
-          <span className="text-brand font-semibold">Emerald Wealth Edition</span>
-        </div>
-      </div>
-
-      {/* ─── 2. Glassmorphic Navigation Bar ────────────────────────────── */}
-      <header className="sticky top-[33px] z-40 bg-bg-primary/80 backdrop-blur-xl border-b border-line/60 transition-all">
+      {/* ─── Glassmorphic Navigation Bar ────────────────────────────── */}
+      <header className="sticky top-0 z-40 bg-bg-primary/80 backdrop-blur-xl border-b border-line/60 transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           
           {/* Logo */}
@@ -127,19 +112,31 @@ const LandingPage = () => {
               )}
             </button>
 
-            <Link
-              to="/login"
-              className="text-sm font-semibold text-ink-soft hover:text-ink transition px-3 py-2"
-            >
-              Sign In
-            </Link>
-            <Link
-              to="/register"
-              className="bg-brand hover:bg-brand-dark text-white font-semibold text-sm px-4 py-2 rounded-xl transition shadow-sm hover:shadow flex items-center gap-1.5"
-            >
-              <span>Get Started Free</span>
-              <ArrowRight className="w-4 h-4 stroke-[2.5]" />
-            </Link>
+            {isAuthenticated ? (
+              <Link
+                to="/dashboard"
+                className="bg-brand hover:bg-brand-dark text-white font-semibold text-sm px-4 py-2 rounded-xl transition shadow-sm hover:shadow flex items-center gap-1.5"
+              >
+                <span>Go to Dashboard</span>
+                <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+              </Link>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="text-sm font-semibold text-ink-soft hover:text-ink transition px-3 py-2"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to="/register"
+                  className="bg-brand hover:bg-brand-dark text-white font-semibold text-sm px-4 py-2 rounded-xl transition shadow-sm hover:shadow flex items-center gap-1.5"
+                >
+                  <span>Get Started Free</span>
+                  <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Toggle Button */}
@@ -189,18 +186,30 @@ const LandingPage = () => {
                 {isDark ? <Sun size={15} className="text-amber-400" /> : <Moon size={15} className="text-brand" />}
                 <span>Switch to {isDark ? 'Warm Cream Light' : 'Dark Mode'}</span>
               </button>
-              <Link
-                to="/login"
-                className="w-full text-center py-2.5 rounded-xl border border-line text-sm font-semibold text-ink hover:bg-bg-hover"
-              >
-                Sign In
-              </Link>
-              <Link
-                to="/register"
-                className="w-full text-center py-2.5 rounded-xl bg-brand text-white text-sm font-bold shadow-sm"
-              >
-                Get Started Free
-              </Link>
+              {isAuthenticated ? (
+                <Link
+                  to="/dashboard"
+                  className="w-full text-center py-2.5 rounded-xl bg-brand text-white text-sm font-bold shadow-sm flex items-center justify-center gap-1.5"
+                >
+                  <span>Go to Dashboard</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    to="/login"
+                    className="w-full text-center py-2.5 rounded-xl border border-line text-sm font-semibold text-ink hover:bg-bg-hover"
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="w-full text-center py-2.5 rounded-xl bg-brand text-white text-sm font-bold shadow-sm"
+                  >
+                    Get Started Free
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         )}
@@ -235,21 +244,33 @@ const LandingPage = () => {
 
           {/* Hero CTAs */}
           <div className="mt-9 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              to="/register"
-              className="w-full sm:w-auto bg-brand hover:bg-brand-dark text-white font-semibold text-base px-7 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 transform hover:-translate-y-0.5"
-            >
-              <span>Start Tracking Free</span>
-              <ArrowRight className="w-5 h-5 stroke-[2.5]" />
-            </Link>
+            {isAuthenticated ? (
+              <Link
+                to="/dashboard"
+                className="w-full sm:w-auto bg-brand hover:bg-brand-dark text-white font-semibold text-base px-8 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 transform hover:-translate-y-0.5"
+              >
+                <span>Go to Your Dashboard</span>
+                <ArrowRight className="w-5 h-5 stroke-[2.5]" />
+              </Link>
+            ) : (
+              <>
+                <Link
+                  to="/register"
+                  className="w-full sm:w-auto bg-brand hover:bg-brand-dark text-white font-semibold text-base px-7 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 transform hover:-translate-y-0.5"
+                >
+                  <span>Start Tracking Free</span>
+                  <ArrowRight className="w-5 h-5 stroke-[2.5]" />
+                </Link>
 
-            <Link
-              to="/login"
-              className="w-full sm:w-auto bg-bg-card hover:bg-bg-hover text-ink border border-line hover:border-line-light font-bold text-base px-6 py-3.5 rounded-xl transition flex items-center justify-center gap-2"
-            >
-              <Sparkles className="w-4 h-4 text-brand" />
-              <span>Sign In to Dashboard</span>
-            </Link>
+                <Link
+                  to="/login"
+                  className="w-full sm:w-auto bg-bg-card hover:bg-bg-hover text-ink border border-line hover:border-line-light font-bold text-base px-6 py-3.5 rounded-xl transition flex items-center justify-center gap-2"
+                >
+                  <Sparkles className="w-4 h-4 text-brand" />
+                  <span>Sign In to Dashboard</span>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Social Proof Strip */}

@@ -47,7 +47,7 @@ const Register = () => {
       if (res.data.success) {
         login(res.data.token, res.data.user);
         toast.success(`Account created! Welcome, ${res.data.user.name}`);
-        navigate('/');
+        navigate('/dashboard');
       }
     } catch (err) {
       toast.error(err.response?.data?.message || 'Registration failed.');

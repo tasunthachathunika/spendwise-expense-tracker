@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 
 const getHeaderInfo = (pathname, userName) => {
   switch (pathname) {
+    case '/dashboard':
     case '/':
       return {
         title: 'Dashboard Overview',

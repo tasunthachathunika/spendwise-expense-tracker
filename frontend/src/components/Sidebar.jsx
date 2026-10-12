@@ -23,7 +23,7 @@ const Sidebar = ({ isOpen, onClose }) => {
   };
 
   const navLinks = [
-    { to: '/', label: 'Dashboard', icon: LayoutDashboard },
+    { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { to: '/transactions', label: 'Transactions', icon: ArrowLeftRight },
     { to: '/budgets', label: 'Budgets', icon: Target },
     { to: '/analytics', label: 'Analytics', icon: PieChart },
@@ -64,7 +64,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             <NavLink
               key={to}
               to={to}
-              end={to === '/'}
+              end={to === '/dashboard'}
               onClick={onClose}
               className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
             >

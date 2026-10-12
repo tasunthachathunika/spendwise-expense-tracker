@@ -51,6 +51,7 @@ function App() {
 
         <Routes>
           {/* Public Landing & Auth Routes */}
+          <Route path="/" element={<LandingPage />} />
           <Route path="/landing" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -58,7 +59,7 @@ function App() {
           {/* Protected Application Routes */}
           <Route element={<PrivateRoute />}>
             <Route element={<Layout />}>
-              <Route path="/" element={<Dashboard />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/transactions" element={<Transactions />} />
               <Route path="/budgets" element={<Budgets />} />
               <Route path="/analytics" element={<Analytics />} />

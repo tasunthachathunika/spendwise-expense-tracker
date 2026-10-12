@@ -24,7 +24,7 @@ const Login = () => {
       if (res.data.success) {
         login(res.data.token, res.data.user);
         toast.success(`Welcome back, ${res.data.user.name}!`);
-        navigate('/');
+        navigate('/dashboard');
       }
     } catch (err) {
       toast.error(err.response?.data?.message || 'Login failed. Please verify credentials.');
