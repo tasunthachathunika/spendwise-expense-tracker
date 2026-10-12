@@ -22,7 +22,8 @@ import {
   BarChart3,
   Star,
   Sun,
-  Moon
+  Moon,
+  Gem
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
@@ -216,62 +217,64 @@ const LandingPage = () => {
       </header>
 
       {/* ─── 3. Hero Section ───────────────────────────────────────────── */}
-      <section className="relative pt-16 pb-20 md:pt-24 md:pb-28 overflow-hidden">
-        {/* Professional Ambient Hero Background Image */}
-        <div className="absolute inset-0 pointer-events-none select-none z-0 overflow-hidden">
-          <img
-            src="/hero_lifestyle_desk.jpg"
-            alt="SpendWise Personal Finance Lifestyle"
-            className={`w-full h-full object-cover object-right md:object-right transition-all duration-700 ${
-              isDark 
-                ? 'opacity-30 brightness-90 contrast-125' 
-                : 'opacity-90 contrast-[1.03] saturate-[1.08]'
-            }`}
-          />
-          {/* Directional gradient overlays to ensure seamless blend with page background & 100% text readability */}
-          <div 
-            className="absolute inset-0"
-            style={{
-              background: isDark
-                ? 'linear-gradient(to right, #0a0e17 0%, rgba(10, 14, 23, 0.96) 42%, rgba(10, 14, 23, 0.65) 70%, rgba(10, 14, 23, 0.85) 100%), linear-gradient(to bottom, transparent 60%, #0a0e17 100%)'
-                : 'linear-gradient(to right, #fdf9ef 0%, rgba(253, 249, 239, 0.96) 45%, rgba(253, 249, 239, 0.35) 75%, rgba(253, 249, 239, 0.6) 100%), linear-gradient(to bottom, transparent 65%, #fdf9ef 100%)',
-            }}
-          />
-        </div>
+      <section 
+        aria-labelledby="hero-title"
+        className="relative min-h-[92vh] overflow-hidden bg-cream dark:bg-[#0a0e17] flex flex-col justify-center"
+      >
+        {/* Background Image Layer (Unblurred & Crisp High Resolution) */}
+        <img
+          src="/hero.webp"
+          alt="Woman checking her finances on her phone in a bright cafe"
+          fetchpriority="high"
+          decoding="async"
+          width="2560"
+          height="1440"
+          className="absolute inset-0 w-full h-full object-cover object-[70%_center] lg:object-[75%_center] pointer-events-none select-none z-0"
+        />
 
-        {/* Ambient Glows */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[350px] bg-brand/15 rounded-full blur-[120px] pointer-events-none"></div>
-        <div className="absolute top-1/3 right-10 w-[300px] h-[250px] bg-info/10 rounded-full blur-[100px] pointer-events-none"></div>
+        {/* Desktop Left-Only Gradient Overlay so Woman & Phone on right stay 100% crisp and unwashed */}
+        <div 
+          className="hidden md:block absolute inset-0 pointer-events-none z-[1] bg-gradient-to-r from-cream via-cream/85 via-35% to-transparent to-65% dark:from-[#0a0e17] dark:via-[#0a0e17]/85 dark:via-35% dark:to-transparent dark:to-65%" 
+        />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          
-          {/* Left-Aligned Headline & CTA Area for Editorial Lifestyle Layout */}
-          <div className="text-center lg:text-left lg:max-w-2xl py-6 lg:py-10">
-            {/* Pill Badge */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand/10 border border-brand/25 text-brand text-xs font-semibold mb-6 shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-brand animate-ping"></span>
-              <span>💎 Personal Finance & Wealth Clarity</span>
+        {/* Mobile Vertical Gradient Overlay */}
+        <div 
+          className="md:hidden absolute inset-0 pointer-events-none z-[1] bg-gradient-to-b from-cream/95 via-cream/80 to-cream/30 dark:from-[#0a0e17]/95 dark:via-[#0a0e17]/80 dark:to-[#0a0e17]/30" 
+        />
+
+        {/* Subtle Ambient Depth Glow */}
+        <div className="absolute top-1/4 left-1/4 w-[450px] h-[350px] bg-brand/10 rounded-full blur-[120px] pointer-events-none z-[2]" />
+
+        {/* Content Container */}
+        <div className="max-w-7xl mx-auto px-6 lg:px-12 w-full relative z-10 py-20 lg:py-28">
+          <div className="max-w-2xl text-left">
+            
+            {/* 1. Pill Badge */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/80 dark:bg-bg-card/80 backdrop-blur-sm border border-line shadow-sm text-sm font-medium text-brand mb-6">
+              <span className="w-2 h-2 rounded-full bg-brand animate-ping" />
+              <Gem className="w-3.5 h-3.5 text-brand" />
+              <span>Personal Finance & Wealth Clarity</span>
             </div>
 
-            {/* Main Headline */}
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[4rem] font-extrabold text-ink tracking-tight leading-[1.12]">
+            {/* 2. Main Headline */}
+            <h1 id="hero-title" className="font-serif font-bold text-5xl md:text-6xl lg:text-7xl tracking-tight leading-[1.05] text-ink">
               Your Home Base for{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand via-brand-light to-info">
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#ea580c] via-[#b9824a] to-[#0284c7]">
                 Financial Clarity
               </span>
             </h1>
 
-            {/* Subheadline */}
-            <p className="mt-6 text-base sm:text-lg md:text-xl text-ink-soft leading-relaxed max-w-xl mx-auto lg:mx-0">
+            {/* 3. Paragraph */}
+            <p className="mt-6 text-lg lg:text-xl text-ink-soft max-w-xl leading-relaxed">
               SpendWise brings all your expenses, income streams, and monthly budgets into one unified, distraction-free dashboard. Know where every rupee goes.
             </p>
 
-            {/* Hero CTAs */}
-            <div className="mt-9 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+            {/* 4. CTA Buttons */}
+            <div className="mt-9 flex flex-wrap items-center gap-4">
               {isAuthenticated ? (
                 <Link
                   to="/dashboard"
-                  className="w-full sm:w-auto bg-brand hover:bg-brand-dark text-white font-semibold text-base px-8 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 transform hover:-translate-y-0.5"
+                  className="bg-brand hover:bg-brand-dark text-white font-semibold px-7 py-3.5 rounded-xl shadow-lg shadow-brand/25 hover:-translate-y-0.5 transition duration-200 flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50"
                 >
                   <span>Go to Your Dashboard</span>
                   <ArrowRight className="w-5 h-5 stroke-[2.5]" />
@@ -280,7 +283,7 @@ const LandingPage = () => {
                 <>
                   <Link
                     to="/register"
-                    className="w-full sm:w-auto bg-brand hover:bg-brand-dark text-white font-semibold text-base px-7 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 transform hover:-translate-y-0.5"
+                    className="bg-brand hover:bg-brand-dark text-white font-semibold px-7 py-3.5 rounded-xl shadow-lg shadow-brand/25 hover:-translate-y-0.5 transition duration-200 flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50"
                   >
                     <span>Start Tracking Free</span>
                     <ArrowRight className="w-5 h-5 stroke-[2.5]" />
@@ -288,7 +291,7 @@ const LandingPage = () => {
 
                   <Link
                     to="/login"
-                    className="w-full sm:w-auto bg-bg-card hover:bg-bg-hover text-ink border border-line hover:border-line-light font-bold text-base px-6 py-3.5 rounded-xl transition flex items-center justify-center gap-2"
+                    className="bg-white/90 dark:bg-bg-card/90 border border-line text-ink font-semibold px-7 py-3.5 rounded-xl hover:bg-white dark:hover:bg-bg-hover shadow-sm transition duration-200 flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50"
                   >
                     <Sparkles className="w-4 h-4 text-brand" />
                     <span>Sign In to Dashboard</span>
@@ -297,9 +300,9 @@ const LandingPage = () => {
               )}
             </div>
 
-            {/* Social Proof Strip */}
-            <div className="mt-12 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs text-ink-muted">
-              <div className="flex items-center gap-1.5">
+            {/* 5. Trust Row (One clean row on desktop >=1280px) */}
+            <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-ink-soft">
+              <div className="flex items-center gap-1.5 flex-shrink-0">
                 <div className="flex text-amber-400">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="w-3.5 h-3.5 fill-current" />
@@ -308,21 +311,42 @@ const LandingPage = () => {
                 <span className="font-semibold text-ink">4.9/5 Rating</span>
                 <span>by modern developers & students</span>
               </div>
-              <span className="hidden sm:inline text-line">•</span>
-              <div className="flex items-center gap-1.5">
+              <span className="hidden xl:inline text-line font-light" aria-hidden="true">|</span>
+              <div className="flex items-center gap-1.5 flex-shrink-0">
                 <ShieldCheck className="w-4 h-4 text-brand" />
                 <span>Zero-knowledge data isolation</span>
               </div>
-              <span className="hidden sm:inline text-line">•</span>
-              <div className="flex items-center gap-1.5">
+              <span className="hidden xl:inline text-line font-light" aria-hidden="true">|</span>
+              <div className="flex items-center gap-1.5 flex-shrink-0">
                 <Zap className="w-4 h-4 text-info" />
-                <span>Real-time LKR (Rs.) Tracking</span>
+                <span>Real-time LKR (Rs.) tracking</span>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Extra Polish: Subtle Floating Glass Card near Phone (hidden below lg) */}
+          <div className="hidden lg:flex absolute right-8 xl:right-20 bottom-16 xl:bottom-24 z-10 pointer-events-none animate-float">
+            <div className="bg-white/80 dark:bg-bg-card/85 backdrop-blur-md rounded-2xl border border-white/60 dark:border-line shadow-xl p-4 w-64 text-left">
+              <div className="flex items-center justify-between text-xs font-semibold text-ink mb-1.5">
+                <span className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-income" />
+                  Monthly Budget
+                </span>
+                <span className="text-income font-bold">68% used</span>
+              </div>
+              <div className="w-full bg-cream-band dark:bg-bg-secondary rounded-full h-2 overflow-hidden">
+                <div className="bg-income h-2 rounded-full w-[68%]" />
+              </div>
+              <div className="flex justify-between items-center text-[10px] text-ink-soft mt-2">
+                <span>Rs. 68,000 spent</span>
+                <span>Rs. 100,000 limit</span>
               </div>
             </div>
           </div>
 
           {/* ─── 4. Interactive Dashboard Hero Preview (App Mockup) ───────── */}
-          <div className="mt-12 sm:mt-16 relative max-w-5xl mx-auto">
+          <div className="mt-20 sm:mt-28 relative max-w-5xl mx-auto">
             {/* Ambient card back-glow */}
             <div className="absolute -inset-1.5 bg-gradient-to-r from-brand/30 via-info/20 to-brand/30 rounded-3xl blur-xl opacity-75"></div>
 

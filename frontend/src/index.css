@@ -1147,3 +1147,19 @@ tbody td {
   .modal { max-height: 100vh; border-radius: 0; }
   .modal-backdrop { padding: 0; }
 }
+
+/* ─── Hero Section Floating Animation & Polish ───────────────────── */
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animate-float {
+    animation: floatSlow 6s ease-in-out infinite;
+  }
+}
