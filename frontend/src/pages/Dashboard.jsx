@@ -219,7 +219,7 @@ const Dashboard = () => {
               setEditingTransaction(null);
               setIsTransModalOpen(true);
             }}
-            className="bg-brand hover:bg-brand-light text-brand-dark font-bold text-sm px-4 py-2.5 rounded-xl transition shadow-lg shadow-brand/20 flex items-center gap-2 flex-shrink-0 cursor-pointer"
+            className="bg-brand hover:bg-brand-dark text-white font-bold text-sm px-4 py-2.5 rounded-xl transition shadow-lg shadow-brand/20 flex items-center gap-2 flex-shrink-0 cursor-pointer"
           >
             <Plus className="w-4 h-4 stroke-[2.5]" />
             <span>Add Transaction</span>

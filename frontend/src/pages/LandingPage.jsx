@@ -51,7 +51,7 @@ const LandingPage = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand to-brand-light flex items-center justify-center shadow-lg shadow-brand/25 group-hover:shadow-brand/40 transition-all duration-300">
-              <WalletCards className="w-5 h-5 text-brand-dark" strokeWidth={2.5} />
+              <WalletCards className="w-5 h-5 text-white" strokeWidth={2.5} />
             </div>
             <div>
               <span className="font-extrabold text-xl tracking-tight text-ink flex items-center">

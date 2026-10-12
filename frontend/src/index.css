@@ -38,7 +38,7 @@
   --transition:    0.2s ease;
 }
 
-/* ─── Design Tokens: Dark Mode (Emerald Wealth Spec) ─────────────── */
+/* ─── Design Tokens: Dark Mode ─────────────── */
 .dark {
   --bg-primary:    #0a0e17;
   --bg-secondary:  #111827;
@@ -49,12 +49,12 @@
   --text-primary:  #f1f5f9;
   --text-secondary:#94a3b8;
   --text-muted:    #64748b;
-  --accent:        #10b981;
-  --accent-light:  #34d399;
-  --accent-dark:   #06251b;
-  --accent-soft:   rgba(16, 185, 129, 0.2);
-  --accent-dim:    rgba(16, 185, 129, 0.15);
-  --btn-text:      #06251b;
+  --accent:        #ea580c;
+  --accent-light:  #f97316;
+  --accent-dark:   #c2410c;
+  --accent-soft:   rgba(234, 88, 12, 0.2);
+  --accent-dim:    rgba(234, 88, 12, 0.15);
+  --btn-text:      #ffffff;
   --green:         #10b981;
   --green-dim:     rgba(16, 185, 129, 0.15);
   --red:           #f43f5e;
@@ -433,13 +433,13 @@ body {
 }
 .dark .btn-primary {
   background: linear-gradient(135deg, var(--accent), var(--accent-light));
-  color: #06251b;
+  color: #ffffff;
   font-weight: 700;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.4);
 }
 .dark .btn-primary:hover:not(:disabled) {
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
-  color: #031811;
+  box-shadow: 0 6px 20px rgba(234, 88, 12, 0.55);
+  color: #ffffff;
 }
 
 .btn-secondary {

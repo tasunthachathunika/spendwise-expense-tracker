@@ -45,7 +45,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         {/* Brand Logo */}
         <div className="sidebar-logo">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand to-brand-light flex items-center justify-center shadow-lg shadow-brand/20 flex-shrink-0">
-            <WalletCards size={22} className="text-brand-dark" />
+            <WalletCards size={22} className="text-white" />
           </div>
           <div>
             <span className="font-extrabold text-lg tracking-tight text-ink flex items-center">
