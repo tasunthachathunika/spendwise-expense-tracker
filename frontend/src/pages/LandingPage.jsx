@@ -217,6 +217,28 @@ const LandingPage = () => {
 
       {/* ─── 3. Hero Section ───────────────────────────────────────────── */}
       <section className="relative pt-16 pb-20 md:pt-24 md:pb-28 overflow-hidden">
+        {/* Professional Ambient Hero Background Image */}
+        <div className="absolute inset-0 pointer-events-none select-none z-0 overflow-hidden">
+          <img
+            src={isDark ? '/hero_fintech_bg.jpg' : '/hero_light_bg.jpg'}
+            alt="SpendWise Luxury Fintech Background"
+            className="w-full h-full object-cover object-center transition-all duration-700"
+            style={{
+              opacity: isDark ? 0.4 : 0.7,
+              filter: isDark ? 'contrast(1.15) brightness(0.95)' : 'contrast(1.05) saturate(1.1)',
+            }}
+          />
+          {/* Smooth radial and vertical gradient fade for flawless readability & seamless blending */}
+          <div 
+            className="absolute inset-0"
+            style={{
+              background: isDark
+                ? 'radial-gradient(circle at 50% 30%, rgba(10, 14, 23, 0.45) 0%, rgba(10, 14, 23, 0.8) 65%, #0a0e17 100%), linear-gradient(to bottom, transparent 60%, #0a0e17 100%)'
+                : 'radial-gradient(circle at 50% 30%, rgba(253, 249, 239, 0.35) 0%, rgba(253, 249, 239, 0.75) 65%, #fdf9ef 100%), linear-gradient(to bottom, transparent 60%, #fdf9ef 100%)',
+            }}
+          />
+        </div>
+
         {/* Ambient Glows */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[350px] bg-brand/15 rounded-full blur-[120px] pointer-events-none"></div>
         <div className="absolute top-1/3 right-10 w-[300px] h-[250px] bg-info/10 rounded-full blur-[100px] pointer-events-none"></div>
