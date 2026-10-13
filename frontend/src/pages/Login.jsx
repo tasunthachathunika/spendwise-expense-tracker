@@ -228,11 +228,15 @@ const Login = () => {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
+            {/* Decoy hidden inputs to prevent browser password managers from auto-filling */}
+            <input type="text" name="decoy_user" style={{ display: 'none' }} tabIndex={-1} aria-hidden="true" autoComplete="off" />
+            <input type="password" name="decoy_pass" style={{ display: 'none' }} tabIndex={-1} aria-hidden="true" autoComplete="off" />
+
             {/* Email Field */}
             <div>
               <label
-                htmlFor="email"
+                htmlFor="login-email"
                 className="block text-xs font-semibold uppercase tracking-wider text-ink-soft mb-1.5"
               >
                 Email Address
@@ -242,10 +246,11 @@ const Login = () => {
                   <Mail className="w-4 h-4" />
                 </div>
                 <input
-                  id="email"
+                  id="login-email"
+                  name="spendwise-email"
                   type="email"
                   required
-                  autoComplete="email"
+                  autoComplete="off"
                   placeholder="you@example.com"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -257,7 +262,7 @@ const Login = () => {
             {/* Password Field */}
             <div>
               <label
-                htmlFor="password"
+                htmlFor="login-password"
                 className="block text-xs font-semibold uppercase tracking-wider text-ink-soft mb-1.5"
               >
                 Password
@@ -267,10 +272,11 @@ const Login = () => {
                   <Lock className="w-4 h-4" />
                 </div>
                 <input
-                  id="password"
+                  id="login-password"
+                  name="spendwise-password"
                   type={showPassword ? 'text' : 'password'}
                   required
-                  autoComplete="current-password"
+                  autoComplete="new-password"
                   placeholder="••••••••"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
