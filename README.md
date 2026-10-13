@@ -1,90 +1,380 @@
-# SpendWise - Personal Expense & Budget Tracker
+# SpendWise — Personal Expense & Budget Tracker
 
-A modern, production-ready full-stack Personal Expense & Budget Tracker built with Node.js, Express, MongoDB, React, Vite, Tailwind CSS, Recharts, and JWT Authentication.
+<p align="center">
+  <img src="frontend/public/spendwise-logo-light.svg" alt="SpendWise Logo" width="220" />
+</p>
 
----
+<p align="center">
+  <strong>A premium, full-stack personal finance application designed for mindful cash flow management, budget discipline, and actionable financial intelligence.</strong>
+</p>
 
-## 🚀 Quick Start Guide
-
-### 1. Start MongoDB
-Ensure your MongoDB server is running:
-
-**Option A (Windows Service as Admin):**
-Open PowerShell as Administrator and run:
-```powershell
-net start MongoDB
-```
-
-**Option B (Direct CLI):**
-```powershell
-mongod --dbpath="C:\data\db"
-```
-*(Or specify your MongoDB Atlas URI in `backend/.env` under `MONGO_URI`)*
+<p align="center">
+  <img src="https://img.shields.io/badge/Node.js-18.x-339933?logo=node.js&logoColor=white" alt="Node.js" />
+  <img src="https://img.shields.io/badge/Express-4.18-000000?logo=express&logoColor=white" alt="Express" />
+  <img src="https://img.shields.io/badge/MongoDB-Mongoose%208-47A248?logo=mongodb&logoColor=white" alt="MongoDB" />
+  <img src="https://img.shields.io/badge/React-18.2%20(Vite)-61DAFB?logo=react&logoColor=black" alt="React" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
+  <img src="https://img.shields.io/badge/Currency-LKR%20(Rs.)-ea580c" alt="Currency LKR" />
+</p>
 
 ---
 
-### 2. Start the Backend Server (Port 5000)
-Open a terminal in the project root:
-```powershell
+## 📖 Overview
+
+**SpendWise** is a modern MERN-stack personal finance tracker crafted with the visual elegance and refined UX of premier fintech platforms. Built to support Sri Lankan Rupee (`LKR`) cash flows with locale-aware formatting (`Rs. 250,000`), SpendWise empowers individuals to track income streams, categorize daily expenses, enforce monthly budget limits with dynamic visual alerts, and gain instant clarity over cash flow trends. With warm cream light mode and warm obsidian dark mode, focus management, double-submission safeguards, and strict resource-level authorization checks, SpendWise delivers an enterprise-grade experience for university evaluation and daily personal budgeting.
+
+---
+
+## 🌟 Key Features
+
+- **Authentication & Security:**
+  - Secure JWT-based authentication with bcrypt-hashed passwords (salt rounds: 12).
+  - Centralized Axios interceptors for automatic Bearer token injection and global 401 handling.
+  - In-memory rate limiting on authentication routes protecting against brute-force attacks.
+  - Security headers enforced (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `X-XSS-Protection`).
+  - Strict ownership checks on every database query (`userId: req.user._id`) eliminating Insecure Direct Object References (IDOR).
+  - Sanitized update payloads preventing mass-assignment vulnerabilities.
+
+- **Dynamic Financial Dashboard:**
+  - Aggregated real-time metrics: Total Income, Total Expenses, Net Savings, and Monthly Budget Status.
+  - Month and year filter dropdown enabling historical inspection.
+  - Interactive cash flow comparison bar chart and expense-by-category breakdown donut chart.
+  - Recent transactions overview with authentic empty states when no activity exists.
+
+- **Transaction Management:**
+  - Comprehensive CRUD operations for Incomes and Expenses.
+  - Server-side and client-side multi-filter engine: search by keyword, filter by Type, Category, and Date ranges.
+  - Sri Lankan Rupee (`LKR`) formatting using `Intl.NumberFormat('en-LK')`.
+  - Accessible modal dialogs with auto-focus management and double-submission protection.
+  - Categorized using modern Lucide icons (zero emojis) across 15+ standard life categories.
+
+- **Monthly Budget Discipline:**
+  - Set custom target budget amounts per month and year.
+  - Automatic progress indicators with percentage calculations and color-coded status badges:
+    - **Safe** (green, < 75%)
+    - **Approaching Limit** (amber, 75% – 99%)
+    - **Over Budget Warning** (red, >= 100%)
+  - Accessible custom confirmation dialog (`role="alertdialog"`) for destructive budget deletions.
+
+- **Financial Analytics & Trends:**
+  - 6-month historical cash flow trends via Recharts area and bar visualizations.
+  - Category-level distribution donut chart with percentages and formatted amounts.
+  - Theme-adaptive chart color tokens synchronizing seamlessly with both light and dark themes.
+
+- **User Profile & Account Settings:**
+  - Account overview showing member registration tenure, active monthly budget, and transaction counts.
+  - Profile name update with length validation (2 to 50 characters).
+  - Secure password modification requiring current password verification and minimum 6-character complexity.
+  - Theme toggle selector preserving user preference in `localStorage`.
+
+---
+
+## 💻 Tech Stack
+
+| Layer | Technologies |
+|---|---|
+| **Frontend Framework** | React.js (v18.2) + Vite build tool |
+| **Styling & Design System** | Tailwind CSS (v3.4), Custom Design Tokens (Cream & Dark), Fraunces & Inter fonts |
+| **Icons & Visuals** | Lucide-React (100% SVG icons, zero unicode emojis) |
+| **Data Visualization** | Recharts (ResponsiveContainer, BarChart, PieChart, AreaChart) |
+| **Routing & Notifications** | React Router v6, React Hot Toast |
+| **Backend Runtime** | Node.js (v18+) with Express.js |
+| **Database & ODM** | MongoDB Atlas / Local MongoDB, Mongoose v8 |
+| **Security & Auth** | JSON Web Tokens (`jsonwebtoken`), `bcryptjs`, Custom Rate Limiter |
+| **HTTP Client** | Axios with request & response interceptors |
+
+---
+
+## 📁 Project Architecture
+
+```
+spendwise/
+├── backend/
+│   ├── config/
+│   │   └── db.js                 # Mongoose connection handler
+│   ├── controllers/
+│   │   ├── authController.js       # Register, Login, Me, Profile & Password
+│   │   ├── budgetController.js     # Budget CRUD with user ownership verification
+│   │   ├── dashboardController.js  # MongoDB aggregations for summaries & charts
+│   │   └── transactionController.js# Transaction CRUD, filtering & pagination
+│   ├── middleware/
+│   │   ├── authMiddleware.js       # JWT bearer token verification
+│   │   └── security.js             # Security headers & auth rate limiting
+│   ├── models/
+│   │   ├── Budget.js               # Budget schema with compound unique index
+│   │   ├── Transaction.js          # Transaction schema with indexes on userId & date
+│   │   └── User.js                 # User schema with pre-save bcrypt hook
+│   ├── routes/
+│   │   ├── authRoutes.js           # Auth endpoint definitions
+│   │   ├── budgetRoutes.js         # Budget endpoint definitions
+│   │   ├── dashboardRoutes.js      # Dashboard aggregation endpoints
+│   │   └── transactionRoutes.js    # Transaction endpoint definitions
+│   ├── .env.example                # Documented backend environment template
+│   ├── package.json                # Dependencies & seed scripts
+│   ├── seed.js                     # Idempotent LKR seed script for demonstration
+│   └── server.js                   # Express application entry point
+├── frontend/
+│   ├── public/
+│   │   ├── favicon.svg             # Application favicon
+│   │   ├── spendwise-logo-light.svg# Light theme vector logo
+│   │   └── spendwise-logo-dark.svg # Dark theme vector logo
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── common/
+│   │   │   │   ├── CategoryIcon.jsx    # Accessible Lucide category renderer
+│   │   │   │   └── ConfirmDialog.jsx   # Accessible alertdialog modal
+│   │   │   ├── dashboard/              # Stat cards, donut chart, cashflow chart
+│   │   │   ├── BudgetModal.jsx         # Accessible budget editor
+│   │   │   ├── Layout.jsx              # App layout with Sidebar & Navbar
+│   │   │   ├── Navbar.jsx              # Header with user menu & theme toggle
+│   │   │   ├── PrivateRoute.jsx        # Protected route guard
+│   │   │   ├── Sidebar.jsx             # Navigation sidebar with responsive drawer
+│   │   │   └── TransactionModal.jsx    # Add/edit transaction dialog
+│   │   ├── context/
+│   │   │   ├── AuthContext.jsx         # Global user & authentication state
+│   │   │   └── ThemeContext.jsx        # Light/dark theme provider
+│   │   ├── hooks/
+│   │   │   └── useDocumentTitle.js     # Dynamic browser tab title updater
+│   │   ├── pages/
+│   │   │   ├── Analytics.jsx           # Trends & category distribution
+│   │   │   ├── Budgets.jsx             # Monthly budget cards & progress
+│   │   │   ├── Dashboard.jsx           # Financial overview & stat cards
+│   │   │   ├── LandingPage.jsx         # SaaS marketing homepage
+│   │   │   ├── Login.jsx               # Split-screen fintech login page
+│   │   │   ├── NotFound.jsx            # Custom 404 page with return route
+│   │   │   ├── Profile.jsx             # Account settings & password update
+│   │   │   ├── Register.jsx            # Split-screen registration page
+│   │   │   └── Transactions.jsx        # Filterable transaction ledger
+│   │   ├── utils/
+│   │   │   ├── api.js                  # Axios client with interceptors
+│   │   │   └── helpers.js              # LKR currency & date utilities
+│   │   ├── App.jsx                     # Route matrix & notification toasts
+│   │   ├── index.css                   # Tailwind tokens & custom theme variables
+│   │   └── main.jsx                    # React virtual DOM root
+│   ├── package.json                    # Frontend dependencies
+│   ├── tailwind.config.js              # Tailwind custom theme token mappings
+│   └── vite.config.js                  # Vite server & API proxy configuration
+├── docs/
+│   └── screenshots/                    # Evaluation & demonstration screenshots
+├── .gitignore                          # Git ignore rules protecting secrets
+└── README.md                           # Comprehensive documentation
+```
+
+---
+
+## ⚡ Prerequisites
+
+Before installing SpendWise, verify that the following dependencies are installed on your machine:
+- **Node.js**: v18.0.0 or higher ([Download Node.js](https://nodejs.org/))
+- **npm**: v9.0.0 or higher (packaged with Node.js)
+- **MongoDB**: Either a local instance running on `localhost:27017` or a free [MongoDB Atlas Cluster](https://www.mongodb.com/atlas)
+- **Git**: Installed for version control
+
+---
+
+## 🛠️ Step-by-Step Setup Guide
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/tasunthachathunika/spendwise-expense-tracker.git
+cd spendwise-expense-tracker
+```
+
+### 2. Configure Backend Environment
+Navigate into `backend/` and copy the sample environment file:
+```bash
+cd backend
+cp .env.example .env
+```
+Edit `backend/.env` with your preferred settings:
+```ini
+PORT=5000
+MONGO_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/spendwise?retryWrites=true&w=majority
+JWT_SECRET=spendwise_super_secret_jwt_key_2026
+JWT_EXPIRES_IN=7d
+NODE_ENV=development
+```
+
+### 3. Install Dependencies
+Install dependencies for both the backend and frontend:
+```bash
+# In backend/
+npm install
+
+# In frontend/
+cd ../frontend
+npm install
+```
+
+### 4. Seed Realistic Demonstration Data
+SpendWise provides a dedicated, idempotent database seed script that populates realistic Sri Lankan Rupee (`LKR`) cash flows spanning the last 6 months for evaluation:
+```bash
+cd ../backend
+npm run seed
+```
+> **Seeded Demo Account Credentials:**
+> - **Email:** `demo@spendwise.lk`
+> - **Password:** `SpendWise2026!`
+> - **Records:** 51 realistic transactions (Salary, Freelance, Groceries, Rent, Utilities) + 6 monthly budgets.
+
+### 5. Start Development Servers
+Start both servers concurrently in separate terminal windows:
+
+**Terminal 1 — Backend:**
+```bash
 cd backend
 npm run dev
+# Backend runs at http://localhost:5000
 ```
-> Server runs at `http://localhost:5000`
 
----
-
-### 3. Start the Frontend Application (Port 5173)
-Open a separate terminal:
-```powershell
+**Terminal 2 — Frontend:**
+```bash
 cd frontend
 npm run dev
+# Frontend runs at http://localhost:5173
 ```
-> Open your browser at `http://localhost:5173`
+
+Open your browser at `http://localhost:5173` to experience SpendWise!
 
 ---
 
-## 🛠️ Project Architecture
+## 🔐 Environment Variables
 
-```
-/backend
-├── controllers/
-│   ├── authController.js       # Register, Login, Me, Profile & Password update
-│   ├── transactionController.js# CRUD, search, category/date filters
-│   ├── budgetController.js     # Upsert monthly budget targets
-│   └── dashboardController.js  # Summary cards & analytics data
-├── middleware/
-│   └── authMiddleware.js       # JWT bearer token verification
-├── models/
-│   ├── User.js                 # User schema with bcrypt hash hook
-│   ├── Transaction.js          # Incomes & Expenses with indexes
-│   └── Budget.js               # Unique monthly budget targets
-├── routes/                     # Express API routers
-├── server.js                   # Express app entry & MongoDB connection
-└── .env                        # Configuration (Port, JWT Secret, DB URI)
+| Variable Name | Description | Default / Example Value | Required |
+|---|---|---|---|
+| `PORT` | Port number for the Express API server | `5000` | No (defaults to 5000) |
+| `MONGO_URI` | MongoDB connection URI (Atlas or Local) | `mongodb://localhost:27017/spendwise` | **Yes** |
+| `JWT_SECRET` | Secret key used to sign and verify JWT tokens | `spendwise_super_secret_jwt_key_2026` | **Yes** |
+| `JWT_EXPIRES_IN` | Token expiration duration | `7d` | No (defaults to 7d) |
+| `NODE_ENV` | Application execution environment | `development` | No |
 
-/frontend
-├── src/
-│   ├── components/
-│   │   ├── Sidebar.jsx         # Mobile-responsive drawer navigation
-│   │   ├── Navbar.jsx          # Dynamic page titles & profile avatar
-│   │   ├── Layout.jsx          # Protected layout shell
-│   │   ├── PrivateRoute.jsx    # Authentication route guard
-│   │   ├── TransactionModal.jsx# Add/edit transaction with validations
-│   │   └── BudgetModal.jsx     # Set monthly budget limits
-│   ├── context/
-│   │   └── AuthContext.jsx     # Global JWT login/logout state
-│   ├── pages/
-│   │   ├── LandingPage.jsx     # High-converting Fintech SaaS landing page (/landing)
-│   │   ├── Login.jsx           # Sign in (/login)
-│   │   ├── Register.jsx        # Account registration (/register)
-│   │   ├── Dashboard.jsx       # 4 Stat cards, progress, recent activity
-│   │   ├── Transactions.jsx    # Paginated data table & filter bar
-│   │   ├── Budgets.jsx         # Budget cards & exceeding warnings
-│   │   ├── Analytics.jsx       # Donut chart, Bar chart & Trend lines
-│   │   └── Profile.jsx         # Personal info, password change, appearance & live stats
-│   ├── utils/
-│   │   ├── api.js              # Axios with JWT interceptors
-│   │   └── helpers.js          # Formatters, icons & chart palettes
-│   ├── App.jsx                 # Routes & React Hot Toast configuration
-│   └── index.css               # Complete dark modern SaaS design tokens
+---
+
+## 📡 API Endpoint Reference
+
+All endpoints (except public auth & health) require a valid JWT Bearer token in the `Authorization` header: `Bearer <token>`.
+
+### Authentication (`/api/auth`)
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `POST` | `/api/auth/register` | Public | Register new user account with name, email, password |
+| `POST` | `/api/auth/login` | Public | Authenticate user and receive JWT bearer token |
+| `GET` | `/api/auth/me` | Bearer | Retrieve profile of the currently logged-in user |
+| `PUT` | `/api/auth/profile` | Bearer | Update user display name (2–50 chars) |
+| `PUT` | `/api/auth/password` | Bearer | Change account password verifying current password |
+
+### Transactions (`/api/transactions`)
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `GET` | `/api/transactions` | Bearer | Get paginated transactions with optional filters (`type`, `category`, `search`, `startDate`, `endDate`, `page`, `limit`) |
+| `POST` | `/api/transactions` | Bearer | Create a new transaction (`type`, `amount`, `category`, `date`, `paymentMethod`, `description`) |
+| `GET` | `/api/transactions/:id` | Bearer | Retrieve single transaction by ID (scoped to authenticated user) |
+| `PUT` | `/api/transactions/:id` | Bearer | Update transaction fields (whitelisted sanitization) |
+| `DELETE` | `/api/transactions/:id` | Bearer | Delete transaction by ID (scoped to authenticated user) |
+| `GET` | `/api/transactions/categories` | Bearer | Get distinct categories utilized by current user |
+
+### Budgets (`/api/budgets`)
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `GET` | `/api/budgets` | Bearer | Retrieve all monthly budgets for authenticated user |
+| `GET` | `/api/budgets/:year/:month` | Bearer | Retrieve budget for specific year and month |
+| `POST` | `/api/budgets` | Bearer | Create or update budget for month/year (upsert) |
+| `DELETE` | `/api/budgets/:id` | Bearer | Delete budget by ID (scoped to authenticated user) |
+
+### Dashboard & Analytics (`/api/dashboard`)
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `GET` | `/api/dashboard/summary` | Bearer | Aggregate summary metrics for selected month/year |
+| `GET` | `/api/dashboard/category-expenses`| Bearer | Expense totals grouped by category for donut chart |
+| `GET` | `/api/dashboard/cash-flow` | Bearer | Monthly cash flow comparison (Income vs Expense) |
+
+### Health Check (`/api/health`)
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `GET` | `/api/health` | Public | Health status check returning `{ status: "OK" }` |
+
+---
+
+## 📸 Essential Screenshots
+
+| View | Light Theme | Dark Theme |
+|---|---|---|
+| **Landing Hero** | ![Landing Hero](docs/screenshots/landing-hero.png) | — |
+| **Financial Dashboard** | ![Dashboard](docs/screenshots/dashboard.png) | ![Dark Mode Dashboard](docs/screenshots/dark-mode.png) |
+| **Transaction Ledger** | ![Transactions](docs/screenshots/transactions.png) | — |
+| **Budget Discipline** | ![Budgets](docs/screenshots/budgets.png) | — |
+| **Cash Flow Analytics** | ![Analytics](docs/screenshots/analytics.png) | — |
+
+---
+
+## 📷 Screenshot Capture Checklist (1440 × 900)
+
+When capturing evaluation screenshots for submission, use a browser window resized to **1440 × 900 px** and follow these specifications:
+
+- [ ] **1. Landing Page (`docs/screenshots/landing-hero.png`)**:
+  - URL: `http://localhost:5173/landing` (Light Mode).
+  - Capture hero banner, statistics badges, and feature cards.
+- [ ] **2. Financial Dashboard (`docs/screenshots/dashboard.png`)**:
+  - URL: `http://localhost:5173/dashboard` (Light Mode, seeded account).
+  - Capture 4 stat cards, budget progress bar, donut chart, cash flow bars, and recent transactions.
+- [ ] **3. Transactions Ledger (`docs/screenshots/transactions.png`)**:
+  - URL: `http://localhost:5173/transactions` (Light Mode).
+  - Capture active search filter, category badge column with Lucide icons, and pagination controls.
+- [ ] **4. Budget Management (`docs/screenshots/budgets.png`)**:
+  - URL: `http://localhost:5173/budgets` (Light Mode).
+  - Capture monthly budget cards showing spent vs limit, percentage bar, and warning tags.
+- [ ] **5. Cash Flow Analytics (`docs/screenshots/analytics.png`)**:
+  - URL: `http://localhost:5173/analytics` (Light Mode).
+  - Capture monthly income vs expense bar chart and category breakdown donut chart.
+- [ ] **6. Warm Dark Theme Preview (`docs/screenshots/dark-mode.png`)**:
+  - URL: `http://localhost:5173/dashboard` (Dark Mode enabled via top-right theme toggle).
+  - Demonstrate warm obsidian dark background, high-contrast typography, and glowing stat borders.
+
+---
+
+## 🧪 Testing Instructions
+
+### Backend API Verification
+You can verify the backend endpoints using `curl` or Postman:
+
+1. **Health Check:**
+   ```bash
+   curl -i http://localhost:5000/api/health
+   ```
+2. **Demo User Login:**
+   ```bash
+   curl -i -X POST http://localhost:5000/api/auth/login \
+     -H "Content-Type: application/json" \
+     -d '{"email":"demo@spendwise.lk","password":"SpendWise2026!"}'
+   ```
+3. **Protected Route Access (Replace `<TOKEN>`):**
+   ```bash
+   curl -i http://localhost:5000/api/dashboard/summary \
+     -H "Authorization: Bearer <TOKEN>"
+   ```
+
+### Frontend Build Verification
+To verify that the frontend compiles cleanly without errors or warnings:
+```bash
+cd frontend
+npm run build
 ```
+
+---
+
+## 🚀 Future Improvements
+
+- **Receipt OCR & Document Upload:** Upload scanned store receipts to automatically extract amounts, vendor names, and dates using Tesseract.js.
+- **Automated Bank Statement CSV Import:** Import bank statements exported from Commercial Bank, Sampath Bank, and HNB.
+- **Recurring Subscription Notifications:** Configurable email reminders for recurring monthly utilities and subscription renewals.
+- **Export to PDF & Excel:** Export monthly financial reports with formatted summary tables and charts.
+
+---
+
+## 👨‍💻 Project Submission Details
+
+- **Module:** Full-Stack Web Application Development (Individual Assignment)
+- **Team / Identifier:** Team 405
+- **Deadline:** October 16, 2026 — 3:00 PM
+- **Author:** Chathunika Tasuntha
+- **Repository:** [https://github.com/tasunthachathunika/spendwise-expense-tracker](https://github.com/tasunthachathunika/spendwise-expense-tracker)
