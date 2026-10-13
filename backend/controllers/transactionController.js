@@ -97,14 +97,32 @@ const getTransaction = async (req, res) => {
 // @access  Private
 const updateTransaction = async (req, res) => {
   try {
-    const { amount } = req.body;
-    if (amount !== undefined && amount <= 0) {
-      return res.status(400).json({ success: false, message: 'Amount must be greater than 0.' });
+    const { type, amount, category, description, date, paymentMethod } = req.body;
+    const updates = {};
+
+    if (type !== undefined) {
+      if (!['Income', 'Expense'].includes(type)) {
+        return res.status(400).json({ success: false, message: 'Type must be Income or Expense.' });
+      }
+      updates.type = type;
     }
+
+    if (amount !== undefined) {
+      const numAmount = Number(amount);
+      if (isNaN(numAmount) || numAmount <= 0) {
+        return res.status(400).json({ success: false, message: 'Amount must be greater than 0.' });
+      }
+      updates.amount = numAmount;
+    }
+
+    if (category !== undefined) updates.category = String(category).trim();
+    if (description !== undefined) updates.description = String(description).trim();
+    if (date !== undefined) updates.date = date;
+    if (paymentMethod !== undefined) updates.paymentMethod = paymentMethod;
 
     const transaction = await Transaction.findOneAndUpdate(
       { _id: req.params.id, userId: req.user._id },
-      req.body,
+      { $set: updates },
       { new: true, runValidators: true }
     );
 
