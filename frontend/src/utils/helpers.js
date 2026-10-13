@@ -1,17 +1,23 @@
-// Format currency in Sri Lankan Rupees (Rs. 250,000)
+// Format currency in Sri Lankan Rupees (Rs. 250,000) using en-LK locale
+const lkrFormatter = new Intl.NumberFormat('en-LK', {
+  maximumFractionDigits: 2,
+  minimumFractionDigits: 0,
+});
+
 export const formatCurrency = (amount, prefix = 'Rs. ') => {
-  const num = Math.abs(Number(amount) || 0);
-  const formatted = num.toLocaleString('en-US');
-  return `${prefix}${formatted}`;
+  const val = Number(amount) || 0;
+  const isNegative = val < 0;
+  const formatted = lkrFormatter.format(Math.abs(val));
+  return isNegative ? `-${prefix}${formatted}` : `${prefix}${formatted}`;
 };
 
 // Format signed currency (+Rs. 250,000 / -Rs. 145,000)
 export const formatSignedCurrency = (amount, type) => {
-  const num = Math.abs(Number(amount) || 0);
-  const formatted = num.toLocaleString('en-US');
+  const val = Number(amount) || 0;
+  const formatted = lkrFormatter.format(Math.abs(val));
   if (type === 'Income') return `+Rs. ${formatted}`;
   if (type === 'Expense') return `-Rs. ${formatted}`;
-  return Number(amount) < 0 ? `-Rs. ${formatted}` : `Rs. ${formatted}`;
+  return val < 0 ? `-Rs. ${formatted}` : `Rs. ${formatted}`;
 };
 
 // Format date safely without mixing dateStyle with individual date components
