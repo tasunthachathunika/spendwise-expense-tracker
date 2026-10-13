@@ -11,14 +11,18 @@ import {
   Eye,
   EyeOff,
   Loader2,
+  Sparkles,
 } from 'lucide-react';
 import SpendWiseLogo from '../components/landing/SpendWiseLogo';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
+import useDocumentTitle from '../hooks/useDocumentTitle';
 
 const Login = () => {
+  useDocumentTitle('Sign In');
   const [formData, setFormData] = useState({ email: '', password: '' });
+  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [imgError, setImgError] = useState(false);
@@ -45,6 +49,14 @@ const Login = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleFillDemo = () => {
+    setFormData({
+      email: 'demo@spendwise.lk',
+      password: 'SpendWise2026!',
+    });
+    toast.success('Loaded demo account credentials');
   };
 
   return (
@@ -227,6 +239,26 @@ const Login = () => {
             </p>
           </div>
 
+          {/* Quick Demo Access Card (For Evaluators & Reviewers) */}
+          <div className="mb-5 p-3 sm:p-3.5 rounded-xl border border-brand/25 bg-brand-soft/30 flex items-center justify-between gap-3 shadow-2xs">
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-brand">
+                <Sparkles className="w-3.5 h-3.5 flex-shrink-0" />
+                <span>Demo Account Access</span>
+              </div>
+              <div className="text-[11px] text-ink-soft font-mono truncate mt-0.5">
+                demo@spendwise.lk • SpendWise2026!
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={handleFillDemo}
+              className="text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-brand text-white hover:bg-brand-dark transition-all duration-150 shadow-2xs shrink-0 cursor-pointer active:scale-95"
+            >
+              Fill Demo
+            </button>
+          </div>
+
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
             {/* Decoy hidden inputs to prevent browser password managers from auto-filling */}
@@ -291,6 +323,26 @@ const Login = () => {
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
+            </div>
+
+            {/* Remember Me & Forgot Password Row */}
+            <div className="flex items-center justify-between text-xs sm:text-sm pt-0.5">
+              <label className="flex items-center gap-2 cursor-pointer text-ink-body select-none">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="w-4 h-4 rounded border-line text-brand focus:ring-brand accent-brand cursor-pointer"
+                />
+                <span>Remember me</span>
+              </label>
+              <button
+                type="button"
+                onClick={() => toast('To access demo records, click "Fill Demo" above or sign in with your registered account.', { duration: 4000 })}
+                className="font-medium text-brand hover:underline cursor-pointer"
+              >
+                Forgot password?
+              </button>
             </div>
 
             {/* Primary Submit Button */}
