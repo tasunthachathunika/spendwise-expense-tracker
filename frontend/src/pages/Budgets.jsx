@@ -124,7 +124,9 @@ const Budgets = () => {
       ) : budgets.length === 0 ? (
         <div className="card">
           <div className="empty-state">
-            <div className="empty-state-icon">🎯</div>
+            <div className="empty-state-icon flex items-center justify-center mb-2">
+              <Target size={36} className="text-ink-soft opacity-70" />
+            </div>
             <h4 className="empty-state-title">No budgets established yet</h4>
             <p className="empty-state-text">
               Establish a monthly budget threshold to keep your expenses organized and avoid overspending.

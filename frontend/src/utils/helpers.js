@@ -59,16 +59,16 @@ export const getInitials = (name = '') => {
     .toUpperCase();
 };
 
-// Category icon map
+// Category icon mapping (Lucide icon identifier name)
 export const categoryIcon = (category = '') => {
   const map = {
-    Food: '🍔', Groceries: '🛒', Transport: '🚗', Fuel: '⛽',
-    Shopping: '🛍️', Entertainment: '🎬', Health: '💊', Medical: '🏥',
-    Education: '📚', Rent: '🏠', Housing: '🏠', Utilities: '💡',
-    Travel: '✈️', Gym: '💪', Salary: '💼', Freelance: '💻',
-    Investment: '📈', Business: '🏢', Gift: '🎁', Other: '📦',
+    Food: 'Utensils', Groceries: 'ShoppingCart', Transport: 'Car', Fuel: 'Fuel',
+    Shopping: 'ShoppingBag', Entertainment: 'Film', Health: 'HeartPulse', Medical: 'HeartPulse',
+    Education: 'GraduationCap', Rent: 'Home', Housing: 'Home', Utilities: 'Zap',
+    Travel: 'Plane', Gym: 'Dumbbell', Salary: 'Briefcase', Freelance: 'Laptop',
+    Investment: 'TrendingUp', Business: 'Building2', Gift: 'Gift', Other: 'Package',
   };
-  return map[category] || '💰';
+  return map[category] || 'CircleDollarSign';
 };
 
 // Chart color palette (Warm Cream Light / Monarch spec: orange, amber, sky, violet, pink, teal, grey)

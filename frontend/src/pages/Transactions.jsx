@@ -9,10 +9,12 @@ import {
   X,
   CreditCard,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  FileText
 } from 'lucide-react';
 import api from '../utils/api';
-import { formatCurrency, formatDate, categoryIcon, EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '../utils/helpers';
+import { formatCurrency, formatDate, EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '../utils/helpers';
+import CategoryIcon from '../components/common/CategoryIcon';
 import TransactionModal from '../components/TransactionModal';
 import toast from 'react-hot-toast';
 import useDocumentTitle from '../hooks/useDocumentTitle';
@@ -219,7 +221,9 @@ const Transactions = () => {
           </div>
         ) : transactions.length === 0 ? (
           <div className="empty-state">
-            <div className="empty-state-icon">📋</div>
+            <div className="empty-state-icon flex items-center justify-center mb-2">
+              <FileText size={36} className="text-ink-soft opacity-70" />
+            </div>
             <h4 className="empty-state-title">No transactions found</h4>
             <p className="empty-state-text">
               {search || typeFilter || categoryFilter || startDate || endDate
@@ -255,8 +259,10 @@ const Transactions = () => {
                         </span>
                       </td>
                       <td>
-                        <div className="flex items-center gap-2">
-                          <span>{categoryIcon(tx.category)}</span>
+                        <div className="flex items-center gap-2.5">
+                          <span className="w-7 h-7 rounded-md bg-cream-band text-brand flex items-center justify-center shrink-0 border border-line">
+                            <CategoryIcon category={tx.category} size={14} />
+                          </span>
                           <span className="font-medium text-ink">{tx.category}</span>
                         </div>
                       </td>
