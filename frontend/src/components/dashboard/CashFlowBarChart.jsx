@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { formatCurrency } from '../../utils/helpers';
+import { BarChart3 } from 'lucide-react';
 
 const CustomBarTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -40,17 +41,8 @@ const CustomBarTooltip = ({ active, payload, label }) => {
 };
 
 const CashFlowBarChart = ({ data = [] }) => {
-  // Realistic fallback data for last 6 months
-  const defaultMonthlyData = [
-    { month: 'May', income: 180000, expense: 110000 },
-    { month: 'Jun', income: 210000, expense: 130000 },
-    { month: 'Jul', income: 220000, expense: 140000 },
-    { month: 'Aug', income: 200000, expense: 120000 },
-    { month: 'Sep', income: 235000, expense: 142000 },
-    { month: 'Oct (Now)', income: 250000, expense: 145000 },
-  ];
-
-  const chartData = data && data.length > 0 ? data : defaultMonthlyData;
+  const hasData = data && data.length > 0;
+  const chartData = hasData ? data : [];
 
   return (
     <div className="bg-bg-card border border-line rounded-2xl p-6 shadow-sm flex flex-col justify-between h-full">
@@ -69,47 +61,61 @@ const CashFlowBarChart = ({ data = [] }) => {
         </div>
       </div>
 
-      {/* Responsive Bar Chart */}
-      <div className="w-full h-56 pt-2">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#232f48" vertical={false} />
-            <XAxis
-              dataKey="month"
-              stroke="#94a3b8"
-              fontSize={11}
-              tickLine={false}
-              axisLine={{ stroke: '#232f48' }}
-            />
-            <YAxis
-              stroke="#94a3b8"
-              fontSize={10}
-              tickLine={false}
-              axisLine={false}
-              tickFormatter={(v) => (v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v)}
-            />
-            <Tooltip content={<CustomBarTooltip />} />
-            <Bar
-              dataKey="income"
-              name="Income"
-              fill="var(--income, #15803d)"
-              radius={[4, 4, 0, 0]}
-              maxBarSize={28}
-            />
-            <Bar
-              dataKey="expense"
-              name="Expense"
-              fill="var(--expense, #dc2626)"
-              radius={[4, 4, 0, 0]}
-              maxBarSize={28}
-            />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+      {!hasData ? (
+        <div className="h-56 flex flex-col items-center justify-center text-center p-6 my-auto">
+          <div className="w-12 h-12 rounded-2xl bg-cream-band border border-line flex items-center justify-center text-ink-soft mb-3">
+            <BarChart3 className="w-5 h-5 text-ink-soft" />
+          </div>
+          <h4 className="text-sm font-bold text-ink">No cash flow trend yet</h4>
+          <p className="text-xs text-ink-soft max-w-xs mt-1">
+            Cash flow comparisons will automatically build over time as you log transactions.
+          </p>
+        </div>
+      ) : (
+        <>
+          {/* Responsive Bar Chart */}
+          <div className="w-full h-56 pt-2">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(120, 113, 108, 0.2)" vertical={false} />
+                <XAxis
+                  dataKey="month"
+                  stroke="#7a7263"
+                  fontSize={11}
+                  tickLine={false}
+                  axisLine={{ stroke: 'rgba(120, 113, 108, 0.2)' }}
+                />
+                <YAxis
+                  stroke="#7a7263"
+                  fontSize={10}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(v) => (v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v)}
+                />
+                <Tooltip content={<CustomBarTooltip />} />
+                <Bar
+                  dataKey="income"
+                  name="Income"
+                  fill="var(--income, #15803d)"
+                  radius={[4, 4, 0, 0]}
+                  maxBarSize={28}
+                />
+                <Bar
+                  dataKey="expense"
+                  name="Expense"
+                  fill="var(--expense, #dc2626)"
+                  radius={[4, 4, 0, 0]}
+                  maxBarSize={28}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
 
-      <p className="text-xs text-ink-soft text-center pt-3 border-t border-line mt-2">
-        Consistently maintaining a positive net cash flow surplus.
-      </p>
+          <p className="text-xs text-ink-soft text-center pt-3 border-t border-line mt-2">
+            Consistently maintaining a positive net cash flow surplus.
+          </p>
+        </>
+      )}
     </div>
   );
 };

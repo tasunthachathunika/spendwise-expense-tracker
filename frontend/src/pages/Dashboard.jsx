@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Calendar, RefreshCw } from 'lucide-react';
 import api from '../utils/api';
 import toast from 'react-hot-toast';
+import { formatCurrency } from '../utils/helpers';
 
 // Modular Dashboard Subcomponents
 import StatCard from '../components/dashboard/StatCard';
@@ -15,27 +16,37 @@ import { StatCardSkeleton, ChartSkeleton, TableSkeleton } from '../components/co
 import TransactionModal from '../components/TransactionModal';
 import BudgetModal from '../components/BudgetModal';
 
-const MONTH_OPTIONS = [
-  { label: 'October 2026', month: 10, year: 2026 },
-  { label: 'September 2026', month: 9, year: 2026 },
-  { label: 'August 2026', month: 8, year: 2026 },
-];
+const generateMonthOptions = () => {
+  const options = [];
+  const now = new Date();
+  for (let i = 0; i < 6; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    options.push({
+      label: d.toLocaleString('en-US', { month: 'long', year: 'numeric' }),
+      month: d.getMonth() + 1,
+      year: d.getFullYear(),
+    });
+  }
+  return options;
+};
+
+const MONTH_OPTIONS = generateMonthOptions();
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [selectedPeriod, setSelectedPeriod] = useState(MONTH_OPTIONS[0]);
 
-  // Dashboard state with realistic fallback defaults matching the prototype
+  // Dashboard authentic initial state
   const [summary, setSummary] = useState({
-    totalIncome: 250000,
-    totalExpenses: 145000,
-    balance: 105000,
-    monthlyIncome: 250000,
-    monthlyExpenses: 145000,
-    budgetAmount: 180000,
-    budgetRemaining: 35000,
-    budgetUsagePercent: 80.5,
-    daysRemaining: 22,
+    totalIncome: 0,
+    totalExpenses: 0,
+    balance: 0,
+    monthlyIncome: 0,
+    monthlyExpenses: 0,
+    budgetAmount: 0,
+    budgetRemaining: 0,
+    budgetUsagePercent: 0,
+    daysRemaining: 0,
   });
 
   const [recentTransactions, setRecentTransactions] = useState([]);
@@ -60,39 +71,33 @@ const Dashboard = () => {
       if (res.data?.success) {
         const d = res.data;
         if (d.summary) {
-          // If live budget exists, calculate days remaining
           const now = new Date();
           const daysInMonth = new Date(selectedPeriod.year, selectedPeriod.month, 0).getDate();
           const daysLeft = Math.max(0, daysInMonth - now.getDate());
 
           setSummary({
-            totalIncome: d.summary.totalIncome ?? 250000,
-            totalExpenses: d.summary.totalExpenses ?? 145000,
-            balance: d.summary.balance ?? 105000,
-            monthlyIncome: d.summary.monthlyIncome ?? 250000,
-            monthlyExpenses: d.summary.monthlyExpenses ?? 145000,
-            budgetAmount: d.summary.budgetAmount || 180000,
-            budgetRemaining: d.summary.budgetRemaining ?? 35000,
-            budgetUsagePercent: d.summary.budgetUsagePercent || 80.5,
-            daysRemaining: daysLeft || 22,
+            totalIncome: Number(d.summary.totalIncome) || 0,
+            totalExpenses: Number(d.summary.totalExpenses) || 0,
+            balance: Number(d.summary.balance) || 0,
+            monthlyIncome: Number(d.summary.monthlyIncome) || 0,
+            monthlyExpenses: Number(d.summary.monthlyExpenses) || 0,
+            budgetAmount: Number(d.summary.budgetAmount) || 0,
+            budgetRemaining: Number(d.summary.budgetRemaining) || 0,
+            budgetUsagePercent: Number(d.summary.budgetUsagePercent) || 0,
+            daysRemaining: daysLeft,
           });
         }
 
-        if (d.recentTransactions && d.recentTransactions.length > 0) {
-          setRecentTransactions(d.recentTransactions);
-        }
+        setRecentTransactions(d.recentTransactions || []);
 
-        if (d.expenseByCategory && d.expenseByCategory.length > 0) {
-          setCategoryData(
-            d.expenseByCategory.map((cat) => ({
-              name: cat._id,
-              value: cat.total,
-            }))
-          );
-        }
+        setCategoryData(
+          (d.expenseByCategory || []).map((cat) => ({
+            name: cat._id,
+            value: cat.total,
+          }))
+        );
 
         if (d.monthlyTrend && d.monthlyTrend.length > 0) {
-          // Process 6 months trend
           const monthMap = {};
           d.monthlyTrend.forEach((item) => {
             const key = `${item._id.month}/${item._id.year}`;
@@ -106,11 +111,13 @@ const Dashboard = () => {
             if (item._id.type === 'Expense') monthMap[key].expense = item.total;
           });
           setCashFlowData(Object.values(monthMap).slice(-6));
+        } else {
+          setCashFlowData([]);
         }
       }
     } catch (err) {
-      // Keep realistic fallback data smoothly so UI displays properly
-      console.warn('Dashboard API notice: Using local cached metrics.', err.message);
+      console.error('Dashboard data fetch error:', err);
+      toast.error('Unable to fetch live dashboard metrics.');
     } finally {
       setLoading(false);
     }
@@ -242,9 +249,9 @@ const Dashboard = () => {
             type="income"
             label="Total Income"
             amount={summary.totalIncome}
-            badgeText="+14.2%"
+            badgeText={summary.monthlyIncome > 0 ? "Active" : "Logged"}
             badgePositive={true}
-            subtitle="vs last month"
+            subtitle={summary.monthlyIncome > 0 ? `This month: +${formatCurrency(summary.monthlyIncome)}` : "All-time credited"}
           />
 
           {/* Total Expenses */}
@@ -252,9 +259,9 @@ const Dashboard = () => {
             type="expense"
             label="Total Expenses"
             amount={summary.totalExpenses}
-            badgeText="+5.8%"
+            badgeText={summary.monthlyExpenses > 0 ? "Active" : "Logged"}
             badgePositive={false}
-            subtitle="vs last month"
+            subtitle={summary.monthlyExpenses > 0 ? `This month: -${formatCurrency(summary.monthlyExpenses)}` : "All-time debited"}
           />
 
           {/* Net Balance (Info / Sky highlight) */}
@@ -262,9 +269,9 @@ const Dashboard = () => {
             type="balance"
             label="Net Balance"
             amount={summary.balance}
-            badgeText="Healthy liquidity"
-            badgePositive={true}
-            subtitle="• 42% saved"
+            badgeText={summary.balance >= 0 ? "Surplus" : "Deficit"}
+            badgePositive={summary.balance >= 0}
+            subtitle={summary.balance >= 0 ? "Positive liquidity" : "Expenses exceed income"}
           />
 
           {/* Monthly Budget Target */}
@@ -272,9 +279,9 @@ const Dashboard = () => {
             type="budget"
             label="Monthly Budget"
             amount={summary.budgetAmount}
-            badgeText="Remaining:"
+            badgeText={summary.budgetAmount > 0 ? `${summary.budgetUsagePercent}% used` : "Not Set"}
             badgePositive={summary.budgetRemaining >= 0}
-            subtitle={`Rs. ${Math.abs(summary.budgetRemaining || 35000).toLocaleString()}`}
+            subtitle={summary.budgetAmount > 0 ? `Remaining: ${formatCurrency(summary.budgetRemaining)}` : "No limit set"}
           />
         </div>
       )}
@@ -284,6 +291,7 @@ const Dashboard = () => {
         budgetAmount={summary.budgetAmount}
         spentAmount={summary.monthlyExpenses}
         daysRemaining={summary.daysRemaining}
+        onSetBudget={() => setIsBudgetModalOpen(true)}
       />
 
       {/* Analytics Charts Section (1/3 Donut Category + 2/3 Cash Flow Bar) */}

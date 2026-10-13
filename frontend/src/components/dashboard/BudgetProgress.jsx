@@ -3,10 +3,32 @@ import { AlertTriangle, CheckCircle2, AlertOctagon } from 'lucide-react';
 import { formatCurrency } from '../../utils/helpers';
 
 const BudgetProgress = ({
-  budgetAmount = 180000,
-  spentAmount = 145000,
-  daysRemaining = 22,
+  budgetAmount = 0,
+  spentAmount = 0,
+  daysRemaining = 0,
+  onSetBudget,
 }) => {
+  if (budgetAmount <= 0) {
+    return (
+      <div className="bg-bg-card border border-line rounded-2xl p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-base font-bold text-ink">Monthly Budget Status</h2>
+          <p className="text-xs text-ink-soft mt-0.5">
+            You haven't established a spending budget limit for this month yet.
+          </p>
+        </div>
+        {onSetBudget && (
+          <button
+            onClick={onSetBudget}
+            className="px-4 py-2 bg-brand/10 hover:bg-brand/20 text-brand border border-brand/30 rounded-xl text-xs font-semibold transition flex-shrink-0"
+          >
+            Set Monthly Budget
+          </button>
+        )}
+      </div>
+    );
+  }
+
   // Calculate percentage
   const percent = budgetAmount > 0 
     ? Math.round((spentAmount / budgetAmount) * 1000) / 10 
@@ -15,13 +37,13 @@ const BudgetProgress = ({
   const remainingLimit = budgetAmount - spentAmount;
 
   // Determine threshold states
-  // 0% – 70%: Emerald (#10b981)
-  // 70% – 90%: Amber Warning (#f59e0b)
-  // 90%+ or Over budget: Rose Alert (#f43f5e)
+  // 0% – 70%: Emerald/Brand
+  // 70% – 90%: Amber Warning
+  // 90%+ or Over budget: Rose Alert
   let statusColor = 'bg-brand shadow-brand/30';
   let badgeClass = 'bg-brand/10 text-brand border-brand/30';
   let badgeLabel = `● On Track (${percent}%)`;
-  let statusText = '0-70% Emerald, 70-90% Amber Warning, 90%+ Rose Alert';
+  let statusText = '0-70% On Track, 70-90% Warning, 90%+ Alert';
   let BadgeIcon = CheckCircle2;
 
   if (isOverBudget || percent >= 90) {

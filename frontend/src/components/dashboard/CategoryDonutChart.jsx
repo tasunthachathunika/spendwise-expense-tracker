@@ -1,5 +1,6 @@
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { PieChart as LucidePieChart } from 'lucide-react';
 import { formatCurrency } from '../../utils/helpers';
 
 // Category colors defined in Warm Cream / Monarch specs
@@ -39,15 +40,9 @@ const CategoryDonutChart = ({
   data = [],
   monthName = 'October',
 }) => {
-  // Fallback realistic category breakdown if empty
-  const defaultData = [
-    { name: 'Food', value: 50750 },
-    { name: 'Bills', value: 36250 },
-    { name: 'Transport', value: 29000 },
-    { name: 'Shopping', value: 29000 },
-  ];
+  const hasData = data && data.length > 0;
 
-  const chartData = (data && data.length > 0 ? data : defaultData).map((item, index) => {
+  const chartData = (hasData ? data : []).map((item, index) => {
     const color = CATEGORY_COLOR_MAP[item.name] || DEFAULT_COLORS[index % DEFAULT_COLORS.length];
     return {
       ...item,
@@ -74,53 +69,67 @@ const CategoryDonutChart = ({
         </span>
       </div>
 
-      {/* Donut Chart with Center Total */}
-      <div className="relative w-full h-52 flex items-center justify-center my-2">
-        <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-            <Tooltip content={<CustomTooltip />} />
-            <Pie
-              data={chartData}
-              cx="50%"
-              cy="50%"
-              innerRadius={62}
-              outerRadius={84}
-              paddingAngle={3}
-              dataKey="value"
-              stroke="#161f30"
-              strokeWidth={2}
-            >
-              {chartData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
-              ))}
-            </Pie>
-          </PieChart>
-        </ResponsiveContainer>
-
-        {/* Center Label */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-          <span className="text-[11px] font-semibold text-ink-muted uppercase tracking-wider">Total</span>
-          <span className="text-base font-mono font-bold text-ink">{compactTotal}</span>
+      {!hasData ? (
+        <div className="h-64 flex flex-col items-center justify-center text-center p-6 my-auto">
+          <div className="w-12 h-12 rounded-2xl bg-cream-band border border-line flex items-center justify-center text-ink-soft mb-3">
+            <LucidePieChart className="w-5 h-5 text-ink-soft" />
+          </div>
+          <h4 className="text-sm font-bold text-ink">No category expenses yet</h4>
+          <p className="text-xs text-ink-soft max-w-xs mt-1">
+            Expenses logged for this month will be broken down by category here.
+          </p>
         </div>
-      </div>
+      ) : (
+        <>
+          {/* Donut Chart with Center Total */}
+          <div className="relative w-full h-52 flex items-center justify-center my-2">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Tooltip content={<CustomTooltip />} />
+                <Pie
+                  data={chartData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={62}
+                  outerRadius={84}
+                  paddingAngle={3}
+                  dataKey="value"
+                  stroke="transparent"
+                  strokeWidth={2}
+                >
+                  {chartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
 
-      {/* Color Legend with percentage */}
-      <div className="grid grid-cols-2 gap-2 text-xs pt-4 border-t border-line">
-        {chartData.map((item, idx) => {
-          const pct = totalExpense > 0 ? Math.round((item.value / totalExpense) * 100) : 0;
-          return (
-            <div key={idx} className="flex items-center gap-2">
-              <span
-                className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                style={{ backgroundColor: item.color }}
-              ></span>
-              <span className="text-ink-soft truncate">
-                {item.name} ({pct}%)
-              </span>
+            {/* Center Label */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+              <span className="text-[11px] font-semibold text-ink-muted uppercase tracking-wider">Total</span>
+              <span className="text-base font-mono font-bold text-ink">{compactTotal}</span>
             </div>
-          );
-        })}
-      </div>
+          </div>
+
+          {/* Color Legend with percentage */}
+          <div className="grid grid-cols-2 gap-2 text-xs pt-4 border-t border-line">
+            {chartData.map((item, idx) => {
+              const pct = totalExpense > 0 ? Math.round((item.value / totalExpense) * 100) : 0;
+              return (
+                <div key={idx} className="flex items-center gap-2">
+                  <span
+                    className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: item.color }}
+                  ></span>
+                  <span className="text-ink-soft truncate">
+                    {item.name} ({pct}%)
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
     </div>
   );
 };
