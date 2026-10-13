@@ -11,7 +11,6 @@ import {
   Eye,
   EyeOff,
   Loader2,
-  Sparkles,
 } from 'lucide-react';
 import SpendWiseLogo from '../components/landing/SpendWiseLogo';
 import api from '../utils/api';
@@ -49,14 +48,6 @@ const Login = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleFillDemo = () => {
-    setFormData({
-      email: 'demo@spendwise.lk',
-      password: 'SpendWise2026!',
-    });
-    toast.success('Loaded demo account credentials');
   };
 
   return (
@@ -239,26 +230,6 @@ const Login = () => {
             </p>
           </div>
 
-          {/* Quick Demo Access Card (For Evaluators & Reviewers) */}
-          <div className="mb-5 p-3 sm:p-3.5 rounded-xl border border-brand/25 bg-brand-soft/30 flex items-center justify-between gap-3 shadow-2xs">
-            <div className="min-w-0">
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-brand">
-                <Sparkles className="w-3.5 h-3.5 flex-shrink-0" />
-                <span>Demo Account Access</span>
-              </div>
-              <div className="text-[11px] text-ink-soft font-mono truncate mt-0.5">
-                demo@spendwise.lk • SpendWise2026!
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={handleFillDemo}
-              className="text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-brand text-white hover:bg-brand-dark transition-all duration-150 shadow-2xs shrink-0 cursor-pointer active:scale-95"
-            >
-              Fill Demo
-            </button>
-          </div>
-
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
             {/* Decoy hidden inputs to prevent browser password managers from auto-filling */}
@@ -338,7 +309,7 @@ const Login = () => {
               </label>
               <button
                 type="button"
-                onClick={() => toast('To access demo records, click "Fill Demo" above or sign in with your registered account.', { duration: 4000 })}
+                onClick={() => toast('To reset your credentials, please contact your administrator.', { duration: 4000 })}
                 className="font-medium text-brand hover:underline cursor-pointer"
               >
                 Forgot password?
