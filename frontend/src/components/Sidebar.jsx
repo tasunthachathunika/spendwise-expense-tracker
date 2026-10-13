@@ -77,8 +77,8 @@ const Sidebar = ({ isOpen, onClose }) => {
               {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
             </div>
             <div className="overflow-hidden">
-              <p className="text-sm font-semibold text-white truncate">{user?.name || 'User'}</p>
-              <p className="text-xs text-gray-400 truncate">{user?.email || ''}</p>
+              <p className="text-sm font-semibold text-ink truncate">{user?.name || 'User'}</p>
+              <p className="text-xs text-ink-soft truncate">{user?.email || ''}</p>
             </div>
           </div>
         </div>

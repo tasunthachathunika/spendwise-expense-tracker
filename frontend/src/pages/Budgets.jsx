@@ -134,7 +134,7 @@ const Budgets = () => {
             return (
               <div 
                 key={b._id} 
-                className={`budget-card relative ${isCurrent ? 'ring-2 ring-indigo-500/50' : ''}`}
+                className={`budget-card relative ${isCurrent ? 'ring-2 ring-brand/50' : ''}`}
               >
                 <div className="budget-card-header">
                   <div>
@@ -143,7 +143,7 @@ const Budgets = () => {
                         {monthName(b.month)} {b.year}
                       </span>
                       {isCurrent && (
-                        <span className="text-xs bg-indigo-500/20 text-indigo-400 font-bold px-2 py-0.5 rounded-full">
+                        <span className="text-xs bg-brand-soft text-brand font-bold px-2 py-0.5 rounded-full">
                           Current
                         </span>
                       )}
@@ -173,12 +173,12 @@ const Budgets = () => {
                     <span>Critical Limit ({percent}%)</span>
                   </div>
                 ) : percent >= 70 ? (
-                  <div className="inline-flex items-center gap-1 text-xs text-amber-400 font-semibold mb-3">
+                  <div className="inline-flex items-center gap-1 text-xs text-warn font-semibold mb-3">
                     <AlertTriangle size={14} />
                     <span>Nearing Limit ({percent}%)</span>
                   </div>
                 ) : (
-                  <div className="inline-flex items-center gap-1 text-xs text-emerald-400 font-semibold mb-3">
+                  <div className="inline-flex items-center gap-1 text-xs text-income font-semibold mb-3">
                     <CheckCircle2 size={14} />
                     <span>On Track ({percent}%)</span>
                   </div>
@@ -187,18 +187,18 @@ const Budgets = () => {
                 {/* Amount details */}
                 <div className="space-y-1 mb-4">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">Target Budget:</span>
-                    <span className="font-bold text-white">{formatCurrency(b.amount)}</span>
+                    <span className="text-ink-soft">Target Budget:</span>
+                    <span className="font-bold text-ink">{formatCurrency(b.amount)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">Total Spent:</span>
-                    <span className={`font-bold ${isExceeded || percent >= 90 ? 'text-rose-400' : 'text-gray-200'}`}>
+                    <span className="text-ink-soft">Total Spent:</span>
+                    <span className={`font-bold ${isExceeded || percent >= 90 ? 'text-expense' : 'text-ink-body'}`}>
                       {formatCurrency(spent)}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">Remaining:</span>
-                    <span className={`font-bold ${isExceeded ? 'text-rose-400' : 'text-emerald-400'}`}>
+                    <span className="text-ink-soft">Remaining:</span>
+                    <span className={`font-bold ${isExceeded ? 'text-expense' : 'text-income'}`}>
                       {formatCurrency(b.amount - spent)}
                     </span>
                   </div>
@@ -212,8 +212,8 @@ const Budgets = () => {
                   />
                 </div>
 
-                <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-800">
-                  <span className="text-xs text-gray-400">Usage: {percent}%</span>
+                <div className="flex justify-between items-center mt-3 pt-3 border-t border-line">
+                  <span className="text-xs text-ink-soft">Usage: {percent}%</span>
                   <button
                     className="btn btn-sm btn-secondary text-xs"
                     onClick={() => openEditModal(b)}

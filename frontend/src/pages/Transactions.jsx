@@ -244,24 +244,24 @@ const Transactions = () => {
                       <td>
                         <div className="flex items-center gap-2">
                           <span>{categoryIcon(tx.category)}</span>
-                          <span className="font-medium text-white">{tx.category}</span>
+                          <span className="font-medium text-ink">{tx.category}</span>
                         </div>
                       </td>
                       <td>
-                        <span className="text-gray-300">
-                          {tx.description || <span className="text-gray-500 italic">—</span>}
+                        <span className="text-ink-body">
+                          {tx.description || <span className="text-ink-soft italic">—</span>}
                         </span>
                       </td>
                       <td>
-                        <span className="text-xs text-gray-400 bg-gray-800/60 px-2 py-1 rounded">
+                        <span className="text-xs text-ink-soft bg-cream-band border border-line px-2 py-0.5 rounded">
                           {tx.paymentMethod}
                         </span>
                       </td>
                       <td>
-                        <span className="text-gray-400 text-sm">{formatDate(tx.date)}</span>
+                        <span className="text-ink-soft text-sm">{formatDate(tx.date)}</span>
                       </td>
                       <td>
-                        <span className={`font-bold ${tx.type === 'Income' ? 'text-emerald-400' : 'text-rose-400'}`}>
+                        <span className={`font-bold font-mono ${tx.type === 'Income' ? 'text-income' : 'text-expense'}`}>
                           {tx.type === 'Income' ? '+' : '-'} {formatCurrency(tx.amount)}
                         </span>
                       </td>
@@ -291,8 +291,8 @@ const Transactions = () => {
 
             {/* Pagination Controls */}
             {pages > 1 && (
-              <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-800">
-                <span className="text-xs text-gray-400">
+              <div className="flex items-center justify-between mt-4 pt-4 border-t border-line">
+                <span className="text-xs text-ink-soft">
                   Page {page} of {pages} ({total} items)
                 </span>
                 <div className="flex items-center gap-2">
