@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Transaction = require('../models/Transaction');
 const Budget = require('../models/Budget');
 
@@ -7,17 +8,19 @@ const Budget = require('../models/Budget');
 const getSummary = async (req, res) => {
   try {
     const userId = req.user._id;
+    const userObjectId = new mongoose.Types.ObjectId(userId);
     const now = new Date();
-    const currentMonth = now.getMonth() + 1;
-    const currentYear = now.getFullYear();
 
-    // Current month date range
-    const startOfMonth = new Date(currentYear, currentMonth - 1, 1);
-    const endOfMonth = new Date(currentYear, currentMonth, 0, 23, 59, 59, 999);
+    const targetMonth = req.query.month ? parseInt(req.query.month) : (now.getMonth() + 1);
+    const targetYear = req.query.year ? parseInt(req.query.year) : now.getFullYear();
+
+    // Selected month date range
+    const startOfMonth = new Date(targetYear, targetMonth - 1, 1);
+    const endOfMonth = new Date(targetYear, targetMonth, 0, 23, 59, 59, 999);
 
     // Aggregate all-time totals
     const allTimeAgg = await Transaction.aggregate([
-      { $match: { userId: userId } },
+      { $match: { userId: userObjectId } },
       {
         $group: {
           _id: '$type',
@@ -33,9 +36,9 @@ const getSummary = async (req, res) => {
       if (item._id === 'Expense') totalExpenses = item.total;
     });
 
-    // Current month totals
+    // Selected month totals
     const monthAgg = await Transaction.aggregate([
-      { $match: { userId: userId, date: { $gte: startOfMonth, $lte: endOfMonth } } },
+      { $match: { userId: userObjectId, date: { $gte: startOfMonth, $lte: endOfMonth } } },
       {
         $group: {
           _id: '$type',
@@ -51,8 +54,8 @@ const getSummary = async (req, res) => {
       if (item._id === 'Expense') monthlyExpenses = item.total;
     });
 
-    // Budget for current month
-    const budget = await Budget.findOne({ userId, month: currentMonth, year: currentYear });
+    // Budget for selected month
+    const budget = await Budget.findOne({ userId, month: targetMonth, year: targetYear });
     const budgetAmount = budget ? budget.amount : 0;
     const budgetRemaining = budgetAmount - monthlyExpenses;
 
@@ -61,9 +64,9 @@ const getSummary = async (req, res) => {
       .sort({ date: -1, createdAt: -1 })
       .limit(5);
 
-    // Expense by category for current month
+    // Expense by category for selected month
     const expenseByCategory = await Transaction.aggregate([
-      { $match: { userId: userId, type: 'Expense', date: { $gte: startOfMonth, $lte: endOfMonth } } },
+      { $match: { userId: userObjectId, type: 'Expense', date: { $gte: startOfMonth, $lte: endOfMonth } } },
       {
         $group: {
           _id: '$category',
@@ -80,7 +83,7 @@ const getSummary = async (req, res) => {
     sixMonthsAgo.setHours(0, 0, 0, 0);
 
     const monthlyTrend = await Transaction.aggregate([
-      { $match: { userId: userId, date: { $gte: sixMonthsAgo } } },
+      { $match: { userId: userObjectId, date: { $gte: sixMonthsAgo } } },
       {
         $group: {
           _id: {
@@ -105,8 +108,8 @@ const getSummary = async (req, res) => {
         budgetAmount,
         budgetRemaining,
         budgetUsagePercent: budgetAmount > 0 ? Math.round((monthlyExpenses / budgetAmount) * 100) : 0,
-        currentMonth,
-        currentYear,
+        currentMonth: targetMonth,
+        currentYear: targetYear,
       },
       recentTransactions,
       expenseByCategory,
