@@ -19,6 +19,7 @@ import api from '../utils/api';
 import { formatCurrency, CHART_COLORS } from '../utils/helpers';
 import toast from 'react-hot-toast';
 import useDocumentTitle from '../hooks/useDocumentTitle';
+import { useTheme } from '../context/ThemeContext';
 
 const formatYAxisTick = (val) => {
   if (!val || val === 0) return 'Rs. 0';
@@ -34,10 +35,23 @@ const formatYAxisTick = (val) => {
 
 const Analytics = () => {
   useDocumentTitle('Analytics');
+  const { isDark } = useTheme();
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState(currentYear);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const tooltipStyle = {
+    backgroundColor: isDark ? '#211c16' : '#ffffff',
+    borderColor: isDark ? '#352d23' : '#e9e1ca',
+    borderRadius: '12px',
+    color: isDark ? '#f7f1e6' : '#1f1b16',
+    boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)',
+    fontSize: '12px',
+  };
+
+  const gridStroke = isDark ? '#352d23' : '#e9e1ca';
+  const axisStroke = isDark ? '#a39a88' : '#7a7263';
 
   const fetchAnalytics = async () => {
     try {
@@ -91,7 +105,7 @@ const Analytics = () => {
           <p className="page-subtitle text-ink-soft">Visual performance metrics for cashflow, spending, and habits</p>
         </div>
         <div className="flex items-center gap-2">
-          <label className="text-xs font-semibold text-gray-400">Year:</label>
+          <label className="text-xs font-semibold text-ink-soft">Year:</label>
           <select
             className="filter-select"
             value={selectedYear}
@@ -135,7 +149,9 @@ const Analytics = () => {
                   </Pie>
                   <Tooltip 
                     formatter={customTooltipFormatter}
-                    contentStyle={{ backgroundColor: '#1a1d27', borderColor: '#2a2d3e', borderRadius: '10px' }}
+                    contentStyle={tooltipStyle}
+                    itemStyle={{ color: isDark ? '#f7f1e6' : '#1f1b16' }}
+                    labelStyle={{ color: isDark ? '#f7f1e6' : '#1f1b16' }}
                   />
                   <Legend 
                     layout="horizontal" 
@@ -157,16 +173,18 @@ const Analytics = () => {
           <div style={{ width: '100%', height: 320 }}>
             <ResponsiveContainer>
               <BarChart data={monthlyData} margin={{ top: 10, right: 10, left: 15, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#232f48" vertical={false} />
-                <XAxis dataKey="monthName" stroke="#94a3b8" fontSize={12} tickLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} tickFormatter={formatYAxisTick} />
+                <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} vertical={false} />
+                <XAxis dataKey="monthName" stroke={axisStroke} fontSize={12} tickLine={false} />
+                <YAxis stroke={axisStroke} fontSize={11} tickLine={false} tickFormatter={formatYAxisTick} />
                 <Tooltip 
                   formatter={customTooltipFormatter}
-                  contentStyle={{ backgroundColor: '#161f30', borderColor: '#232f48', borderRadius: '10px' }}
+                  contentStyle={tooltipStyle}
+                  itemStyle={{ color: isDark ? '#f7f1e6' : '#1f1b16' }}
+                  labelStyle={{ color: isDark ? '#f7f1e6' : '#1f1b16' }}
                 />
                 <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
-                <Bar dataKey="income" name="Income" fill="#10b981" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="expense" name="Expense" fill="#f43f5e" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="income" name="Income" fill={isDark ? '#4ade80' : '#15803d'} radius={[4, 4, 0, 0]} />
+                <Bar dataKey="expense" name="Expense" fill={isDark ? '#f87171' : '#dc2626'} radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -181,40 +199,42 @@ const Analytics = () => {
         <div style={{ width: '100%', height: 350 }}>
           <ResponsiveContainer>
             <LineChart data={trendData} margin={{ top: 20, right: 30, left: 15, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#232f48" vertical={false} />
-              <XAxis dataKey="month" stroke="#94a3b8" fontSize={12} tickLine={false} />
-              <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} tickFormatter={formatYAxisTick} />
+              <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} vertical={false} />
+              <XAxis dataKey="month" stroke={axisStroke} fontSize={12} tickLine={false} />
+              <YAxis stroke={axisStroke} fontSize={11} tickLine={false} tickFormatter={formatYAxisTick} />
               <Tooltip 
                 formatter={customTooltipFormatter}
-                contentStyle={{ backgroundColor: '#161f30', borderColor: '#232f48', borderRadius: '10px' }}
+                contentStyle={tooltipStyle}
+                itemStyle={{ color: isDark ? '#f7f1e6' : '#1f1b16' }}
+                labelStyle={{ color: isDark ? '#f7f1e6' : '#1f1b16' }}
               />
               <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
               <Line 
                 type="monotone" 
                 dataKey="expense" 
                 name="Expenses" 
-                stroke="#f43f5e" 
+                stroke={isDark ? '#f87171' : '#dc2626'} 
                 strokeWidth={3}
-                dot={{ r: 4, fill: '#f43f5e' }}
+                dot={{ r: 4, fill: isDark ? '#f87171' : '#dc2626' }}
                 activeDot={{ r: 6 }}
               />
               <Line 
                 type="monotone" 
                 dataKey="income" 
                 name="Income" 
-                stroke="#10b981" 
+                stroke={isDark ? '#4ade80' : '#15803d'} 
                 strokeWidth={3}
-                dot={{ r: 4, fill: '#10b981' }}
+                dot={{ r: 4, fill: isDark ? '#4ade80' : '#15803d' }}
                 activeDot={{ r: 6 }}
               />
               <Line 
                 type="monotone" 
                 dataKey="net" 
                 name="Net Savings" 
-                stroke="#38bdf8" 
+                stroke={isDark ? '#38bdf8' : '#0284c7'} 
                 strokeWidth={2}
                 strokeDasharray="4 4"
-                dot={{ r: 3, fill: '#38bdf8' }}
+                dot={{ r: 3, fill: isDark ? '#38bdf8' : '#0284c7' }}
               />
             </LineChart>
           </ResponsiveContainer>
