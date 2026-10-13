@@ -18,6 +18,7 @@ import { BarChart3 } from 'lucide-react';
 import api from '../utils/api';
 import { formatCurrency, CHART_COLORS } from '../utils/helpers';
 import toast from 'react-hot-toast';
+import useDocumentTitle from '../hooks/useDocumentTitle';
 
 const formatYAxisTick = (val) => {
   if (!val || val === 0) return 'Rs. 0';
@@ -32,6 +33,7 @@ const formatYAxisTick = (val) => {
 };
 
 const Analytics = () => {
+  useDocumentTitle('Analytics');
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState(currentYear);
   const [data, setData] = useState(null);

@@ -12,8 +12,10 @@ import api from '../utils/api';
 import { formatCurrency, monthName } from '../utils/helpers';
 import BudgetModal from '../components/BudgetModal';
 import toast from 'react-hot-toast';
+import useDocumentTitle from '../hooks/useDocumentTitle';
 
 const Budgets = () => {
+  useDocumentTitle('Budgets');
   const [budgets, setBudgets] = useState([]);
   const [expensesByMonth, setExpensesByMonth] = useState({});
   const [loading, setLoading] = useState(true);

@@ -15,6 +15,7 @@ import Transactions from './pages/Transactions';
 import Budgets from './pages/Budgets';
 import Analytics from './pages/Analytics';
 import Profile from './pages/Profile';
+import NotFound from './pages/NotFound';
 
 function App() {
   return (
@@ -27,23 +28,24 @@ function App() {
           toastOptions={{
             duration: 3500,
             style: {
-              background: '#161f30',
-              color: '#f1f5f9',
-              border: '1px solid #232f48',
-              borderRadius: '10px',
+              background: 'rgb(var(--card))',
+              color: 'rgb(var(--ink))',
+              border: '1px solid rgb(var(--line))',
+              borderRadius: '12px',
               fontSize: '14px',
               fontFamily: 'Inter, sans-serif',
+              boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
             },
             success: {
               iconTheme: {
-                primary: '#10b981',
-                secondary: '#161f30',
+                primary: '#15803d',
+                secondary: 'rgb(var(--card))',
               },
             },
             error: {
               iconTheme: {
-                primary: '#f43f5e',
-                secondary: '#161f30',
+                primary: '#dc2626',
+                secondary: 'rgb(var(--card))',
               },
             },
           }}
@@ -67,8 +69,8 @@ function App() {
             </Route>
           </Route>
 
-          {/* Catch-all redirect */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          {/* Catch-all 404 route */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
     </AuthProvider>

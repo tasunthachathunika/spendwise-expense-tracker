@@ -15,10 +15,12 @@ import api from '../utils/api';
 import { formatCurrency, formatDate, categoryIcon, EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '../utils/helpers';
 import TransactionModal from '../components/TransactionModal';
 import toast from 'react-hot-toast';
+import useDocumentTitle from '../hooks/useDocumentTitle';
 
 const ALL_CATEGORIES = Array.from(new Set([...EXPENSE_CATEGORIES, ...INCOME_CATEGORIES]));
 
 const Transactions = () => {
+  useDocumentTitle('Transactions');
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);

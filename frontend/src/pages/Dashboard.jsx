@@ -30,9 +30,12 @@ const generateMonthOptions = () => {
   return options;
 };
 
+import useDocumentTitle from '../hooks/useDocumentTitle';
+
 const MONTH_OPTIONS = generateMonthOptions();
 
 const Dashboard = () => {
+  useDocumentTitle('Dashboard');
   const [loading, setLoading] = useState(true);
   const [selectedPeriod, setSelectedPeriod] = useState(MONTH_OPTIONS[0]);
 
