@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -25,6 +25,7 @@ const BudgetModal = ({ isOpen, onClose, onSave, budget = null, initialMonth, ini
     amount: '',
   });
   const [loading, setLoading] = useState(false);
+  const amountInputRef = useRef(null);
 
   useEffect(() => {
     if (budget) {
@@ -40,12 +41,17 @@ const BudgetModal = ({ isOpen, onClose, onSave, budget = null, initialMonth, ini
         amount: '',
       });
     }
+    if (isOpen) {
+      setTimeout(() => amountInputRef.current?.focus(), 50);
+    }
   }, [budget, isOpen, initialMonth, initialYear]);
 
   if (!isOpen) return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return; // Prevent double submit
+
     const numAmount = parseFloat(formData.amount);
     if (isNaN(numAmount) || numAmount <= 0) {
       toast.error('Please enter a valid budget amount greater than 0');
@@ -117,6 +123,7 @@ const BudgetModal = ({ isOpen, onClose, onSave, budget = null, initialMonth, ini
             <div className="form-group">
               <label className="form-label">Target Budget Amount (Rs.) *</label>
               <input
+                ref={amountInputRef}
                 type="number"
                 step="1"
                 min="1"

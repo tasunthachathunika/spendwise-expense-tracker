@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import { toInputDate, EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '../utils/helpers';
 import toast from 'react-hot-toast';
@@ -21,6 +21,7 @@ const TransactionModal = ({ isOpen, onClose, onSave, transaction = null }) => {
     paymentMethod: 'Debit Card',
   });
   const [loading, setLoading] = useState(false);
+  const amountInputRef = useRef(null);
 
   useEffect(() => {
     if (transaction) {
@@ -42,6 +43,9 @@ const TransactionModal = ({ isOpen, onClose, onSave, transaction = null }) => {
         paymentMethod: 'Debit Card',
       });
     }
+    if (isOpen) {
+      setTimeout(() => amountInputRef.current?.focus(), 50);
+    }
   }, [transaction, isOpen]);
 
   if (!isOpen) return null;
@@ -50,6 +54,7 @@ const TransactionModal = ({ isOpen, onClose, onSave, transaction = null }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return; // Prevent double submit
 
     // Validations: amount > 0, category and date required
     const numAmount = parseFloat(formData.amount);
@@ -119,6 +124,7 @@ const TransactionModal = ({ isOpen, onClose, onSave, transaction = null }) => {
             <div className="form-group">
               <label className="form-label">Amount (Rs.) *</label>
               <input
+                ref={amountInputRef}
                 type="number"
                 step="0.01"
                 min="0.01"
