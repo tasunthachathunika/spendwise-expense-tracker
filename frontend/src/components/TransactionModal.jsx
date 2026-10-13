@@ -117,14 +117,14 @@ const TransactionModal = ({ isOpen, onClose, onSave, transaction = null }) => {
 
             {/* Amount */}
             <div className="form-group">
-              <label className="form-label">Amount ($) *</label>
+              <label className="form-label">Amount (Rs.) *</label>
               <input
                 type="number"
                 step="0.01"
                 min="0.01"
                 required
                 className="form-control"
-                placeholder="0.00"
+                placeholder="e.g. 5000.00"
                 value={formData.amount}
                 onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
               />

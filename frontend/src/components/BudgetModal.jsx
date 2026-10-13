@@ -115,18 +115,18 @@ const BudgetModal = ({ isOpen, onClose, onSave, budget = null, initialMonth, ini
             </div>
 
             <div className="form-group">
-              <label className="form-label">Target Budget Amount ($) *</label>
+              <label className="form-label">Target Budget Amount (Rs.) *</label>
               <input
                 type="number"
                 step="1"
                 min="1"
                 required
                 className="form-control"
-                placeholder="e.g. 2500"
+                placeholder="e.g. 150000"
                 value={formData.amount}
                 onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
               />
-              <span className="text-xs text-gray-400 mt-1">
+              <span className="text-xs text-ink-soft mt-1">
                 SpendWise will notify and warn you if your expenses exceed this threshold for the month.
               </span>
             </div>
