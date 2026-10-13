@@ -45,6 +45,14 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  const updateUser = (userData) => {
+    setUser((prev) => {
+      const nextUser = typeof userData === 'function' ? userData(prev) : { ...prev, ...userData };
+      localStorage.setItem('sw_user', JSON.stringify(nextUser));
+      return nextUser;
+    });
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -54,6 +62,7 @@ export const AuthProvider = ({ children }) => {
         loading,
         login,
         logout,
+        updateUser,
       }}
     >
       {children}

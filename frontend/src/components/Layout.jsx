@@ -55,10 +55,7 @@ const Layout = () => {
         {/* Top Announcement Bar */}
         <div className="bg-bg-secondary border-b border-line px-4 py-2 text-xs text-ink-soft flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-brand/10 text-brand border border-brand/20">
-              Emerald Theme Active
-            </span>
-            <span>SpendWise v1.0 • Connected to Live Database</span>
+            <span className="font-medium text-ink-soft">SpendWise v1.0</span>
           </div>
           <div className="hidden sm:flex items-center gap-4 text-ink-muted">
             <span>Currency: <strong className="text-ink">LKR (Rs.)</strong></span>

@@ -6,9 +6,9 @@ import {
   PieChart, 
   Target, 
   User, 
-  LogOut,
-  WalletCards
+  LogOut
 } from 'lucide-react';
+import SpendWiseLogo from './landing/SpendWiseLogo';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
@@ -44,17 +44,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
         {/* Brand Logo */}
         <div className="sidebar-logo">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand to-brand-light flex items-center justify-center shadow-lg shadow-brand/20 flex-shrink-0">
-            <WalletCards size={22} className="text-white" />
-          </div>
-          <div>
-            <span className="font-extrabold text-lg tracking-tight text-ink flex items-center">
-              Spend<span className="text-brand">Wise</span>
-            </span>
-            <span className="text-[10px] text-ink-muted block uppercase tracking-wider font-semibold">
-              Emerald Wealth
-            </span>
-          </div>
+          <SpendWiseLogo size="sm" showTagline={true} />
         </div>
 
         {/* Navigation Menu */}

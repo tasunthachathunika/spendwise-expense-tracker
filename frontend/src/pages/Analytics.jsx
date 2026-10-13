@@ -14,9 +14,22 @@ import {
   LineChart,
   Line
 } from 'recharts';
+import { BarChart3 } from 'lucide-react';
 import api from '../utils/api';
 import { formatCurrency, CHART_COLORS } from '../utils/helpers';
 import toast from 'react-hot-toast';
+
+const formatYAxisTick = (val) => {
+  if (!val || val === 0) return 'Rs. 0';
+  const abs = Math.abs(val);
+  if (abs >= 1000000) {
+    return `Rs. ${(val / 1000000).toLocaleString('en-LK', { maximumFractionDigits: 1 })}M`;
+  }
+  if (abs >= 1000) {
+    return `Rs. ${(val / 1000).toLocaleString('en-LK', { maximumFractionDigits: 1 })}k`;
+  }
+  return `Rs. ${val.toLocaleString('en-LK')}`;
+};
 
 const Analytics = () => {
   const currentYear = new Date().getFullYear();
@@ -73,8 +86,7 @@ const Analytics = () => {
     <div>
       <div className="page-header">
         <div>
-          <h2 className="page-title">Financial Analytics</h2>
-          <p className="page-subtitle">Visual performance metrics for cashflow, spending, and habits</p>
+          <p className="page-subtitle text-ink-soft">Visual performance metrics for cashflow, spending, and habits</p>
         </div>
         <div className="flex items-center gap-2">
           <label className="text-xs font-semibold text-gray-400">Year:</label>
@@ -98,9 +110,9 @@ const Analytics = () => {
           <p className="chart-subtitle">Distribution of top spending categories</p>
           
           {pieData.length === 0 ? (
-            <div className="empty-state py-12">
-              <span className="text-3xl mb-2">📊</span>
-              <p className="text-sm text-gray-400">No expense records available yet.</p>
+            <div className="empty-state py-12 flex flex-col items-center justify-center">
+              <BarChart3 className="w-10 h-10 text-ink-soft mb-2" />
+              <p className="text-sm text-ink-soft">No expense records available yet.</p>
             </div>
           ) : (
             <div style={{ width: '100%', height: 320 }}>
@@ -142,10 +154,10 @@ const Analytics = () => {
 
           <div style={{ width: '100%', height: 320 }}>
             <ResponsiveContainer>
-              <BarChart data={monthlyData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+              <BarChart data={monthlyData} margin={{ top: 10, right: 10, left: 15, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#232f48" vertical={false} />
                 <XAxis dataKey="monthName" stroke="#94a3b8" fontSize={12} tickLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} tickFormatter={(val) => `$${val}`} />
+                <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} tickFormatter={formatYAxisTick} />
                 <Tooltip 
                   formatter={customTooltipFormatter}
                   contentStyle={{ backgroundColor: '#161f30', borderColor: '#232f48', borderRadius: '10px' }}
@@ -166,10 +178,10 @@ const Analytics = () => {
 
         <div style={{ width: '100%', height: 350 }}>
           <ResponsiveContainer>
-            <LineChart data={trendData} margin={{ top: 20, right: 30, left: 10, bottom: 0 }}>
+            <LineChart data={trendData} margin={{ top: 20, right: 30, left: 15, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#232f48" vertical={false} />
               <XAxis dataKey="month" stroke="#94a3b8" fontSize={12} tickLine={false} />
-              <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} tickFormatter={(val) => `$${val}`} />
+              <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} tickFormatter={formatYAxisTick} />
               <Tooltip 
                 formatter={customTooltipFormatter}
                 contentStyle={{ backgroundColor: '#161f30', borderColor: '#232f48', borderRadius: '10px' }}

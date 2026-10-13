@@ -48,7 +48,7 @@ npm run dev
 ```
 /backend
 ├── controllers/
-│   ├── authController.js       # Register, Login, Me endpoints
+│   ├── authController.js       # Register, Login, Me, Profile & Password update
 │   ├── transactionController.js# CRUD, search, category/date filters
 │   ├── budgetController.js     # Upsert monthly budget targets
 │   └── dashboardController.js  # Summary cards & analytics data
@@ -81,7 +81,7 @@ npm run dev
 │   │   ├── Transactions.jsx    # Paginated data table & filter bar
 │   │   ├── Budgets.jsx         # Budget cards & exceeding warnings
 │   │   ├── Analytics.jsx       # Donut chart, Bar chart & Trend lines
-│   │   └── Profile.jsx         # Account details & security summary
+│   │   └── Profile.jsx         # Personal info, password change, appearance & live stats
 │   ├── utils/
 │   │   ├── api.js              # Axios with JWT interceptors
 │   │   └── helpers.js          # Formatters, icons & chart palettes

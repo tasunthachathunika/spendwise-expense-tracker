@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="90" viewBox="0 0 360 90" fill="none">
+  <defs>
+    <linearGradient id="sw-light-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF7A45" />
+      <stop offset="50%" stop-color="#FF6233" />
+      <stop offset="100%" stop-color="#EA5028" />
+    </linearGradient>
+    <filter id="sw-light-shadow" x="-20%" y="-20%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#EA5028" flood-opacity="0.30"/>
+    </filter>
+  </defs>
+
+  <!-- 72x72 Icon Badge -->
+  <g transform="translate(10, 9)" filter="url(#sw-light-shadow)">
+    <!-- Scale 100x100 down to 72x72 (0.72) -->
+    <g transform="scale(0.72)">
+      <rect width="100" height="100" rx="26" fill="url(#sw-light-grad)" />
+      <rect x="2.5" y="2.5" width="95" height="95" rx="23.5" stroke="white" stroke-opacity="0.22" stroke-width="1.5" fill="none" />
+      <g fill="white">
+        <!-- Part 1: Arrow + Hook -->
+        <path d="M 80.64,18.0 L 77.46,33.89 L 72.92,29.8 L 55.22,47.96 L 53.86,48.41 L 40.24,48.41 L 36.61,47.05 L 33.89,44.33 L 32.98,42.06 L 32.98,38.43 L 34.34,35.25 L 36.16,33.43 L 38.88,32.07 L 49.32,32.07 L 51.13,32.98 L 52.5,34.34 L 50.23,37.06 L 49.32,37.52 L 48.41,37.06 L 39.79,37.06 L 37.97,38.88 L 37.97,41.15 L 38.43,42.06 L 40.24,43.42 L 52.04,43.42 L 69.29,26.17 L 65.21,21.63 L 71.56,20.27 L 72.01,19.82 L 73.83,19.82 L 76.1,18.91 L 80.18,18.45 L 80.64,18.0 Z" />
+        <!-- Part 2: Top Arc -->
+        <path d="M 38.88,20.72 L 49.32,20.72 L 49.77,21.18 L 51.59,21.18 L 56.13,22.99 L 60.21,26.62 L 56.58,29.8 L 53.86,27.53 L 48.87,25.72 L 39.79,25.72 L 39.33,26.17 L 36.16,26.62 L 33.43,27.99 L 29.35,32.07 L 27.53,35.7 L 27.08,42.06 L 28.89,47.5 L 32.52,51.59 L 34.79,52.95 L 34.34,53.4 L 34.79,53.86 L 34.79,57.94 L 33.89,57.94 L 27.99,54.31 L 25.26,51.13 L 22.54,44.78 L 22.09,37.52 L 22.54,37.06 L 22.54,35.25 L 23.45,32.52 L 25.72,28.44 L 31.16,23.45 L 34.79,21.63 L 38.43,21.18 L 38.88,20.72 Z" />
+        <!-- Part 3: Bottom Arc -->
+        <path d="M 64.75,44.33 L 66.57,44.78 L 70.65,47.05 L 74.28,50.68 L 76.55,54.77 L 77.91,59.3 L 77.91,66.11 L 77.01,69.29 L 76.1,70.65 L 76.1,71.56 L 72.92,76.1 L 70.2,78.37 L 66.11,80.64 L 63.39,81.55 L 61.12,81.55 L 60.67,82.0 L 50.68,82.0 L 55.22,77.01 L 62.48,76.55 L 66.57,74.74 L 70.65,70.65 L 72.47,67.02 L 72.92,65.66 L 72.92,59.3 L 70.65,54.31 L 67.02,50.68 L 63.39,48.87 L 60.67,48.41 L 64.75,44.33 Z" />
+        <!-- Part 4: Staircase Base -->
+        <path d="M 38.88,54.31 L 60.21,54.31 L 60.67,54.77 L 62.03,54.77 L 63.84,55.67 L 65.66,57.49 L 67.02,60.21 L 67.02,64.3 L 65.66,67.48 L 63.84,69.29 L 61.12,70.65 L 32.52,70.65 L 32.07,71.11 L 32.07,74.74 L 32.98,77.01 L 49.77,77.01 L 45.23,82.0 L 20.27,82.0 L 19.36,81.55 L 19.36,77.01 L 26.62,77.01 L 27.08,76.55 L 27.08,66.11 L 27.53,65.66 L 38.43,65.66 L 38.88,65.21 L 38.43,64.75 L 38.88,64.3 L 38.43,63.84 L 38.43,54.77 L 38.88,54.31 Z" />
+      </g>
+    </g>
+  </g>
+
+  <!-- Typography Wordmark (Light Mode) -->
+  <g transform="translate(100, 48)">
+    <text font-family="Plus Jakarta Sans, Inter, system-ui, -apple-system, sans-serif" font-size="36" font-weight="800" letter-spacing="-0.03em">
+      <tspan fill="#1A2332">Spend</tspan><tspan fill="#FF6233">Wise</tspan>
+    </text>
+    <text y="20" font-family="Plus Jakarta Sans, Inter, system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" letter-spacing="0.28em" fill="#64748B">
+      PERSONAL FINANCE
+    </text>
+  </g>
+</svg>

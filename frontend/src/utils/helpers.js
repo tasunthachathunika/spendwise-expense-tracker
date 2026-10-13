@@ -14,10 +14,14 @@ export const formatSignedCurrency = (amount, type) => {
   return Number(amount) < 0 ? `-Rs. ${formatted}` : `Rs. ${formatted}`;
 };
 
-// Format date
+// Format date safely without mixing dateStyle with individual date components
 export const formatDate = (date, opts = {}) => {
+  if (!date) return '—';
   const d = new Date(date);
-  if (isNaN(d)) return '—';
+  if (isNaN(d.getTime())) return '—';
+  if (opts.dateStyle || opts.timeStyle) {
+    return d.toLocaleDateString('en-US', opts);
+  }
   return d.toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
