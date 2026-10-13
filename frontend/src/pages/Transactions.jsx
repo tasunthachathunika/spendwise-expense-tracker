@@ -16,6 +16,7 @@ import { formatCurrency, formatDate, categoryIcon, EXPENSE_CATEGORIES, INCOME_CA
 import TransactionModal from '../components/TransactionModal';
 import toast from 'react-hot-toast';
 import useDocumentTitle from '../hooks/useDocumentTitle';
+import ConfirmDialog from '../components/common/ConfirmDialog';
 
 const ALL_CATEGORIES = Array.from(new Set([...EXPENSE_CATEGORIES, ...INCOME_CATEGORIES]));
 
@@ -37,6 +38,8 @@ const Transactions = () => {
   // Modals state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTx, setSelectedTx] = useState(null);
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchTransactions = async () => {
     try {
@@ -100,14 +103,22 @@ const Transactions = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this transaction?')) return;
+  const requestDelete = (id) => {
+    setDeleteTargetId(id);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteTargetId) return;
     try {
-      await api.delete(`/transactions/${id}`);
-      toast.success('Transaction deleted');
+      setIsDeleting(true);
+      await api.delete(`/transactions/${deleteTargetId}`);
+      toast.success('Transaction deleted successfully');
+      setDeleteTargetId(null);
       fetchTransactions();
     } catch (err) {
       toast.error('Failed to delete transaction');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -278,7 +289,7 @@ const Transactions = () => {
                           </button>
                           <button
                             className="btn btn-icon delete"
-                            onClick={() => handleDelete(tx._id)}
+                            onClick={() => requestDelete(tx._id)}
                             title="Delete Transaction"
                           >
                             <Trash2 size={14} />
@@ -327,6 +338,18 @@ const Transactions = () => {
         onClose={() => setIsModalOpen(false)}
         onSave={handleSaveTransaction}
         transaction={selectedTx}
+      />
+
+      {/* Accessible Confirm Delete Dialog */}
+      <ConfirmDialog
+        isOpen={!!deleteTargetId}
+        title="Delete Transaction"
+        message="Are you sure you want to permanently delete this transaction record? This action cannot be reversed."
+        confirmText="Delete Transaction"
+        isDestructive={true}
+        isLoading={isDeleting}
+        onConfirm={handleConfirmDelete}
+        onClose={() => setDeleteTargetId(null)}
       />
     </div>
   );

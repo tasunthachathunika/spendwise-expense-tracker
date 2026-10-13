@@ -13,6 +13,7 @@ import { formatCurrency, monthName } from '../utils/helpers';
 import BudgetModal from '../components/BudgetModal';
 import toast from 'react-hot-toast';
 import useDocumentTitle from '../hooks/useDocumentTitle';
+import ConfirmDialog from '../components/common/ConfirmDialog';
 
 const Budgets = () => {
   useDocumentTitle('Budgets');
@@ -21,6 +22,8 @@ const Budgets = () => {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedBudget, setSelectedBudget] = useState(null);
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth() + 1;
@@ -71,14 +74,22 @@ const Budgets = () => {
     }
   };
 
-  const handleDeleteBudget = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this budget plan?')) return;
+  const requestDeleteBudget = (id) => {
+    setDeleteTargetId(id);
+  };
+
+  const handleConfirmDeleteBudget = async () => {
+    if (!deleteTargetId) return;
     try {
-      await api.delete(`/budgets/${id}`);
-      toast.success('Budget deleted');
+      setIsDeleting(true);
+      await api.delete(`/budgets/${deleteTargetId}`);
+      toast.success('Budget deleted successfully');
+      setDeleteTargetId(null);
       fetchBudgetsAndExpenses();
     } catch (err) {
       toast.error('Failed to delete budget');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -155,7 +166,7 @@ const Budgets = () => {
                   <div className="flex items-center gap-1">
                     <button
                       className="btn btn-icon delete"
-                      onClick={() => handleDeleteBudget(b._id)}
+                      onClick={() => requestDeleteBudget(b._id)}
                       title="Delete Budget"
                     >
                       <Trash2 size={14} />
@@ -237,6 +248,18 @@ const Budgets = () => {
         budget={selectedBudget}
         initialMonth={currentMonth}
         initialYear={currentYear}
+      />
+
+      {/* Accessible Confirm Delete Dialog */}
+      <ConfirmDialog
+        isOpen={!!deleteTargetId}
+        title="Delete Monthly Budget"
+        message="Are you sure you want to delete this monthly budget threshold? You can establish a new one at any time."
+        confirmText="Delete Budget"
+        isDestructive={true}
+        isLoading={isDeleting}
+        onConfirm={handleConfirmDeleteBudget}
+        onClose={() => setDeleteTargetId(null)}
       />
     </div>
   );
