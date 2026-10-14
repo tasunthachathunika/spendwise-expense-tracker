@@ -7,6 +7,8 @@ const {
   updateTransaction,
   deleteTransaction,
   getCategories,
+  exportTransactions,
+  bulkDeleteTransactions,
 } = require('../controllers/transactionController');
 const { protect } = require('../middleware/authMiddleware');
 
@@ -14,6 +16,9 @@ const { protect } = require('../middleware/authMiddleware');
 router.use(protect);
 
 router.get('/categories', getCategories);
+router.get('/export', exportTransactions);
+router.delete('/bulk', bulkDeleteTransactions);
+
 router.route('/').get(getTransactions).post(createTransaction);
 router.route('/:id').get(getTransaction).put(updateTransaction).delete(deleteTransaction);
 

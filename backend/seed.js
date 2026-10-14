@@ -145,9 +145,40 @@ const seed = async () => {
           { type: 'Expense', amount: 14100, category: 'Utilities', description: 'Utilities & Water Board', day: 9, paymentMethod: 'Online Payment' },
           { type: 'Expense', amount: 9800, category: 'Fuel', description: 'Fuel Refill', day: 13, paymentMethod: 'Credit Card' },
           { type: 'Expense', amount: 12600, category: 'Shopping', description: 'Home Office Ergonomic Accessories', day: 20, paymentMethod: 'Online Payment' },
+          { type: 'Income', amount: 22000, category: 'Investment', description: 'Stock Portfolio Quarterly Dividend', day: 24, paymentMethod: 'Bank Transfer' },
+          { type: 'Expense', amount: 4800, category: 'Food', description: 'Afternoon Tea & Pastries at The English Cake Company', day: 26, paymentMethod: 'Cash' },
+          { type: 'Expense', amount: 6200, category: 'Health', description: 'Routine Vitamins & Supplements', day: 28, paymentMethod: 'Debit Card' },
         ],
       },
     ];
+
+    // Add supplementary items to recent months to ensure > 65 transactions
+    monthlyTemplates[0].items.push(
+      { type: 'Expense', amount: 4500, category: 'Food', description: 'Artisan Coffee & Snacks at Java Lounge', day: 14, paymentMethod: 'Debit Card', notes: 'Weekly team catchup' },
+      { type: 'Income', amount: 48000, category: 'Freelance', description: 'Dashboard Performance Audit', day: 15, paymentMethod: 'Bank Transfer', notes: 'Client invoice #SW-891' },
+      { type: 'Expense', amount: 11200, category: 'Transport', description: 'Airport Express Highway Taxi', day: 16, paymentMethod: 'Cash' },
+      { type: 'Expense', amount: 5600, category: 'Entertainment', description: 'Online Streaming Subscription Renewal', day: 17, paymentMethod: 'Online Payment' }
+    );
+    monthlyTemplates[1].items.push(
+      { type: 'Expense', amount: 3800, category: 'Food', description: 'Bake House Pastry Box', day: 8, paymentMethod: 'Cash' },
+      { type: 'Expense', amount: 8900, category: 'Education', description: 'TypeScript Advanced Patterns Book', day: 19, paymentMethod: 'Online Payment' },
+      { type: 'Income', amount: 35000, category: 'Freelance', description: 'Logo & Brand Identity Redesign', day: 27, paymentMethod: 'Bank Transfer' }
+    );
+    monthlyTemplates[2].items.push(
+      { type: 'Expense', amount: 6400, category: 'Transport', description: 'PickMe Commutes & Rides', day: 9, paymentMethod: 'Debit Card' },
+      { type: 'Expense', amount: 14500, category: 'Shopping', description: 'Mechanical Keyboard for Workspace', day: 22, paymentMethod: 'Credit Card' },
+      { type: 'Income', amount: 15000, category: 'Gift', description: 'Birthday Gift from Family', day: 25, paymentMethod: 'Bank Transfer' }
+    );
+    monthlyTemplates[3].items.push(
+      { type: 'Expense', amount: 7800, category: 'Groceries', description: 'Artisan Cheese & Fresh Produce', day: 12, paymentMethod: 'Debit Card' },
+      { type: 'Expense', amount: 3200, category: 'Utilities', description: 'Mobile Postpaid Bill Payment', day: 15, paymentMethod: 'Online Payment' },
+      { type: 'Expense', amount: 9900, category: 'Education', description: 'Cloud DevOps Workshop Registration', day: 23, paymentMethod: 'Credit Card' }
+    );
+    monthlyTemplates[4].items.push(
+      { type: 'Expense', amount: 4200, category: 'Health', description: 'Prescription Eyewear Cleaner & Drops', day: 11, paymentMethod: 'Cash' },
+      { type: 'Expense', amount: 11500, category: 'Fuel', description: 'Full Tank Fueling before Trip', day: 16, paymentMethod: 'Credit Card' },
+      { type: 'Expense', amount: 6800, category: 'Food', description: 'Sunday Brunch with Family', day: 24, paymentMethod: 'Debit Card' }
+    );
 
     for (const tpl of monthlyTemplates) {
       const d = new Date(now.getFullYear(), now.getMonth() + tpl.monthOffset, 1);
@@ -175,6 +206,7 @@ const seed = async () => {
           amount: item.amount,
           category: item.category,
           description: item.description,
+          notes: item.notes || '',
           paymentMethod: item.paymentMethod,
           date: txDate,
         });
