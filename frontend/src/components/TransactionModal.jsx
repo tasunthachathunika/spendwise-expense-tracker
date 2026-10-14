@@ -17,6 +17,7 @@ const TransactionModal = ({ isOpen, onClose, onSave, transaction = null }) => {
     amount: '',
     category: '',
     description: '',
+    notes: '',
     date: toInputDate(new Date()),
     paymentMethod: 'Debit Card',
   });
@@ -30,6 +31,7 @@ const TransactionModal = ({ isOpen, onClose, onSave, transaction = null }) => {
         amount: transaction.amount || '',
         category: transaction.category || '',
         description: transaction.description || '',
+        notes: transaction.notes || '',
         date: toInputDate(transaction.date) || toInputDate(new Date()),
         paymentMethod: transaction.paymentMethod || 'Debit Card',
       });
@@ -39,6 +41,7 @@ const TransactionModal = ({ isOpen, onClose, onSave, transaction = null }) => {
         amount: '',
         category: 'Food',
         description: '',
+        notes: '',
         date: toInputDate(new Date()),
         paymentMethod: 'Debit Card',
       });
@@ -185,9 +188,27 @@ const TransactionModal = ({ isOpen, onClose, onSave, transaction = null }) => {
               <input
                 type="text"
                 className="form-control"
-                placeholder="e.g. Grocery shopping at Trader Joe's"
+                placeholder="e.g. Grocery shopping at Keells"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              />
+            </div>
+
+            {/* Notes (Optional, max 200 chars with live counter) */}
+            <div className="form-group">
+              <div className="flex items-center justify-between mb-1">
+                <label className="form-label mb-0">Notes (Optional)</label>
+                <span className="text-[11px] text-ink-soft">
+                  {(formData.notes || '').length} / 200
+                </span>
+              </div>
+              <textarea
+                rows={2}
+                maxLength={200}
+                className="form-control resize-none"
+                placeholder="Add reference numbers, store location, or extra details..."
+                value={formData.notes || ''}
+                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               />
             </div>
           </div>
