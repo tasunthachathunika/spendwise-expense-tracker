@@ -20,7 +20,6 @@ import {
   TrendingUp,
   TrendingDown,
   Wallet,
-  Keyboard,
   Copy
 } from 'lucide-react';
 import api from '../utils/api';
@@ -480,14 +479,6 @@ const Transactions = () => {
         </div>
 
         <div className="flex items-center gap-2.5 self-start sm:self-auto">
-          {/* Keyboard shortcut hint */}
-          <div className="hidden lg:flex items-center gap-1.5 px-2 py-1 rounded-lg bg-cream-band border border-line text-[11px] text-ink-soft select-none" title="Keyboard shortcuts: Press / to search, N for new transaction, Esc to close">
-            <Keyboard size={13} className="text-brand" />
-            <span><kbd className="font-semibold text-ink">/</kbd> search</span>
-            <span>•</span>
-            <span><kbd className="font-semibold text-ink">N</kbd> add</span>
-          </div>
-
           {/* Export Popover Menu */}
           <ExportPopover
             total={total}
