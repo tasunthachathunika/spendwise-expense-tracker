@@ -100,6 +100,7 @@ const SpendWiseLogo = ({
   theme = 'auto',
   onDark = false,
   asLink = false,
+  to = '/',
   iconOnly = false,
   className = '',
 }) => {
@@ -131,9 +132,8 @@ const SpendWiseLogo = ({
   const isDarkContext = onDark || theme === 'dark';
 
   const getSpendColorClass = () => {
-    if (isDarkContext) return 'text-[#fdf9ef]';
-    if (theme === 'light') return 'text-[#1A2332]';
-    return 'text-[#1A2332] dark:text-[#fdf9ef]';
+    if (onDark) return 'text-[#fdf9ef]';
+    return 'text-ink';
   };
 
   const content = (
@@ -151,15 +151,13 @@ const SpendWiseLogo = ({
           className={`font-extrabold tracking-tight ${currentSize.title} leading-none flex items-center transition-colors duration-200`}
         >
           <span className={getSpendColorClass()}>Spend</span>
-          <span className="text-[#FF6233]">Wise</span>
+          <span className="text-brand">Wise</span>
         </span>
 
         {/* Subtitle "PERSONAL FINANCE" */}
         {showTagline && (
           <span
-            className={`font-semibold tracking-[0.28em] ${
-              isDarkContext ? 'text-[#d6cdbd]' : 'text-[#64748B] dark:text-[#94A3B8]'
-            } uppercase ${currentSize.tagline} ${currentSize.taglineMargin} block`}
+            className={`font-semibold tracking-[0.28em] text-ink-soft uppercase ${currentSize.tagline} ${currentSize.taglineMargin} block`}
           >
             PERSONAL FINANCE
           </span>
@@ -169,13 +167,24 @@ const SpendWiseLogo = ({
   );
 
   if (iconOnly) {
+    if (asLink) {
+      return (
+        <Link
+          to={to}
+          aria-label="SpendWise home"
+          className="inline-flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 rounded-xl"
+        >
+          <SpendWiseIcon size={currentSize.icon} className={className} />
+        </Link>
+      );
+    }
     return <SpendWiseIcon size={currentSize.icon} className={className} />;
   }
 
   if (asLink) {
     return (
       <Link
-        to="/"
+        to={to}
         aria-label="SpendWise home"
         className="inline-flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 rounded-xl"
       >
