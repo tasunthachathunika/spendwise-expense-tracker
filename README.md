@@ -266,12 +266,25 @@ All endpoints (except public auth & health) require a valid JWT Bearer token in 
 ### Transactions (`/api/transactions`)
 | Method | Path | Auth | Description |
 |---|---|---|---|
-| `GET` | `/api/transactions` | Bearer | Get paginated transactions with optional filters (`type`, `category`, `search`, `startDate`, `endDate`, `page`, `limit`) |
-| `POST` | `/api/transactions` | Bearer | Create a new transaction (`type`, `amount`, `category`, `date`, `paymentMethod`, `description`) |
+| `GET` | `/api/transactions` | Bearer | Get paginated transactions with validated query params (`page`, `limit` [10, 25, 50, 100], `sort` [date, amount, category, createdAt], `order` [asc, desc], `type`, `category`, `search`, `startDate`, `endDate`). Deterministic `_id` tiebreaker; returns `pagination` metadata and real-time `summary` totals. |
+| `POST` | `/api/transactions` | Bearer | Create a new transaction (`type`, `amount`, `category`, `date`, `paymentMethod`, `description`, optional `notes` up to 200 chars) |
 | `GET` | `/api/transactions/:id` | Bearer | Retrieve single transaction by ID (scoped to authenticated user) |
-| `PUT` | `/api/transactions/:id` | Bearer | Update transaction fields (whitelisted sanitization) |
+| `PUT` | `/api/transactions/:id` | Bearer | Update transaction fields (whitelisted sanitization, supports `notes`) |
 | `DELETE` | `/api/transactions/:id` | Bearer | Delete transaction by ID (scoped to authenticated user) |
+| `GET` | `/api/transactions/export` | Bearer | Export all matching transactions respecting active filters and sort. Supports `?format=csv` (streaming CSV with UTF-8 BOM, RFC 4180 escaping, formula-injection protection, capped at 10,000) and `?format=json` (for client-side PDF, capped at 2,000). |
+| `DELETE` | `/api/transactions/bulk` | Bearer | Bulk delete up to 100 transactions by ID array (`{ ids: [...] }`), strictly scoped to authenticated user. |
 | `GET` | `/api/transactions/categories` | Bearer | Get distinct categories utilized by current user |
+
+### 📤 How to Export Transactions
+SpendWise provides two enterprise-grade export mechanisms accessible from the **Export** dropdown button in the Transactions ledger:
+1. **Download CSV (`.csv`)**:
+   - Streams server-side directly from `GET /api/transactions/export?format=csv` using authenticated Axios blob download.
+   - Prepended with a **UTF-8 BOM (`\uFEFF`)** ensuring Microsoft Excel immediately recognizes UTF-8 characters without encoding corruption.
+   - **CSV/Formula Injection Protection**: Any cell beginning with `=`, `+`, `-`, `@`, `\t`, or `\r` is automatically neutralized with a leading single quote (`'`), preventing malicious spreadsheet formula execution.
+   - Includes standard financial columns: `Date`, `Title`, `Type`, `Category`, `Payment Method`, `Amount` (raw 2-decimal number), and `Notes`.
+2. **Download PDF (`.pdf`)**:
+   - Lazily loads `jsPDF` and `jspdf-autotable` via dynamic `import()` to preserve a lean initial bundle size.
+   - Generates an A4 portrait financial report with SpendWise branding (`#ea580c`), active filters summary, real-time KPI summary cards (Total Income, Total Expenses, Net Balance, Count), repeated table headers on each page, right-aligned amounts (`+Rs.` in green, `-Rs.` in red), zebra striping, and page numbers.
 
 ### Budgets (`/api/budgets`)
 | Method | Path | Auth | Description |
