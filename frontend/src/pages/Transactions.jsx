@@ -27,10 +27,12 @@ import api from '../utils/api';
 import { formatCurrency, formatDate, EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '../utils/helpers';
 import CategoryIcon from '../components/common/CategoryIcon';
 import TransactionModal from '../components/TransactionModal';
-import ExportDropdown from '../components/ExportDropdown';
+import ExportPopover from '../components/ExportPopover';
+import ExportPdfDialog from '../components/ExportPdfDialog';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import toast from 'react-hot-toast';
 import useDocumentTitle from '../hooks/useDocumentTitle';
+import { useAuth } from '../context/AuthContext';
 
 const ALL_CATEGORIES = Array.from(new Set([...EXPENSE_CATEGORIES, ...INCOME_CATEGORIES]));
 const ALLOWED_LIMITS = [10, 25, 50, 100];
@@ -78,9 +80,11 @@ const Transactions = () => {
 
   // Modals state
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPdfDialogOpen, setIsPdfDialogOpen] = useState(false);
   const [selectedTx, setSelectedTx] = useState(null);
   const [deleteTargetId, setDeleteTargetId] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const { user } = useAuth();
 
   // Date Preset Tracking
   const [activeDatePreset, setActiveDatePreset] = useState('');
@@ -484,8 +488,8 @@ const Transactions = () => {
             <span><kbd className="font-semibold text-ink">N</kbd> add</span>
           </div>
 
-          {/* Export Dropdown Button (Part 2) */}
-          <ExportDropdown
+          {/* Export Popover Menu */}
+          <ExportPopover
             total={total}
             filters={{
               type: typeFilter,
@@ -496,6 +500,7 @@ const Transactions = () => {
             }}
             sort={sort}
             order={order}
+            onOpenPdfDialog={() => setIsPdfDialogOpen(true)}
           />
 
           {/* Add Transaction Button */}
@@ -1234,6 +1239,24 @@ const Transactions = () => {
         isLoading={isBulkDeleting}
         onConfirm={handleConfirmBulkDelete}
         onClose={() => setIsBulkModalOpen(false)}
+      />
+
+      {/* ─── Export PDF Configuration Dialog ──────────────────────────────────── */}
+      <ExportPdfDialog
+        isOpen={isPdfDialogOpen}
+        onClose={() => setIsPdfDialogOpen(false)}
+        total={total}
+        filters={{
+          type: typeFilter,
+          category: categoryFilter,
+          search: searchFilter,
+          startDate,
+          endDate,
+        }}
+        sort={sort}
+        order={order}
+        summary={summary}
+        user={user}
       />
     </div>
   );
