@@ -11,6 +11,8 @@ export const formatCurrency = (amount, prefix = 'Rs. ') => {
   return isNegative ? `-${prefix}${formatted}` : `${prefix}${formatted}`;
 };
 
+export const formatLKR = formatCurrency;
+
 // Format signed currency (+Rs. 250,000 / -Rs. 145,000)
 export const formatSignedCurrency = (amount, type) => {
   const val = Number(amount) || 0;
