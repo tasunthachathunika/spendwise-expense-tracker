@@ -78,7 +78,11 @@ const BudgetVsSpentChart = ({
     .slice(0, 4);
 
   return (
-    <div className="dash-card flex flex-col justify-between h-[320px] lg:h-[340px] animate-card-fade-up">
+    <div
+      role="region"
+      aria-label={hasBudgetHistory ? 'Budget vs Spent Chart' : 'Top Spending Categories'}
+      className="dash-card flex flex-col justify-between h-[280px] sm:h-[320px] lg:h-[340px] animate-card-fade-up"
+    >
       {/* Header */}
       <div className="flex items-center justify-between pb-3 border-b border-line">
         <div>
@@ -90,6 +94,11 @@ const BudgetVsSpentChart = ({
               ? '6-month budget tracking'
               : 'Share of monthly expenditure'}
           </p>
+          <span className="sr-only">
+            {hasBudgetHistory
+              ? 'Stacked bar chart tracking monthly budget limits against expenditure over the past 6 months.'
+              : 'Ranked list of top spending categories with amounts and percentage shares for the selected month.'}
+          </span>
         </div>
 
         {hasBudgetHistory ? (

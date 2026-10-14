@@ -54,7 +54,11 @@ const CashFlowAreaChart = ({ data = [], isDark = false }) => {
   const chartData = data || [];
 
   return (
-    <div className="dash-card flex flex-col justify-between h-[320px] lg:h-[340px] animate-card-fade-up">
+    <div
+      role="region"
+      aria-label="Cash Flow Trend Chart"
+      className="dash-card flex flex-col justify-between h-[280px] sm:h-[320px] lg:h-[340px] animate-card-fade-up"
+    >
       <div className="flex items-center justify-between pb-3 border-b border-line">
         <div>
           <h2 className="text-base font-bold font-serif text-ink tracking-tight">
@@ -63,6 +67,9 @@ const CashFlowAreaChart = ({ data = [], isDark = false }) => {
           <p className="text-xs text-ink-soft mt-0.5">
             Income vs expenses for the last 6 months
           </p>
+          <span className="sr-only">
+            Interactive area chart comparing monthly income and expenses across the past 6 months.
+          </span>
         </div>
 
         {/* Legend with explicit text labels */}

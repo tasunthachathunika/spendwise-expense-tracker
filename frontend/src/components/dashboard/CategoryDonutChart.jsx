@@ -80,7 +80,11 @@ const CategoryDonutChart = ({
   }
 
   return (
-    <div className="dash-card flex flex-col justify-between h-[320px] lg:h-[340px] animate-card-fade-up">
+    <div
+      role="region"
+      aria-label="Spending by Category Chart"
+      className="dash-card flex flex-col justify-between h-[280px] sm:h-[320px] lg:h-[340px] animate-card-fade-up"
+    >
       {/* Header */}
       <div className="flex items-center justify-between pb-3 border-b border-line">
         <div>
@@ -90,6 +94,9 @@ const CategoryDonutChart = ({
           <p className="text-xs text-ink-soft mt-0.5">
             {monthName ? `Expense breakdown for ${monthName}` : 'Expense breakdown for selected month'}
           </p>
+          <span className="sr-only">
+            Donut chart showing proportional breakdown of expenses by category for the selected month.
+          </span>
         </div>
         {hasData && (
           <span className="text-xs font-mono font-semibold text-ink-soft bg-cream-band border border-line px-2 py-0.5 rounded-lg">

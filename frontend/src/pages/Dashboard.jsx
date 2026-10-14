@@ -289,136 +289,151 @@ const Dashboard = () => {
       )}
 
       {/* Row 1: Four KPI Cards (Section C) */}
-      {loading && !summary.totalIncome && !summary.monthlyIncome ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
-          <StatCardSkeleton />
-          <StatCardSkeleton />
-          <StatCardSkeleton />
-          <StatCardSkeleton />
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
-          {/* Total Income */}
-          <StatCard
-            type="income"
-            label="Total Income"
-            amount={summary.monthlyIncome}
-            previousAmount={summary.previousMonthIncome}
-            hasPriorData={summary.hasPreviousMonthData}
-            sparklineData={incomeSparkline}
-            staggerIndex={0}
-          />
+      <section aria-labelledby="kpi-metrics-heading">
+        <h2 id="kpi-metrics-heading" className="sr-only">
+          Key Performance Indicators
+        </h2>
+        {loading && !summary.totalIncome && !summary.monthlyIncome ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+            {/* Total Income */}
+            <StatCard
+              type="income"
+              label="Total Income"
+              amount={summary.monthlyIncome}
+              previousAmount={summary.previousMonthIncome}
+              hasPriorData={summary.hasPreviousMonthData}
+              sparklineData={incomeSparkline}
+              staggerIndex={0}
+            />
 
-          {/* Total Expenses */}
-          <StatCard
-            type="expense"
-            label="Total Expenses"
-            amount={summary.monthlyExpenses}
-            previousAmount={summary.previousMonthExpenses}
-            hasPriorData={summary.hasPreviousMonthData}
-            sparklineData={expenseSparkline}
-            staggerIndex={1}
-          />
+            {/* Total Expenses */}
+            <StatCard
+              type="expense"
+              label="Total Expenses"
+              amount={summary.monthlyExpenses}
+              previousAmount={summary.previousMonthExpenses}
+              hasPriorData={summary.hasPreviousMonthData}
+              sparklineData={expenseSparkline}
+              staggerIndex={1}
+            />
 
-          {/* Net Balance */}
-          <StatCard
-            type="balance"
-            label="Net Balance"
-            amount={summary.monthlyIncome - summary.monthlyExpenses}
-            previousAmount={summary.previousMonthBalance}
-            hasPriorData={summary.hasPreviousMonthData}
-            sparklineData={netSparkline}
-            staggerIndex={2}
-          />
+            {/* Net Balance */}
+            <StatCard
+              type="balance"
+              label="Net Balance"
+              amount={summary.monthlyIncome - summary.monthlyExpenses}
+              previousAmount={summary.previousMonthBalance}
+              hasPriorData={summary.hasPreviousMonthData}
+              sparklineData={netSparkline}
+              staggerIndex={2}
+            />
 
-          {/* Monthly Budget (The Highlighted Card) */}
-          <StatCard
-            type="budget"
-            label="Monthly Budget"
-            amount={summary.monthlyExpenses}
-            budgetTotal={summary.budgetAmount}
-            staggerIndex={3}
-            onSetBudget={() => setIsBudgetModalOpen(true)}
-          />
-        </div>
-      )}
+            {/* Monthly Budget (The Highlighted Card) */}
+            <StatCard
+              type="budget"
+              label="Monthly Budget"
+              amount={summary.monthlyExpenses}
+              budgetTotal={summary.budgetAmount}
+              staggerIndex={3}
+              onSetBudget={() => setIsBudgetModalOpen(true)}
+            />
+          </div>
+        )}
+      </section>
 
       {/* Row 2: Three Charts Section (Section D) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6">
-        {/* 1. Cash Flow Trend (Area Chart) */}
-        <div className="lg:col-span-12 xl:col-span-5">
-          {loading && cashFlowData.length === 0 ? (
-            <ChartSkeleton height="h-[320px] lg:h-[340px]" />
-          ) : (
-            <CashFlowAreaChart data={cashFlowData} />
-          )}
-        </div>
+      <section aria-labelledby="analytics-charts-heading">
+        <h2 id="analytics-charts-heading" className="sr-only">
+          Financial Analytics Charts
+        </h2>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6">
+          {/* 1. Cash Flow Trend (Area Chart) */}
+          <div className="lg:col-span-12 xl:col-span-5">
+            {loading && cashFlowData.length === 0 ? (
+              <ChartSkeleton height="h-[280px] sm:h-[320px] lg:h-[340px]" />
+            ) : (
+              <CashFlowAreaChart data={cashFlowData} />
+            )}
+          </div>
 
-        {/* 2. Spending by Category (Donut) */}
-        <div className="lg:col-span-6 xl:col-span-3">
-          {loading && categoryData.length === 0 ? (
-            <ChartSkeleton height="h-[320px] lg:h-[340px]" />
-          ) : (
-            <CategoryDonutChart
-              data={categoryData}
-              monthName={selectedPeriod.shortLabel}
-            />
-          )}
-        </div>
+          {/* 2. Spending by Category (Donut) */}
+          <div className="lg:col-span-6 xl:col-span-3">
+            {loading && categoryData.length === 0 ? (
+              <ChartSkeleton height="h-[280px] sm:h-[320px] lg:h-[340px]" />
+            ) : (
+              <CategoryDonutChart
+                data={categoryData}
+                monthName={selectedPeriod.shortLabel}
+              />
+            )}
+          </div>
 
-        {/* 3. Budget vs Spent / Top Categories */}
-        <div className="lg:col-span-6 xl:col-span-4">
-          {loading && trendNormalized.length === 0 ? (
-            <ChartSkeleton height="h-[320px] lg:h-[340px]" />
-          ) : (
-            <BudgetVsSpentChart
-              trendData={trendNormalized}
-              categoryData={categoryData}
-              selectedMonth={selectedPeriod.month}
-              selectedYear={selectedPeriod.year}
-            />
-          )}
+          {/* 3. Budget vs Spent / Top Categories */}
+          <div className="lg:col-span-6 xl:col-span-4">
+            {loading && trendNormalized.length === 0 ? (
+              <ChartSkeleton height="h-[280px] sm:h-[320px] lg:h-[340px]" />
+            ) : (
+              <BudgetVsSpentChart
+                trendData={trendNormalized}
+                categoryData={categoryData}
+                selectedMonth={selectedPeriod.month}
+                selectedYear={selectedPeriod.year}
+              />
+            )}
+          </div>
         </div>
-      </div>
+      </section>
 
       {/* Row 3: Recent Transactions & Right Column (Section E) */}
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 lg:gap-6">
-        {/* Recent Transactions Table (xl:col-span-8) */}
-        <div className="xl:col-span-8">
-          {loading && recentTransactions.length === 0 ? (
-            <TableSkeleton />
-          ) : (
-            <RecentTransactionsTable
-              transactions={recentTransactions}
-              monthlyExpenses={summary.monthlyExpenses}
-              onEdit={handleEditClick}
-              onDelete={handleDeleteTransaction}
+      <section aria-labelledby="ledger-actions-heading">
+        <h2 id="ledger-actions-heading" className="sr-only">
+          Recent Activity & Actions
+        </h2>
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 lg:gap-6">
+          {/* Recent Transactions Table (xl:col-span-8) */}
+          <div className="xl:col-span-8">
+            {loading && recentTransactions.length === 0 ? (
+              <TableSkeleton />
+            ) : (
+              <RecentTransactionsTable
+                transactions={recentTransactions}
+                monthlyExpenses={summary.monthlyExpenses}
+                onEdit={handleEditClick}
+                onDelete={handleDeleteTransaction}
+                onAddNew={() => {
+                  setEditingTransaction(null);
+                  setIsTransModalOpen(true);
+                }}
+              />
+            )}
+          </div>
+
+          {/* Right Column Stack (xl:col-span-4): Quick Actions & Insights */}
+          <div className="xl:col-span-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-1 gap-5">
+            <QuickActionsCard
               onAddNew={() => {
                 setEditingTransaction(null);
                 setIsTransModalOpen(true);
               }}
             />
-          )}
-        </div>
 
-        {/* Right Column Stack (xl:col-span-4): Quick Actions & Insights */}
-        <div className="xl:col-span-4 space-y-5">
-          <QuickActionsCard
-            onAddNew={() => {
-              setEditingTransaction(null);
-              setIsTransModalOpen(true);
-            }}
-          />
-
-          <InsightsCard
-            expenseByCategory={categoryData.map((c) => ({ _id: c.name, total: c.value }))}
-            monthlyExpenses={summary.monthlyExpenses}
-            previousMonthExpenses={summary.previousMonthExpenses}
-            hasPreviousMonthData={summary.hasPreviousMonthData}
-            budgetAmount={summary.budgetAmount}
-          />
+            <InsightsCard
+              expenseByCategory={categoryData.map((c) => ({ _id: c.name, total: c.value }))}
+              monthlyExpenses={summary.monthlyExpenses}
+              previousMonthExpenses={summary.previousMonthExpenses}
+              hasPreviousMonthData={summary.hasPreviousMonthData}
+              budgetAmount={summary.budgetAmount}
+            />
+          </div>
         </div>
-      </div>
+      </section>
 
       {/* Modals */}
       <TransactionModal
