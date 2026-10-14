@@ -51,6 +51,15 @@ export default {
           hover: "rgb(var(--cream-hover) / <alpha-value>)",
         },
       },
+      contrast: {
+        105: "1.05",
+      },
+      saturate: {
+        110: "1.1",
+      },
+      gradientColorStopPositions: {
+        "52%": "52%",
+      },
     },
   },
   plugins: [],
