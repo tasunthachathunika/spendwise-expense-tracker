@@ -54,6 +54,33 @@ const getSummary = async (req, res) => {
       if (item._id === 'Expense') monthlyExpenses = item.total;
     });
 
+    // Previous month totals (for authentic delta calculations)
+    const prevMonthNum = targetMonth === 1 ? 12 : targetMonth - 1;
+    const prevYearNum = targetMonth === 1 ? targetYear - 1 : targetYear;
+    const startOfPrevMonth = new Date(prevYearNum, prevMonthNum - 1, 1);
+    const endOfPrevMonth = new Date(prevYearNum, prevMonthNum, 0, 23, 59, 59, 999);
+
+    const prevMonthAgg = await Transaction.aggregate([
+      { $match: { userId: userObjectId, date: { $gte: startOfPrevMonth, $lte: endOfPrevMonth } } },
+      {
+        $group: {
+          _id: '$type',
+          total: { $sum: '$amount' },
+        },
+      },
+    ]);
+
+    let previousMonthIncome = 0;
+    let previousMonthExpenses = 0;
+    let hasPreviousMonthData = false;
+    if (prevMonthAgg.length > 0) {
+      hasPreviousMonthData = true;
+      prevMonthAgg.forEach((item) => {
+        if (item._id === 'Income') previousMonthIncome = item.total;
+        if (item._id === 'Expense') previousMonthExpenses = item.total;
+      });
+    }
+
     // Budget for selected month
     const budget = await Budget.findOne({ userId, month: targetMonth, year: targetYear });
     const budgetAmount = budget ? budget.amount : 0;
@@ -76,14 +103,22 @@ const getSummary = async (req, res) => {
       { $sort: { total: -1 } },
     ]);
 
-    // Monthly trend (last 6 months)
-    const sixMonthsAgo = new Date();
-    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
-    sixMonthsAgo.setDate(1);
-    sixMonthsAgo.setHours(0, 0, 0, 0);
+    // Monthly trend for the 6 months ending at targetMonth/targetYear
+    const monthsInWindow = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(targetYear, targetMonth - 1 - i, 1);
+      monthsInWindow.push({
+        year: d.getFullYear(),
+        month: d.getMonth() + 1,
+        monthName: d.toLocaleString('en-US', { month: 'short' }),
+      });
+    }
 
-    const monthlyTrend = await Transaction.aggregate([
-      { $match: { userId: userObjectId, date: { $gte: sixMonthsAgo } } },
+    const startOfWindow = new Date(monthsInWindow[0].year, monthsInWindow[0].month - 1, 1, 0, 0, 0, 0);
+    const endOfWindow = new Date(targetYear, targetMonth, 0, 23, 59, 59, 999);
+
+    const monthlyTrendAgg = await Transaction.aggregate([
+      { $match: { userId: userObjectId, date: { $gte: startOfWindow, $lte: endOfWindow } } },
       {
         $group: {
           _id: {
@@ -96,6 +131,39 @@ const getSummary = async (req, res) => {
       },
       { $sort: { '_id.year': 1, '_id.month': 1 } },
     ]);
+
+    // Fetch budgets in the 6-month window to support real 6-month stacked budget chart
+    const budgetsInWindow = await Budget.find({
+      userId: userObjectId,
+      $or: monthsInWindow.map((m) => ({ month: m.month, year: m.year })),
+    });
+
+    const budgetMap = {};
+    budgetsInWindow.forEach((b) => {
+      budgetMap[`${b.month}/${b.year}`] = b.amount;
+    });
+
+    // Build continuous 6-month trend array
+    const normalizedTrend = monthsInWindow.map((m) => {
+      let income = 0;
+      let expense = 0;
+      monthlyTrendAgg.forEach((item) => {
+        if (item._id.year === m.year && item._id.month === m.month) {
+          if (item._id.type === 'Income') income = item.total;
+          if (item._id.type === 'Expense') expense = item.total;
+        }
+      });
+      const budgetForMonth = budgetMap[`${m.month}/${m.year}`] || 0;
+      return {
+        month: m.monthName,
+        monthNum: m.month,
+        year: m.year,
+        income,
+        expense,
+        net: income - expense,
+        budget: budgetForMonth,
+      };
+    });
 
     res.json({
       success: true,
@@ -110,10 +178,16 @@ const getSummary = async (req, res) => {
         budgetUsagePercent: budgetAmount > 0 ? Math.round((monthlyExpenses / budgetAmount) * 100) : 0,
         currentMonth: targetMonth,
         currentYear: targetYear,
+        previousMonthIncome,
+        previousMonthExpenses,
+        previousMonthBalance: previousMonthIncome - previousMonthExpenses,
+        hasPreviousMonthData,
       },
       recentTransactions,
       expenseByCategory,
-      monthlyTrend,
+      monthlyTrend: monthlyTrendAgg,
+      monthlyTrendNormalized: normalizedTrend,
+      budgetsHistory: budgetsInWindow,
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
