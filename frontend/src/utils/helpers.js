@@ -22,57 +22,6 @@ export const formatSignedCurrency = (amount, type) => {
   return val < 0 ? `-Rs. ${formatted}` : `Rs. ${formatted}`;
 };
 
-// Budget status evaluator using configurable warn and danger thresholds (default: 70% and 90%)
-export const getBudgetStatus = (spent = 0, budget = 0, warnThreshold = 0.7, dangerThreshold = 0.9) => {
-  if (!budget || budget <= 0) return null;
-  const ratio = spent / budget;
-  const percent = Math.round(ratio * 100);
-
-  if (ratio >= dangerThreshold || spent > budget) {
-    return {
-      status: 'danger',
-      statusText: 'Over budget',
-      barColor: 'bg-expense',
-      textColor: 'text-expense',
-      borderColor: 'border-expense',
-      ringColor: 'text-expense',
-      glowClass: 'kpi-card--danger',
-      percent,
-      isDanger: true,
-      isWarn: false,
-      isOk: false,
-    };
-  }
-  if (ratio >= warnThreshold) {
-    return {
-      status: 'warn',
-      statusText: 'Getting close',
-      barColor: 'bg-warn',
-      textColor: 'text-warn',
-      borderColor: 'border-warn',
-      ringColor: 'text-warn',
-      glowClass: 'kpi-card--warn',
-      percent,
-      isDanger: false,
-      isWarn: true,
-      isOk: false,
-    };
-  }
-  return {
-    status: 'ok',
-    statusText: 'On track',
-    barColor: 'bg-income',
-    textColor: 'text-income',
-    borderColor: 'border-income',
-    ringColor: 'text-income',
-    glowClass: 'kpi-card--income',
-    percent,
-    isDanger: false,
-    isWarn: false,
-    isOk: true,
-  };
-};
-
 // Format date safely without mixing dateStyle with individual date components
 export const formatDate = (date, opts = {}) => {
   if (!date) return '—';

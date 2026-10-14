@@ -1,6 +1,6 @@
 import React from 'react';
 import { AlertTriangle, CheckCircle2, AlertOctagon } from 'lucide-react';
-import { formatCurrency, getBudgetStatus } from '../../utils/helpers';
+import { formatCurrency } from '../../utils/helpers';
 
 const BudgetProgress = ({
   budgetAmount = 0,
@@ -10,7 +10,7 @@ const BudgetProgress = ({
 }) => {
   if (budgetAmount <= 0) {
     return (
-      <div className="dash-card flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-bg-card border border-line rounded-2xl p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-base font-bold text-ink">Monthly Budget Status</h2>
           <p className="text-xs text-ink-soft mt-0.5">
@@ -20,7 +20,7 @@ const BudgetProgress = ({
         {onSetBudget && (
           <button
             onClick={onSetBudget}
-            className="px-4 py-2 bg-brand/10 hover:bg-brand/20 text-brand border border-brand/30 rounded-xl text-xs font-semibold transition flex-shrink-0 cursor-pointer"
+            className="px-4 py-2 bg-brand/10 hover:bg-brand/20 text-brand border border-brand/30 rounded-xl text-xs font-semibold transition flex-shrink-0"
           >
             Set Monthly Budget
           </button>
@@ -29,20 +29,38 @@ const BudgetProgress = ({
     );
   }
 
-  const budgetStatus = getBudgetStatus(spentAmount, budgetAmount);
+  // Calculate percentage
+  const percent = budgetAmount > 0 
+    ? Math.round((spentAmount / budgetAmount) * 1000) / 10 
+    : 0;
+  const isOverBudget = spentAmount > budgetAmount;
   const remainingLimit = budgetAmount - spentAmount;
-  const percent = budgetStatus?.percent || 0;
-  const fillWidth = Math.min(percent, 100);
 
-  const statusColor = budgetStatus?.barColor || 'bg-brand';
-  const badgeClass = budgetStatus?.isDanger
-    ? 'bg-expense/10 text-expense border-expense/30'
-    : budgetStatus?.isWarn
-    ? 'bg-warn/10 text-warn border-warn/30'
-    : 'bg-income/10 text-income border-income/30';
-  const BadgeIcon = budgetStatus?.isDanger ? AlertOctagon : budgetStatus?.isWarn ? AlertTriangle : CheckCircle2;
-  const badgeLabel = `● ${budgetStatus?.statusText} (${percent}%)`;
-  const statusText = '0-70% On Track, 70-90% Warning, 90%+ Alert';
+  // Determine threshold states
+  // 0% – 70%: Emerald/Brand
+  // 70% – 90%: Amber Warning
+  // 90%+ or Over budget: Rose Alert
+  let statusColor = 'bg-brand shadow-brand/30';
+  let badgeClass = 'bg-brand/10 text-brand border-brand/30';
+  let badgeLabel = `● On Track (${percent}%)`;
+  let statusText = '0-70% On Track, 70-90% Warning, 90%+ Alert';
+  let BadgeIcon = CheckCircle2;
+
+  if (isOverBudget || percent >= 90) {
+    statusColor = 'bg-expense shadow-expense/30';
+    badgeClass = 'bg-expense/10 text-expense border-expense/30';
+    badgeLabel = isOverBudget
+      ? `● Critical: Over Budget (${percent}%)`
+      : `● Alert: Nearing Limit (${percent}%)`;
+    BadgeIcon = AlertOctagon;
+  } else if (percent >= 70) {
+    statusColor = 'bg-warn shadow-warn/30';
+    badgeClass = 'bg-warn/10 text-warn border-warn/30';
+    badgeLabel = `● Warning: Near Limit (${percent}%)`;
+    BadgeIcon = AlertTriangle;
+  }
+
+  const fillWidth = Math.min(percent, 100);
 
   return (
     <div className="bg-bg-card border border-line rounded-2xl p-6 shadow-sm">
