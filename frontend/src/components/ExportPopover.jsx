@@ -1,11 +1,20 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Download, ChevronDown, FileSpreadsheet, FileText, Loader2 } from 'lucide-react';
+import { 
+  Download, 
+  ChevronDown, 
+  FileSpreadsheet, 
+  FileText, 
+  Loader2, 
+  ArrowRight,
+  ShieldCheck
+} from 'lucide-react';
 import { exportTransactionsToCsv } from '../utils/exportCsv.js';
 import toast from 'react-hot-toast';
 
 /**
- * Professional Export Popover Trigger & Menu.
- * Provides immediate CSV spreadsheet download and opens the PDF report configuration dialog.
+ * Premier Fintech-grade Export Popover Menu & Action Button.
+ * Inspired by modern financial platforms (Stripe, Mercury, Linear, Monarch Money).
+ * Features dual-toned container, tactile icon pill, micro-badges, and rich popover cards.
  */
 const ExportPopover = ({
   total = 0,
@@ -98,7 +107,7 @@ const ExportPopover = ({
 
   return (
     <div className="relative inline-block text-left" ref={popoverRef}>
-      {/* Trigger Button */}
+      {/* ─── Real-world Tactile Export Button ───────────────────────────────── */}
       <button
         ref={buttonRef}
         type="button"
@@ -110,86 +119,133 @@ const ExportPopover = ({
         title={total === 0 ? 'No transactions to export' : `Export ${total} transactions`}
         onClick={() => setIsOpen((prev) => !prev)}
         onKeyDown={handleButtonKeyDown}
-        className={`btn btn-secondary flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-xl border border-line transition select-none ${
+        className={`group relative inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-semibold select-none transition-all duration-200 ${
           isDisabled
-            ? 'opacity-50 cursor-not-allowed bg-card'
-            : 'hover:bg-cream-hover cursor-pointer shadow-2xs'
+            ? 'opacity-50 cursor-not-allowed bg-card/60 border-line text-ink-soft shadow-none'
+            : isOpen
+            ? 'bg-cream-band/70 border-brand/50 ring-2 ring-brand/20 text-brand shadow-xs'
+            : 'bg-card hover:bg-cream-hover border-line hover:border-brand/40 text-ink shadow-2xs hover:shadow-xs active:scale-[0.98] cursor-pointer'
         }`}
       >
-        {isExportingCsv ? (
-          <Loader2 size={15} className="animate-spin text-brand" />
-        ) : (
-          <Download size={15} className="text-ink-soft" />
-        )}
-        <span>{isExportingCsv ? 'Downloading CSV...' : 'Export'}</span>
+        {/* Tactile Icon Pill */}
+        <span
+          className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 border transition-colors ${
+            isExportingCsv
+              ? 'bg-brand-soft text-brand border-brand/30'
+              : isOpen
+              ? 'bg-brand text-white border-brand shadow-2xs'
+              : 'bg-cream-band group-hover:bg-brand-soft text-ink-body group-hover:text-brand border-line/70'
+          }`}
+        >
+          {isExportingCsv ? (
+            <Loader2 size={13} className="animate-spin text-brand" />
+          ) : (
+            <Download size={13} className="transition-transform group-hover:-translate-y-0.5 duration-200" />
+          )}
+        </span>
+
+        {/* Button Label */}
+        <span className="font-semibold tracking-tight">
+          {isExportingCsv ? 'Downloading CSV...' : 'Export'}
+        </span>
+
+        {/* Micro-divider */}
+        <span className="w-px h-3.5 bg-line/80 mx-0.5" aria-hidden="true" />
+
+        {/* Chevron Caret Indicator */}
         <ChevronDown
           size={13}
-          className={`text-ink-soft transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+          className={`text-ink-soft group-hover:text-ink transition-transform duration-200 ${
+            isOpen ? 'rotate-180 text-brand' : ''
+          }`}
         />
       </button>
 
-      {/* Popover Menu */}
+      {/* ─── Premium Popover Menu ───────────────────────────────────────────── */}
       {isOpen && (
         <div
           id="export-popover-menu"
           role="menu"
           aria-labelledby="export-popover-button"
-          className="absolute right-0 mt-2 w-72 rounded-2xl bg-card border border-line shadow-2xl z-30 py-2 animate-in fade-in zoom-in-95 duration-100"
+          className="absolute right-0 mt-2 w-80 rounded-2xl bg-card border border-line shadow-2xl z-40 p-2 animate-in fade-in zoom-in-95 duration-150"
         >
-          {/* Header count indicator */}
-          <div className="px-4 py-2 border-b border-line">
-            <p className="text-[10px] font-bold text-ink-soft uppercase tracking-wider">
-              Export Dataset
-            </p>
-            <p className="text-xs text-ink font-medium mt-0.5">
-              Exports <span className="text-brand font-bold">{total}</span> matching transaction{total === 1 ? '' : 's'}
-            </p>
+          {/* Header Indicator */}
+          <div className="px-3 py-2 border-b border-line mb-1 flex items-center justify-between">
+            <div>
+              <p className="text-[10px] font-bold text-ink-soft uppercase tracking-wider">
+                Export Ledger
+              </p>
+              <p className="text-xs font-semibold text-ink mt-0.5">
+                Ready to download
+              </p>
+            </div>
+            <span className="px-2 py-0.5 rounded-full bg-brand-soft text-brand font-mono font-bold text-[11px] border border-brand/20">
+              {total} record{total === 1 ? '' : 's'}
+            </span>
           </div>
 
-          <div className="p-1.5 space-y-1">
-            {/* CSV Option */}
+          <div className="space-y-1">
+            {/* Option 1: CSV Spreadsheet */}
             <button
               type="button"
               role="menuitem"
               tabIndex={0}
               onClick={handleDownloadCsv}
               onKeyDown={(e) => handleItemKeyDown(e, 0)}
-              className="w-full flex items-start gap-3 p-2.5 rounded-xl text-left hover:bg-cream-hover transition cursor-pointer group focus:outline-none focus:bg-cream-hover"
+              className="w-full flex items-center gap-3 p-2.5 rounded-xl text-left hover:bg-cream-band/70 border border-transparent hover:border-line transition-all cursor-pointer group focus:outline-none focus:bg-cream-band/80"
             >
-              <div className="w-8 h-8 rounded-lg bg-income/10 text-income flex items-center justify-center shrink-0 border border-income/20 mt-0.5">
-                <FileSpreadsheet size={16} />
+              <div className="w-9 h-9 rounded-xl bg-income/10 text-income border border-income/25 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <FileSpreadsheet size={18} />
               </div>
-              <div className="flex-1">
-                <div className="text-xs font-semibold text-ink group-hover:text-brand transition">
-                  CSV spreadsheet
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-ink group-hover:text-brand transition">
+                    CSV spreadsheet
+                  </span>
+                  <span className="text-[9.5px] font-mono font-bold uppercase px-1.5 py-0.5 rounded bg-cream-band text-ink-soft border border-line/80">
+                    .csv
+                  </span>
                 </div>
-                <div className="text-[11px] text-ink-soft font-normal mt-0.5">
-                  Best for Excel and data analysis
-                </div>
+                <p className="text-[11px] text-ink-soft font-normal mt-0.5 leading-snug">
+                  Excel-ready with UTF-8 BOM & formula safety
+                </p>
               </div>
+              <ArrowRight size={14} className="text-ink-soft opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all text-brand shrink-0" />
             </button>
 
-            {/* PDF Option */}
+            {/* Option 2: PDF Executive Report */}
             <button
               type="button"
               role="menuitem"
               tabIndex={0}
               onClick={handleOpenPdf}
               onKeyDown={(e) => handleItemKeyDown(e, 1)}
-              className="w-full flex items-start gap-3 p-2.5 rounded-xl text-left hover:bg-cream-hover transition cursor-pointer group focus:outline-none focus:bg-cream-hover"
+              className="w-full flex items-center gap-3 p-2.5 rounded-xl text-left hover:bg-cream-band/70 border border-transparent hover:border-line transition-all cursor-pointer group focus:outline-none focus:bg-cream-band/80"
             >
-              <div className="w-8 h-8 rounded-lg bg-expense/10 text-expense flex items-center justify-center shrink-0 border border-expense/20 mt-0.5">
-                <FileText size={16} />
+              <div className="w-9 h-9 rounded-xl bg-brand/10 text-brand border border-brand/25 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <FileText size={18} />
               </div>
-              <div className="flex-1">
-                <div className="text-xs font-semibold text-ink group-hover:text-brand transition">
-                  PDF report
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-ink group-hover:text-brand transition">
+                    PDF report
+                  </span>
+                  <span className="text-[9.5px] font-mono font-bold uppercase px-1.5 py-0.5 rounded bg-brand-soft text-brand border border-brand/25">
+                    .pdf
+                  </span>
                 </div>
-                <div className="text-[11px] text-ink-soft font-normal mt-0.5">
-                  Best for printing and sharing
-                </div>
+                <p className="text-[11px] text-ink-soft font-normal mt-0.5 leading-snug">
+                  A4 publication report with summary & charts
+                </p>
               </div>
+              <ArrowRight size={14} className="text-ink-soft opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all text-brand shrink-0" />
             </button>
+          </div>
+
+          {/* Footer Notice */}
+          <div className="mt-1 pt-2 border-t border-line/60 px-3 py-1 flex items-center gap-1.5 text-[10.5px] text-ink-soft">
+            <ShieldCheck size={12} className="text-income shrink-0" />
+            <span>Preserves all active filters and sort orders</span>
           </div>
         </div>
       )}
