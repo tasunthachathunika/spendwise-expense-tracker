@@ -4,6 +4,9 @@ export default {
   darkMode: "class",
   theme: {
     extend: {
+      screens: {
+        'hover-fine': { raw: '(hover: hover) and (pointer: fine)' },
+      },
       fontFamily: {
         serif: ["Fraunces", "Georgia", "serif"],
         sans: ["Inter", "system-ui", "-apple-system", "sans-serif"],

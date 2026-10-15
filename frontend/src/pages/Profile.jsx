@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import { useScrollLock } from '../hooks/useScrollLock';
 import { formatDate, getInitials, formatLKR, useCurrency } from '../utils/helpers';
 import api from '../utils/api';
 import toast from 'react-hot-toast';
@@ -284,10 +285,11 @@ const ProfileContent = () => {
     navigate('/login');
   };
 
-  // Lock body scroll and set initial focus when delete dialog opens
+  // Lock body & scroller scroll and set initial focus when delete dialog opens
+  useScrollLock(isDeleteDialogOpen);
+
   useEffect(() => {
     if (isDeleteDialogOpen) {
-      document.body.style.overflow = 'hidden';
       const timer = setTimeout(() => {
         deletePasswordRef.current?.focus();
       }, 50);
@@ -323,7 +325,6 @@ const ProfileContent = () => {
       return () => {
         clearTimeout(timer);
         window.removeEventListener('keydown', handleKeyDown);
-        document.body.style.overflow = '';
       };
     }
   }, [isDeleteDialogOpen, isDeleting]);
@@ -443,7 +444,7 @@ const ProfileContent = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* ─── LEFT COLUMN: Identity Card ─────────────────────────────────── */}
         <div className="lg:col-span-1">
-          <div className="bg-card border border-line rounded-2xl p-6 text-center shadow-xs flex flex-col items-center sticky top-24 transition-all">
+          <div className="bg-card border border-line rounded-2xl p-6 text-center shadow-xs flex flex-col items-center sticky top-6 transition-all">
             {/* Live Interactive Avatar */}
             <div className="relative">
               <div
@@ -536,72 +537,6 @@ const ProfileContent = () => {
 
         {/* ─── RIGHT COLUMN: Stacked Settings Cards ───────────────────────── */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Settings Preview Panel: Active Budget / This Month at a Glance */}
-          <section className="bg-card border border-line rounded-2xl p-6 shadow-xs">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
-              <div>
-                <h3 className="font-serif text-lg sm:text-xl font-bold text-ink">
-                  {activeBudget?.periodType === 'custom' ? 'Active budget at a glance' : 'This month at a glance'}
-                </h3>
-                <p className="text-sm text-ink-soft mt-0.5">
-                  {activeBudget
-                    ? `Current active budget threshold for ${activeBudget.label}`
-                    : 'Track your current spending cycle against your limit.'}
-                </p>
-              </div>
-              {activeBudget?.periodType === 'custom' && (
-                <span className="self-start sm:self-auto text-xs bg-info/10 text-info border border-info/20 font-bold px-2.5 py-0.5 rounded-full">
-                  Custom Period
-                </span>
-              )}
-            </div>
-
-            {activeBudget ? (
-              <div className="space-y-3">
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3.5 bg-cream-band border border-line rounded-xl text-xs">
-                  <div>
-                    <span className="text-ink-soft block font-medium">Period</span>
-                    <span className="font-bold text-ink text-sm">{activeBudget.label}</span>
-                  </div>
-                  <div>
-                    <span className="text-ink-soft block font-medium">Budget Limit</span>
-                    <span className="font-bold text-ink text-sm">{formatLKR(activeBudget.amount)}</span>
-                  </div>
-                  <div>
-                    <span className="text-ink-soft block font-medium">Spent to Date</span>
-                    <span className="font-bold text-expense text-sm">{formatLKR(activeBudget.spent)}</span>
-                  </div>
-                  <div>
-                    <span className="text-ink-soft block font-medium">Remaining</span>
-                    <span className={`font-bold text-sm ${activeBudget.remaining < 0 ? 'text-expense' : 'text-income'}`}>
-                      {formatLKR(activeBudget.remaining)}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="w-full bg-cream-band h-2 rounded-full overflow-hidden border border-line">
-                  <div
-                    className={`h-full rounded-full transition-all duration-500 ${
-                      activeBudget.percent >= 90 ? 'bg-expense' : activeBudget.percent >= 70 ? 'bg-warn' : 'bg-brand'
-                    }`}
-                    style={{ width: `${Math.min(activeBudget.percent, 100)}%` }}
-                  />
-                </div>
-              </div>
-            ) : (
-              <div className="p-4 rounded-xl bg-cream-band border border-line flex items-center justify-between">
-                <span className="text-xs text-ink-soft">No active budget set for current period.</span>
-                <button
-                  type="button"
-                  onClick={() => navigate('/budgets')}
-                  className="text-xs font-semibold text-brand hover:text-brand-dark transition cursor-pointer"
-                >
-                  Set budget &rarr;
-                </button>
-              </div>
-            )}
-          </section>
-
           {/* Card 1: Personal Information */}
           <section className="bg-card border border-line rounded-2xl p-6 shadow-xs">
             <div className="mb-5">

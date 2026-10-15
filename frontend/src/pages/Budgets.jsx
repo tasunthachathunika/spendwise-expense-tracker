@@ -14,6 +14,7 @@ import { formatCurrency, formatLKR, monthName, getBudgetStatus } from '../utils/
 import BudgetModal from '../components/BudgetModal';
 import toast from 'react-hot-toast';
 import useDocumentTitle from '../hooks/useDocumentTitle';
+import { useScrollLock } from '../hooks/useScrollLock';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 
 const Budgets = () => {
@@ -24,6 +25,8 @@ const Budgets = () => {
   const [selectedBudget, setSelectedBudget] = useState(null);
   const [deleteTargetId, setDeleteTargetId] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  useScrollLock(isModalOpen || Boolean(deleteTargetId));
 
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth() + 1;

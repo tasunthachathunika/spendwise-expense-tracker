@@ -15,6 +15,7 @@ import { StatCardSkeleton, ChartSkeleton, TableSkeleton } from '../components/co
 // Modals
 import TransactionModal from '../components/TransactionModal';
 import BudgetModal from '../components/BudgetModal';
+import { useScrollLock } from '../hooks/useScrollLock';
 
 const generateMonthOptions = () => {
   const options = [];
@@ -66,6 +67,8 @@ const Dashboard = () => {
   const [isTransModalOpen, setIsTransModalOpen] = useState(false);
   const [isBudgetModalOpen, setIsBudgetModalOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null);
+
+  useScrollLock(isTransModalOpen || isBudgetModalOpen);
 
   const fetchDashboardData = async () => {
     try {

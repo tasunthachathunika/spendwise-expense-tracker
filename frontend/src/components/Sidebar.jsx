@@ -19,6 +19,7 @@ import {
 import SpendWiseLogo from './landing/SpendWiseLogo';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import { useScrollLock } from '../hooks/useScrollLock';
 import { formatLKR } from '../utils/helpers';
 import api from '../utils/api';
 import toast from 'react-hot-toast';
@@ -142,11 +143,10 @@ const Sidebar = ({ isOpen, onClose }) => {
   }, [isEffectivelyCollapsed]);
 
   // ─── 2. Mobile Drawer Accessibility (Scroll Lock & Focus Trap) ─────────────
+  useScrollLock(isOpen && isMobile);
+
   useEffect(() => {
     if (!isOpen || !isMobile) return;
-
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
 
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
@@ -175,7 +175,6 @@ const Sidebar = ({ isOpen, onClose }) => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => {
-      document.body.style.overflow = originalOverflow;
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [isOpen, isMobile, onClose]);
@@ -330,7 +329,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         role={isMobile ? 'dialog' : undefined}
         className={`
           fixed inset-y-0 left-0 z-50 flex flex-col bg-cream-band border-r border-line select-none
-          w-[min(85vw,300px)] lg:w-auto lg:sticky lg:top-0 lg:h-screen lg:z-30 lg:translate-x-0
+          w-[min(85vw,300px)] lg:w-auto lg:static lg:h-full lg:shrink-0 lg:z-30 lg:translate-x-0
           transition-[width,transform] duration-250 ease-out motion-reduce:transition-none
           ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
           ${isEffectivelyCollapsed ? 'lg:w-[72px]' : 'lg:w-[264px]'}
@@ -412,7 +411,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         {/* ─── Navigation Scroll Container ─────────────────────────────────── */}
         <nav
           aria-label="Main navigation"
-          className="flex-1 overflow-y-auto [scrollbar-width:thin] space-y-6 pr-0.5"
+          className="flex-1 overflow-y-auto app-scroll space-y-6 pr-0.5"
         >
           {/* Group 1: Main */}
           <div>

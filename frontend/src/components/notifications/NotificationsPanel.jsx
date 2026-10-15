@@ -13,6 +13,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { useNotifications } from '../../context/NotificationContext';
+import { useScrollLock } from '../../hooks/useScrollLock';
 import { formatRelativeTime, formatDate, groupNotificationsByDate } from '../../utils/helpers';
 
 /**
@@ -110,16 +111,8 @@ const NotificationsPanel = ({ isOpen, onClose, anchorRef }) => {
     };
   }, [isOpen, anchorRef]);
 
-  // 2. Lock body scroll on mobile bottom sheet
-  useEffect(() => {
-    if (isOpen && isMobile) {
-      const originalOverflow = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      return () => {
-        document.body.style.overflow = originalOverflow;
-      };
-    }
-  }, [isOpen, isMobile]);
+  // 2. Lock body & scroller scroll on mobile bottom sheet
+  useScrollLock(isOpen && isMobile);
 
   // 3. Keyboard handlers (Escape closes and returns focus to bell)
   useEffect(() => {

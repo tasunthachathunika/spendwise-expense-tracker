@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Menu, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useScrollDirection } from '../../hooks/useScrollDirection';
 import ThemeToggle from './ThemeToggle';
 import SpendWiseLogo from './SpendWiseLogo';
 
@@ -13,34 +14,87 @@ const NAV_ITEMS = [
 ];
 
 const Navbar = () => {
-  const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  // Handle scroll detection for sticky border & active section highlight
+  const { isVisible, isScrolled, scrollProgress } = useScrollDirection();
+
+  const navRef = useRef(null);
+  const hamburgerBtnRef = useRef(null);
+  const [pillStyle, setPillStyle] = useState({
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+    opacity: 0,
+  });
+
+  // Check if device supports hover with fine pointer
+  const isHoverFine = () => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  };
+
+  const updatePill = (targetEl) => {
+    if (!navRef.current || !targetEl) return;
+    const navRect = navRef.current.getBoundingClientRect();
+    const targetRect = targetEl.getBoundingClientRect();
+
+    setPillStyle({
+      x: targetRect.left - navRect.left,
+      y: targetRect.top - navRect.top,
+      width: targetRect.width,
+      height: targetRect.height,
+      opacity: 1,
+    });
+  };
+
+  const hidePill = () => {
+    setPillStyle((prev) => ({ ...prev, opacity: 0 }));
+  };
+
+  const handleLinkMouseEnter = (targetEl) => {
+    if (!isHoverFine()) return;
+    updatePill(targetEl);
+  };
+
+  const handleLinkFocus = (targetEl) => {
+    updatePill(targetEl);
+  };
+
+  const handleNavBlur = (e) => {
+    if (navRef.current && !navRef.current.contains(e.relatedTarget)) {
+      hidePill();
+    }
+  };
+
+  // Handle active section highlight detection
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      const scrollY = window.scrollY;
-      setScrolled(scrollY > 10);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollPosition = window.scrollY + 120;
+          let current = '';
 
-      // Determine active section based on current scroll position
-      const scrollPosition = scrollY + 120;
-      let current = '';
-
-      for (const item of NAV_ITEMS) {
-        const el = document.getElementById(item.id);
-        if (el) {
-          const top = el.offsetTop;
-          const height = el.offsetHeight;
-          if (scrollPosition >= top && scrollPosition < top + height) {
-            current = item.id;
-            break;
+          for (const item of NAV_ITEMS) {
+            const el = document.getElementById(item.id);
+            if (el) {
+              const top = el.offsetTop;
+              const height = el.offsetHeight;
+              if (scrollPosition >= top && scrollPosition < top + height) {
+                current = item.id;
+                break;
+              }
+            }
           }
-        }
+          setActiveSection(current);
+          ticking = false;
+        });
+        ticking = true;
       }
-      setActiveSection(current);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -48,11 +102,26 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Handle Escape key to close mobile drawer
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileMenuOpen]);
+
+  // Handle Escape key to close mobile drawer and return focus
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape' && mobileMenuOpen) {
         setMobileMenuOpen(false);
+        if (hamburgerBtnRef.current) {
+          hamburgerBtnRef.current.focus();
+        }
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -67,146 +136,224 @@ const Navbar = () => {
     }
   };
 
+  const shouldShow = isVisible || mobileMenuOpen;
+
   return (
     <header
-      className={`sticky top-0 z-50 w-full h-16 bg-cream/80 backdrop-blur-md transition-colors duration-200 ${
-        scrolled ? 'border-b border-line shadow-xs' : 'border-b border-transparent'
-      }`}
+      className={`sticky top-0 z-50 w-full h-16 border-b transition-[transform,background-color,border-color,box-shadow,backdrop-filter] duration-300 ease-out will-change-transform motion-reduce:transition-none focus-within:translate-y-0 ${
+        shouldShow
+          ? 'translate-y-0'
+          : '-translate-y-full pointer-events-none focus-within:pointer-events-auto'
+      } ${isScrolled ? 'navbar-glass-scrolled' : 'navbar-glass-top'}`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
-        
-        {/* Brand Logo */}
-        <Link
-          to="/"
-          className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 rounded-xl p-1 hover:opacity-90 transition-opacity duration-200"
-          aria-label="SpendWise home"
-        >
-          <SpendWiseLogo size="sm" showTagline={true} />
-        </Link>
+      <div className="container-page h-full grid grid-cols-2 md:grid-cols-3 items-center">
+        {/* Left Column: Brand Logo (flush with container edge) */}
+        <div className="flex items-center justify-start">
+          <Link
+            to="/"
+            className="navbar-logo-link inline-flex items-center rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-cream"
+            aria-label="SpendWise home"
+          >
+            <SpendWiseLogo size="sm" showTagline={true} />
+          </Link>
+        </div>
 
-        {/* Desktop Nav Links */}
-        <nav className="hidden md:flex items-center gap-8 text-sm font-medium" aria-label="Main navigation">
-          {NAV_ITEMS.map((item) => {
-            const isActive = activeSection === item.id;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => scrollToSection(item.id)}
-                className={`transition-colors cursor-pointer py-1 relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 rounded-md ${
-                  isActive
-                    ? 'text-brand font-semibold'
-                    : 'text-ink-soft hover:text-ink'
-                }`}
-              >
-                {item.label}
-                {isActive && (
-                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-brand rounded-full transition-all" />
-                )}
-              </button>
-            );
-          })}
-        </nav>
+        {/* Center Column: Desktop Nav Links with Sliding Pill */}
+        <div className="hidden md:flex items-center justify-center">
+          <nav
+            ref={navRef}
+            onMouseLeave={hidePill}
+            onBlur={handleNavBlur}
+            className="relative flex items-center gap-1.5 p-1"
+            aria-label="Main navigation"
+          >
+            {/* Sliding Pill Highlight Element */}
+            <div
+              className="absolute pointer-events-none rounded-lg bg-cream-hover dark:bg-card/60 border border-line/60 transition-[transform,width,height,opacity] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+              style={{
+                transform: `translate3d(${pillStyle.x}px, ${pillStyle.y}px, 0)`,
+                width: `${pillStyle.width}px`,
+                height: `${pillStyle.height}px`,
+                opacity: pillStyle.opacity,
+              }}
+              aria-hidden="true"
+            />
 
-        {/* Desktop Action Buttons */}
-        <div className="hidden md:flex items-center gap-3">
+            {NAV_ITEMS.map((item) => {
+              const isActive = activeSection === item.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => scrollToSection(item.id)}
+                  onMouseEnter={(e) => handleLinkMouseEnter(e.currentTarget)}
+                  onFocus={(e) => handleLinkFocus(e.currentTarget)}
+                  aria-current={isActive ? 'location' : undefined}
+                  className={`relative z-10 px-3.5 py-2 rounded-lg text-sm font-medium transition-colors duration-200 cursor-pointer active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-cream ${
+                    isActive
+                      ? 'text-brand font-semibold'
+                      : 'text-ink-body hover-fine:text-ink'
+                  }`}
+                >
+                  <span>{item.label}</span>
+
+                  {/* 2px Rounded Active Indicator Underline */}
+                  <span
+                    className={`absolute bottom-0.5 left-3.5 right-3.5 h-[2px] bg-brand rounded-full transition-transform duration-250 ease-out origin-center pointer-events-none motion-reduce:transition-none ${
+                      isActive ? 'scale-x-100 opacity-100' : 'scale-x-0 opacity-0'
+                    }`}
+                    aria-hidden="true"
+                  />
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+
+        {/* Right Column: Desktop Action Buttons */}
+        <div className="hidden md:flex items-center justify-end gap-2.5">
           <ThemeToggle />
 
           {isAuthenticated ? (
             <button
               onClick={() => navigate('/dashboard')}
-              className="bg-brand hover:bg-brand-dark text-white font-semibold text-sm px-5 py-2.5 rounded-xl transition-all shadow-md shadow-brand/20 hover:shadow-brand/35 hover:-translate-y-0.5 flex items-center gap-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50"
+              className="btn-shine-sweep bg-brand hover-fine:bg-brand-dark text-white font-semibold text-sm rounded-xl px-5 py-2.5 shadow-sm shadow-brand/25 hover-fine:shadow-lg hover-fine:shadow-brand/30 hover-fine:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] active:shadow-sm flex items-center gap-2 cursor-pointer transition-all duration-200 group/cta focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-cream"
             >
               <span>Go to Dashboard</span>
-              <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+              <ArrowRight className="w-4 h-4 stroke-[2.5] transition-transform duration-200 hover-fine:group-hover/cta:translate-x-0.5 motion-reduce:transform-none" />
             </button>
           ) : (
             <>
               <Link
                 to="/login"
-                className="text-sm font-semibold text-ink-body hover:text-ink transition-colors px-3 py-2 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50"
+                className="px-3.5 py-2 rounded-lg text-sm font-medium text-ink transition-all duration-200 cursor-pointer hover-fine:bg-cream-hover hover-fine:text-brand active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-cream"
               >
                 Sign In
               </Link>
               <Link
                 to="/register"
-                className="bg-brand hover:bg-brand-dark text-white font-semibold text-sm px-5 py-2.5 rounded-xl transition-all shadow-md shadow-brand/20 hover:shadow-brand/35 hover:-translate-y-0.5 flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50"
+                className="btn-shine-sweep bg-brand hover-fine:bg-brand-dark text-white font-semibold text-sm rounded-xl px-5 py-2.5 shadow-sm shadow-brand/25 hover-fine:shadow-lg hover-fine:shadow-brand/30 hover-fine:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] active:shadow-sm flex items-center gap-2 transition-all duration-200 group/cta focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-cream"
               >
                 <span>Get Started Free</span>
-                <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+                <ArrowRight className="w-4 h-4 stroke-[2.5] transition-transform duration-200 hover-fine:group-hover/cta:translate-x-0.5 motion-reduce:transform-none" />
               </Link>
             </>
           )}
         </div>
 
-        {/* Mobile Hamburger Button */}
-        <div className="flex md:hidden items-center gap-2">
+        {/* Mobile Right Column: ThemeToggle + Hamburger */}
+        <div className="flex md:hidden items-center justify-end gap-2">
           <ThemeToggle />
           <button
+            ref={hamburgerBtnRef}
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-xl text-ink bg-card border border-line hover:bg-cream-hover transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50"
+            className="w-10 h-10 rounded-xl border border-line bg-card/70 text-ink flex items-center justify-center transition-all duration-200 cursor-pointer shadow-xs hover-fine:border-brand/40 hover-fine:bg-cream-hover hover-fine:text-brand active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-cream"
             aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={mobileMenuOpen}
           >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            <div className="relative w-5 h-5 flex items-center justify-center overflow-hidden">
+              <Menu
+                className={`w-5 h-5 absolute transition-all duration-200 motion-reduce:transition-none transform ${
+                  mobileMenuOpen
+                    ? 'opacity-0 rotate-90 scale-75 pointer-events-none'
+                    : 'opacity-100 rotate-0 scale-100'
+                }`}
+              />
+              <X
+                className={`w-5 h-5 absolute transition-all duration-200 motion-reduce:transition-none transform ${
+                  mobileMenuOpen
+                    ? 'opacity-100 rotate-0 scale-100'
+                    : 'opacity-0 -rotate-90 scale-75 pointer-events-none'
+                }`}
+              />
+            </div>
           </button>
         </div>
       </div>
 
-      {/* Mobile Slide-down Drawer */}
-      {mobileMenuOpen && (
-        <div className="md:hidden bg-cream-band border-b border-line px-5 py-6 space-y-5 animate-in fade-in slide-in-from-top-4 duration-200 shadow-xl">
-          <nav className="flex flex-col space-y-3 text-base font-medium" aria-label="Mobile navigation">
-            {NAV_ITEMS.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => scrollToSection(item.id)}
-                className={`text-left py-2 px-3 rounded-xl transition cursor-pointer ${
-                  activeSection === item.id
-                    ? 'bg-card text-brand font-semibold shadow-xs'
-                    : 'text-ink-body hover:text-ink hover:bg-card/50'
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
-          </nav>
+      {/* Subtle Hairline Glow Line (faint 1px gradient, visible only when scrolled) */}
+      <div
+        className={`navbar-hairline-glow ${isScrolled ? 'opacity-100' : 'opacity-0'}`}
+        aria-hidden="true"
+      />
 
-          <div className="pt-4 border-t border-line flex flex-col gap-3">
-            {isAuthenticated ? (
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  navigate('/dashboard');
-                }}
-                className="w-full py-3 rounded-xl bg-brand hover:bg-brand-dark text-white text-sm font-bold shadow-md shadow-brand/20 flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <span>Go to Dashboard</span>
-                <ArrowRight className="w-4 h-4 stroke-[2.5]" />
-              </button>
-            ) : (
-              <>
-                <Link
-                  to="/login"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="w-full text-center py-3 rounded-xl border border-line bg-card text-sm font-semibold text-ink hover:bg-cream-hover transition"
-                >
-                  Sign In
-                </Link>
-                <Link
-                  to="/register"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="w-full text-center py-3 rounded-xl bg-brand hover:bg-brand-dark text-white text-sm font-bold shadow-md shadow-brand/20 flex items-center justify-center gap-2"
-                >
-                  <span>Get Started Free</span>
-                  <ArrowRight className="w-4 h-4 stroke-[2.5]" />
-                </Link>
-              </>
-            )}
+      {/* 2px Brand Scroll Progress Bar */}
+      <div
+        className="absolute bottom-0 left-0 h-[2px] bg-brand transition-[width] duration-150 ease-out motion-reduce:hidden pointer-events-none"
+        style={{ width: `${scrollProgress}%` }}
+        aria-hidden="true"
+      />
+
+      {/* Mobile Slide-down Drawer Panel with Dim Overlay */}
+      {mobileMenuOpen && (
+        <>
+          {/* Dim Overlay below the bar that closes on click */}
+          <div
+            className="fixed inset-0 top-16 bg-ink/30 backdrop-blur-2xs z-40 transition-opacity duration-200"
+            onClick={() => setMobileMenuOpen(false)}
+            aria-hidden="true"
+          />
+
+          {/* Menu panel sliding down from under the bar */}
+          <div className="absolute top-16 left-0 right-0 z-50 bg-cream/95 backdrop-blur-xl border-b border-line shadow-lg transform transition-all duration-200 ease-out animate-in fade-in slide-in-from-top-2 motion-reduce:transform-none motion-reduce:transition-none">
+            <div className="container-page py-6 space-y-5">
+              <nav className="flex flex-col space-y-1" aria-label="Mobile navigation">
+                {NAV_ITEMS.map((item) => {
+                  const isActive = activeSection === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => scrollToSection(item.id)}
+                      aria-current={isActive ? 'location' : undefined}
+                      className={`w-full text-left py-3 px-3.5 rounded-xl text-base font-medium transition-colors cursor-pointer active:scale-[0.99] ${
+                        isActive
+                          ? 'bg-brand-soft text-brand font-semibold'
+                          : 'text-ink-body active:bg-cream-hover'
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  );
+                })}
+              </nav>
+
+              <div className="pt-4 border-t border-line flex flex-col gap-3">
+                {isAuthenticated ? (
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      navigate('/dashboard');
+                    }}
+                    className="btn-shine-sweep w-full py-3 rounded-xl bg-brand hover-fine:bg-brand-dark text-white text-sm font-semibold shadow-sm shadow-brand/25 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98] transition-all"
+                  >
+                    <span>Go to Dashboard</span>
+                    <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+                  </button>
+                ) : (
+                  <>
+                    <Link
+                      to="/login"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="w-full text-center py-3 rounded-xl border border-line bg-card/70 text-sm font-semibold text-ink active:bg-cream-hover active:scale-[0.98] transition-all"
+                    >
+                      Sign In
+                    </Link>
+                    <Link
+                      to="/register"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="btn-shine-sweep w-full text-center py-3 rounded-xl bg-brand hover-fine:bg-brand-dark text-white text-sm font-semibold shadow-sm shadow-brand/25 flex items-center justify-center gap-2 active:scale-[0.98] transition-all"
+                    >
+                      <span>Get Started Free</span>
+                      <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+                    </Link>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
-        </div>
+        </>
       )}
     </header>
   );

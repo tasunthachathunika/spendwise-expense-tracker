@@ -31,6 +31,7 @@ import ExportPdfDialog from '../components/ExportPdfDialog';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import toast from 'react-hot-toast';
 import useDocumentTitle from '../hooks/useDocumentTitle';
+import { useScrollLock } from '../hooks/useScrollLock';
 import { useAuth } from '../context/AuthContext';
 
 const ALL_CATEGORIES = Array.from(new Set([...EXPENSE_CATEGORIES, ...INCOME_CATEGORIES]));
@@ -84,6 +85,8 @@ const Transactions = () => {
   const [deleteTargetId, setDeleteTargetId] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const { user } = useAuth();
+
+  useScrollLock(isModalOpen || Boolean(deleteTargetId) || isBulkModalOpen || isPdfDialogOpen);
 
   // Date Preset Tracking
   const [activeDatePreset, setActiveDatePreset] = useState('');
