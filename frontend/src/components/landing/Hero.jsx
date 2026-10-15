@@ -27,12 +27,12 @@ const Hero = () => {
         decoding="async"
         width="2560"
         height="1440"
-        className="absolute inset-0 w-full h-full object-cover object-[65%_center] md:object-[70%_center] lg:object-[78%_center] pointer-events-none select-none z-0 contrast-105 saturate-110 brightness-100 dark:brightness-90 transition-all duration-300"
+        className="absolute inset-0 w-full h-full object-cover object-[65%_center] md:object-[70%_center] lg:object-[78%_center] pointer-events-none select-none z-0"
       />
 
       {/* ─── Single Theme-Token Gradient Overlay (Crisp Right Side) ── */}
       <div
-        className="absolute inset-0 pointer-events-none z-10 bg-gradient-to-b from-cream via-cream/90 via-40% to-transparent to-75% md:bg-gradient-to-r md:from-cream md:via-cream/85 md:via-35% md:to-transparent md:to-60% lg:via-cream/80 lg:via-30% lg:to-52%"
+        className="absolute inset-0 pointer-events-none z-10 bg-gradient-to-b from-cream via-cream/90 via-40% to-transparent to-75% md:bg-gradient-to-r md:from-cream md:via-cream/80 md:via-30% md:to-transparent md:to-58% lg:to-50%"
         aria-hidden="true"
       />
 
@@ -100,25 +100,19 @@ const Hero = () => {
           {/* 5. Trust Row (Constrained to text column, wraps cleanly, left 55% on desktop) */}
           <div className="mt-10 pt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-ink-soft max-w-2xl">
             <div className="flex items-center gap-2 flex-shrink-0">
-              <ShieldCheck className="w-4 h-4 text-brand" />
+              <ShieldCheck className="w-4 h-4 text-brand flex-shrink-0" />
               <span>Secure JWT authentication</span>
             </div>
 
-            <span className="hidden xl:inline-block text-line" aria-hidden="true">
-              |
-            </span>
-
             <div className="flex items-center gap-2 flex-shrink-0">
-              <Lock className="w-4 h-4 text-brand" />
+              <span className="hidden sm:inline-block w-1 h-1 rounded-full bg-ink-soft/40 flex-shrink-0 mr-1" aria-hidden="true" />
+              <Lock className="w-4 h-4 text-brand flex-shrink-0" />
               <span>Passwords hashed with bcrypt</span>
             </div>
 
-            <span className="hidden xl:inline-block text-line" aria-hidden="true">
-              |
-            </span>
-
             <div className="flex items-center gap-2 flex-shrink-0">
-              <Zap className="w-4 h-4 text-brand" />
+              <span className="hidden sm:inline-block w-1 h-1 rounded-full bg-ink-soft/40 flex-shrink-0 mr-1" aria-hidden="true" />
+              <Zap className="w-4 h-4 text-brand flex-shrink-0" />
               <span>Real-time LKR (Rs.) tracking</span>
             </div>
           </div>

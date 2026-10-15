@@ -47,8 +47,14 @@ const Dashboard = () => {
     monthlyIncome: 0,
     monthlyExpenses: 0,
     budgetAmount: 0,
+    budgetSpent: 0,
     budgetRemaining: 0,
     budgetUsagePercent: 0,
+    budgetDaysRemaining: 0,
+    budgetPeriodLabel: null,
+    budgetPeriodType: null,
+    budgetNote: null,
+    budgetId: null,
     daysRemaining: 0,
   });
 
@@ -85,8 +91,14 @@ const Dashboard = () => {
             monthlyIncome: Number(d.summary.monthlyIncome) || 0,
             monthlyExpenses: Number(d.summary.monthlyExpenses) || 0,
             budgetAmount: Number(d.summary.budgetAmount) || 0,
+            budgetSpent: Number(d.summary.budgetSpent) || 0,
             budgetRemaining: Number(d.summary.budgetRemaining) || 0,
             budgetUsagePercent: Number(d.summary.budgetUsagePercent) || 0,
+            budgetDaysRemaining: d.summary.budgetDaysRemaining !== undefined ? d.summary.budgetDaysRemaining : daysLeft,
+            budgetPeriodLabel: d.summary.budgetPeriodLabel || null,
+            budgetPeriodType: d.summary.budgetPeriodType || null,
+            budgetNote: d.summary.budgetNote || null,
+            budgetId: d.summary.budgetId || null,
             daysRemaining: daysLeft,
           });
         }
@@ -162,8 +174,13 @@ const Dashboard = () => {
 
   const handleSaveBudget = async (budgetData) => {
     try {
-      await api.post('/budgets', budgetData);
-      toast.success('Budget saved successfully!');
+      if (budgetData._id && budgetData.periodType === 'custom') {
+        await api.put(`/budgets/${budgetData._id}`, budgetData);
+        toast.success('Budget updated successfully!');
+      } else {
+        await api.post('/budgets', budgetData);
+        toast.success('Budget saved successfully!');
+      }
       setIsBudgetModalOpen(false);
       fetchDashboardData();
     } catch (err) {
@@ -182,7 +199,7 @@ const Dashboard = () => {
       {/* Top Header / Bar */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-line pb-6">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-ink tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-ink tracking-tight font-serif">
             Financial Overview
           </h1>
           <p className="text-sm text-ink-soft mt-1">
@@ -218,12 +235,12 @@ const Dashboard = () => {
           <button
             onClick={fetchDashboardData}
             title="Refresh metrics"
-            className="p-2.5 bg-bg-card border border-line hover:border-line-light rounded-xl text-ink-soft hover:text-ink transition"
+            className="p-2.5 bg-bg-card border border-line hover:border-line-light rounded-xl text-ink-soft hover:text-ink transition cursor-pointer"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-brand' : ''}`} />
           </button>
 
-          {/* Primary CTA Button (Emerald #10b981 with Dark Contrast Text #06251b) */}
+          {/* Primary CTA Button */}
           <button
             onClick={() => {
               setEditingTransaction(null);
@@ -277,23 +294,32 @@ const Dashboard = () => {
             subtitle={summary.balance >= 0 ? "Positive liquidity" : "Expenses exceed income"}
           />
 
-          {/* Monthly Budget Target */}
+          {/* Budget Target (Monthly or Active Custom) */}
           <StatCard
             type="budget"
-            label="Monthly Budget"
+            label={summary.budgetPeriodType === 'custom' ? "Active Budget" : "Monthly Budget"}
             amount={summary.budgetAmount}
             badgeText={summary.budgetAmount > 0 ? `${summary.budgetUsagePercent}% used` : "Not Set"}
             badgePositive={summary.budgetRemaining >= 0}
-            subtitle={summary.budgetAmount > 0 ? `Remaining: ${formatCurrency(summary.budgetRemaining)}` : "No limit set"}
+            subtitle={
+              summary.budgetAmount > 0
+                ? summary.budgetPeriodLabel
+                  ? `${summary.budgetPeriodLabel} · Rem: ${formatCurrency(summary.budgetRemaining)}`
+                  : `Remaining: ${formatCurrency(summary.budgetRemaining)}`
+                : "No limit set"
+            }
           />
         </div>
       )}
 
-      {/* Budget Progress & Threshold Indicator (State Rules: 0-70% Emerald, 70-90% Amber, 90%+ Rose) */}
+      {/* Budget Progress & Threshold Indicator */}
       <BudgetProgress
         budgetAmount={summary.budgetAmount}
-        spentAmount={summary.monthlyExpenses}
-        daysRemaining={summary.daysRemaining}
+        spentAmount={summary.budgetSpent !== undefined ? summary.budgetSpent : summary.monthlyExpenses}
+        daysRemaining={summary.budgetDaysRemaining !== undefined ? summary.budgetDaysRemaining : summary.daysRemaining}
+        periodLabel={summary.budgetPeriodLabel}
+        periodType={summary.budgetPeriodType}
+        periodNote={summary.budgetNote}
         onSetBudget={() => setIsBudgetModalOpen(true)}
       />
 
@@ -351,11 +377,17 @@ const Dashboard = () => {
         isOpen={isBudgetModalOpen}
         onClose={() => setIsBudgetModalOpen(false)}
         onSave={handleSaveBudget}
-        budget={{
-          month: selectedPeriod.month,
-          year: selectedPeriod.year,
-          amount: summary.budgetAmount,
-        }}
+        budget={
+          summary.budgetId
+            ? {
+                _id: summary.budgetId,
+                amount: summary.budgetAmount,
+                periodType: summary.budgetPeriodType,
+                month: selectedPeriod.month,
+                year: selectedPeriod.year,
+              }
+            : null
+        }
         initialMonth={selectedPeriod.month}
         initialYear={selectedPeriod.year}
       />

@@ -6,10 +6,11 @@ import {
   AlertTriangle, 
   CheckCircle2, 
   Calendar,
-  DollarSign
+  Clock,
+  Edit2
 } from 'lucide-react';
 import api from '../utils/api';
-import { formatCurrency, monthName } from '../utils/helpers';
+import { formatCurrency, formatLKR, monthName, getBudgetStatus } from '../utils/helpers';
 import BudgetModal from '../components/BudgetModal';
 import toast from 'react-hot-toast';
 import useDocumentTitle from '../hooks/useDocumentTitle';
@@ -18,7 +19,6 @@ import ConfirmDialog from '../components/common/ConfirmDialog';
 const Budgets = () => {
   useDocumentTitle('Budgets');
   const [budgets, setBudgets] = useState([]);
-  const [expensesByMonth, setExpensesByMonth] = useState({});
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedBudget, setSelectedBudget] = useState(null);
@@ -29,28 +29,12 @@ const Budgets = () => {
   const currentMonth = currentDate.getMonth() + 1;
   const currentYear = currentDate.getFullYear();
 
-  const fetchBudgetsAndExpenses = async () => {
+  const fetchBudgets = async () => {
     try {
       setLoading(true);
-      const [budgetsRes, summaryRes] = await Promise.all([
-        api.get('/budgets'),
-        api.get('/dashboard/summary'),
-      ]);
-
-      if (budgetsRes.data.success) {
-        setBudgets(budgetsRes.data.budgets);
-      }
-
-      // We can also fetch all transactions or calculate expenses per month
-      const txRes = await api.get('/transactions?limit=500&type=Expense');
-      if (txRes.data.success) {
-        const expenseMap = {};
-        txRes.data.transactions.forEach((tx) => {
-          const d = new Date(tx.date);
-          const key = `${d.getFullYear()}-${d.getMonth() + 1}`;
-          expenseMap[key] = (expenseMap[key] || 0) + tx.amount;
-        });
-        setExpensesByMonth(expenseMap);
+      const res = await api.get('/budgets');
+      if (res.data?.success) {
+        setBudgets(res.data.budgets || []);
       }
     } catch (err) {
       toast.error('Failed to load budgets');
@@ -60,14 +44,19 @@ const Budgets = () => {
   };
 
   useEffect(() => {
-    fetchBudgetsAndExpenses();
+    fetchBudgets();
   }, []);
 
   const handleSaveBudget = async (budgetData) => {
     try {
-      await api.post('/budgets', budgetData);
-      toast.success('Budget saved successfully!');
-      fetchBudgetsAndExpenses();
+      if (budgetData._id && budgetData.periodType === 'custom') {
+        await api.put(`/budgets/${budgetData._id}`, budgetData);
+        toast.success('Custom budget updated successfully!');
+      } else {
+        await api.post('/budgets', budgetData);
+        toast.success('Budget saved successfully!');
+      }
+      fetchBudgets();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to save budget');
       throw err;
@@ -85,7 +74,8 @@ const Budgets = () => {
       await api.delete(`/budgets/${deleteTargetId}`);
       toast.success('Budget deleted successfully');
       setDeleteTargetId(null);
-      fetchBudgetsAndExpenses();
+      setIsModalOpen(false);
+      fetchBudgets();
     } catch (err) {
       toast.error('Failed to delete budget');
     } finally {
@@ -107,8 +97,8 @@ const Budgets = () => {
     <div>
       <div className="page-header">
         <div>
-          <h2 className="page-title">Monthly Budgets</h2>
-          <p className="page-subtitle">Track and limit spending limits per month</p>
+          <h2 className="page-title">Budgets</h2>
+          <p className="page-subtitle">Track and limit spending limits per monthly or custom period</p>
         </div>
         <button className="btn btn-primary" onClick={openCreateModal}>
           <Plus size={16} />
@@ -129,7 +119,7 @@ const Budgets = () => {
             </div>
             <h4 className="empty-state-title">No budgets established yet</h4>
             <p className="empty-state-text">
-              Establish a monthly budget threshold to keep your expenses organized and avoid overspending.
+              Establish a monthly or custom cycle budget threshold to keep your expenses organized and avoid overspending.
             </p>
             <button className="btn btn-primary mt-2" onClick={openCreateModal}>
               <Plus size={16} />
@@ -140,11 +130,31 @@ const Budgets = () => {
       ) : (
         <div className="budget-grid">
           {budgets.map((b) => {
-            const key = `${b.year}-${b.month}`;
-            const spent = expensesByMonth[key] || 0;
-            const percent = b.amount > 0 ? Math.round((spent / b.amount) * 100) : 0;
-            const isExceeded = spent > b.amount;
-            const isCurrent = b.month === currentMonth && b.year === currentYear;
+            const spent = b.spent || 0;
+            const remaining = b.remaining !== undefined ? b.remaining : b.amount - spent;
+            const percent = b.percent !== undefined ? b.percent : (b.amount > 0 ? Math.round((spent / b.amount) * 100) : 0);
+            const isCustom = b.periodType === 'custom';
+            const isCurrent = b.isCurrent !== undefined
+              ? b.isCurrent
+              : (!isCustom && b.month === currentMonth && b.year === currentYear);
+
+            const status = getBudgetStatus(spent, b.amount) || {
+              statusText: 'On track (0%)',
+              barColor: 'bg-income',
+              textColor: 'text-income',
+              badgeClass: 'bg-income/10 text-income border-income/30',
+              isOverBudget: false,
+            };
+
+            // Days status label
+            let daysLabel = null;
+            if (b.daysElapsed === 0 && b.daysLeft > 0) {
+              daysLabel = `Starts in ${b.daysLeft}d`;
+            } else if (b.daysLeft === 0) {
+              daysLabel = 'Ended';
+            } else if (b.daysLeft > 0) {
+              daysLabel = `${b.daysLeft} days left`;
+            }
 
             return (
               <div 
@@ -153,16 +163,26 @@ const Budgets = () => {
               >
                 <div className="budget-card-header">
                   <div>
-                    <div className="flex items-center gap-2">
-                      <span className="budget-month-label">
-                        {monthName(b.month)} {b.year}
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="budget-month-label font-serif font-bold text-ink text-base">
+                        {isCustom ? b.label : (b.label || `${monthName(b.month)} ${b.year}`)}
                       </span>
+                      {isCustom && (
+                        <span className="text-xs bg-info/10 text-info border border-info/20 font-bold px-2 py-0.5 rounded-full">
+                          Custom
+                        </span>
+                      )}
                       {isCurrent && (
                         <span className="text-xs bg-brand-soft text-brand font-bold px-2 py-0.5 rounded-full">
                           Current
                         </span>
                       )}
                     </div>
+                    {daysLabel && (
+                      <span className="text-xs text-ink-soft block mt-1">
+                        {daysLabel}
+                      </span>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-1">
@@ -170,59 +190,47 @@ const Budgets = () => {
                       className="btn btn-icon delete"
                       onClick={() => requestDeleteBudget(b._id)}
                       title="Delete Budget"
+                      aria-label={`Delete ${b.label || 'budget'}`}
                     >
                       <Trash2 size={14} />
                     </button>
                   </div>
                 </div>
 
-                {/* Warning badge if exceeded */}
-                {isExceeded ? (
-                  <div className="budget-exceeded-badge mb-3">
-                    <AlertTriangle size={14} />
-                    <span>Budget Exceeded</span>
-                  </div>
-                ) : percent >= 90 ? (
-                  <div className="budget-exceeded-badge mb-3">
-                    <AlertTriangle size={14} />
-                    <span>Critical Limit ({percent}%)</span>
-                  </div>
-                ) : percent >= 70 ? (
-                  <div className="inline-flex items-center gap-1 text-xs text-warn font-semibold mb-3">
-                    <AlertTriangle size={14} />
-                    <span>Nearing Limit ({percent}%)</span>
-                  </div>
-                ) : (
-                  <div className="inline-flex items-center gap-1 text-xs text-income font-semibold mb-3">
-                    <CheckCircle2 size={14} />
-                    <span>On Track ({percent}%)</span>
-                  </div>
-                )}
+                {/* 3-Tier Threshold Status Badge */}
+                <div className={`inline-flex items-center gap-1.5 text-xs font-semibold mb-3 px-2.5 py-1 rounded-full border ${status.badgeClass}`}>
+                  {status.isOverBudget || percent >= 90 ? (
+                    <AlertTriangle size={14} className="flex-shrink-0" />
+                  ) : (
+                    <CheckCircle2 size={14} className="flex-shrink-0" />
+                  )}
+                  <span>{status.statusText}</span>
+                </div>
 
                 {/* Amount details */}
                 <div className="space-y-1 mb-4">
                   <div className="flex justify-between text-sm">
                     <span className="text-ink-soft">Target Budget:</span>
-                    <span className="font-bold text-ink">{formatCurrency(b.amount)}</span>
+                    <span className="font-bold text-ink">{formatLKR(b.amount)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-ink-soft">Total Spent:</span>
-                    <span className={`font-bold ${isExceeded || percent >= 90 ? 'text-expense' : 'text-ink-body'}`}>
-                      {formatCurrency(spent)}
+                    <span className={`font-bold ${status.textColor}`}>
+                      {formatLKR(spent)}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-ink-soft">Remaining:</span>
-                    <span className={`font-bold ${isExceeded ? 'text-expense' : 'text-income'}`}>
-                      {formatCurrency(b.amount - spent)}
+                    <span className={`font-bold ${status.isOverBudget ? 'text-expense' : 'text-income'}`}>
+                      {formatLKR(remaining)}
                     </span>
                   </div>
                 </div>
 
-                {/* Progress bar */}
+                {/* Progress bar with theme tokens */}
                 <div className="progress-bar-track">
                   <div
-                    className={`progress-bar-fill ${isExceeded || percent >= 90 ? 'exceeded' : percent >= 70 ? 'warning' : 'safe'}`}
+                    className={`h-full rounded-full transition-all duration-500 ${status.barColor}`}
                     style={{ width: `${Math.min(percent, 100)}%` }}
                   />
                 </div>
@@ -230,10 +238,11 @@ const Budgets = () => {
                 <div className="flex justify-between items-center mt-3 pt-3 border-t border-line">
                   <span className="text-xs text-ink-soft">Usage: {percent}%</span>
                   <button
-                    className="btn btn-sm btn-secondary text-xs"
+                    className="btn btn-sm btn-secondary text-xs flex items-center gap-1"
                     onClick={() => openEditModal(b)}
                   >
-                    Adjust Budget
+                    <Edit2 size={12} />
+                    <span>Adjust Budget</span>
                   </button>
                 </div>
               </div>
@@ -242,11 +251,12 @@ const Budgets = () => {
         </div>
       )}
 
-      {/* Set/Edit Budget Modal */}
+      {/* Set / Adjust Budget Modal */}
       <BudgetModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSave={handleSaveBudget}
+        onDelete={requestDeleteBudget}
         budget={selectedBudget}
         initialMonth={currentMonth}
         initialYear={currentYear}
@@ -255,8 +265,8 @@ const Budgets = () => {
       {/* Accessible Confirm Delete Dialog */}
       <ConfirmDialog
         isOpen={!!deleteTargetId}
-        title="Delete Monthly Budget"
-        message="Are you sure you want to delete this monthly budget threshold? You can establish a new one at any time."
+        title="Delete Budget Threshold"
+        message="Are you sure you want to delete this budget limit? You can establish a new calendar-month or custom period budget at any time."
         confirmText="Delete Budget"
         isDestructive={true}
         isLoading={isDeleting}

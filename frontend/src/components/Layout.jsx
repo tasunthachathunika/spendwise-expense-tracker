@@ -3,6 +3,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
 import { useAuth } from '../context/AuthContext';
+import { useCurrency } from '../utils/helpers';
 
 const getHeaderInfo = (pathname, userName) => {
   switch (pathname) {
@@ -44,6 +45,7 @@ const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
   const { user } = useAuth();
+  const { currency } = useCurrency();
 
   const { title, subtitle } = getHeaderInfo(location.pathname, user?.name);
 
@@ -58,7 +60,9 @@ const Layout = () => {
             <span className="font-medium text-ink-soft">SpendWise v1.0</span>
           </div>
           <div className="hidden sm:flex items-center gap-4 text-ink-muted">
-            <span>Currency: <strong className="text-ink">LKR (Rs.)</strong></span>
+            <span>
+              Currency: <strong className="text-ink">{currency === 'USD' ? 'USD ($)' : 'LKR (Rs.)'}</strong>
+            </span>
             <span>•</span>
             <span>October 2026</span>
           </div>

@@ -271,7 +271,13 @@ const Sidebar = ({ isOpen, onClose }) => {
       if (res.data?.success && res.data?.summary) {
         setBudgetData({
           budgetAmount: Number(res.data.summary.budgetAmount) || 0,
-          monthlyExpenses: Number(res.data.summary.monthlyExpenses) || 0,
+          monthlyExpenses: Number(
+            res.data.summary.budgetSpent !== undefined
+              ? res.data.summary.budgetSpent
+              : res.data.summary.monthlyExpenses
+          ) || 0,
+          periodLabel: res.data.summary.budgetPeriodLabel || null,
+          periodType: res.data.summary.budgetPeriodType || null,
         });
         setBudgetError(false);
       }
@@ -581,8 +587,11 @@ const Sidebar = ({ isOpen, onClose }) => {
                   className="block bg-card border border-line hover:border-line-light rounded-xl p-3 shadow-xs hover:shadow-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 group/bcard"
                 >
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs text-ink-soft group-hover/bcard:text-ink transition-colors">
-                      This month
+                    <span
+                      className="text-xs text-ink-soft group-hover/bcard:text-ink transition-colors truncate max-w-[120px]"
+                      title={budgetData.periodLabel || 'This month'}
+                    >
+                      {budgetData.periodLabel || 'This month'}
                     </span>
                     <span className={`text-[11px] font-semibold ${budgetStatus.textColor}`}>
                       {budgetStatus.statusText} ({budgetStatus.percent}%)
@@ -630,7 +639,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                     className="absolute left-full ml-3 top-1/2 -translate-y-1/2 z-50 whitespace-nowrap bg-ink text-cream text-xs font-medium px-2 py-1 rounded-md shadow-lg opacity-0 pointer-events-none group-hover/bicon:opacity-100 group-focus-within/bicon:opacity-100 transition-opacity duration-150 delay-150"
                   >
                     Budget: {formatLKR(budgetData.monthlyExpenses)} of{' '}
-                    {formatLKR(budgetData.budgetAmount)} ({budgetStatus.statusText})
+                    {formatLKR(budgetData.budgetAmount)} ({budgetStatus.statusText}) · {budgetData.periodLabel || 'This month'}
                   </div>
                 </div>
               )

@@ -58,7 +58,9 @@ export default {
         110: "1.1",
       },
       gradientColorStopPositions: {
+        "50%": "50%",
         "52%": "52%",
+        "58%": "58%",
       },
     },
   },

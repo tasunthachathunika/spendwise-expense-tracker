@@ -10,6 +10,7 @@ import {
   DollarSign,
   Receipt,
   ShieldCheck,
+  Target,
   Sun,
   Moon,
   LogOut,
@@ -20,7 +21,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import { formatDate, getInitials } from '../utils/helpers';
+import { formatDate, getInitials, formatLKR, useCurrency } from '../utils/helpers';
 import api from '../utils/api';
 import toast from 'react-hot-toast';
 
@@ -92,12 +93,14 @@ const getPasswordStrength = (pwd) => {
 const ProfileContent = () => {
   const { user, logout, updateUser } = useAuth();
   const { theme, setTheme, isDark } = useTheme();
+  const { currency, setCurrency } = useCurrency();
   const navigate = useNavigate();
 
   // State
   const [profileLoading, setProfileLoading] = useState(true);
   const [profileError, setProfileError] = useState(null);
   const [txCount, setTxCount] = useState(null);
+  const [activeBudget, setActiveBudget] = useState(null);
 
   // Personal Info Form
   const [name, setName] = useState('');
@@ -140,6 +143,18 @@ const ProfileContent = () => {
         }
       } catch (txErr) {
         // Non-fatal, keep txCount as null
+      }
+
+      // 3. Fetch active budget (monthly or custom period)
+      try {
+        const budgetRes = await api.get('/budgets/current');
+        if (budgetRes.data?.success && budgetRes.data?.budget) {
+          setActiveBudget(budgetRes.data.budget);
+        } else {
+          setActiveBudget(null);
+        }
+      } catch (bErr) {
+        // Non-fatal, keep activeBudget as null
       }
     } catch (err) {
       console.error('Failed to load profile details:', err);
@@ -353,7 +368,9 @@ const ProfileContent = () => {
                   <DollarSign className="w-3.5 h-3.5 text-income" />
                   Primary Currency
                 </span>
-                <span className="font-semibold text-ink">LKR (Rs.)</span>
+                <span className="font-semibold text-ink">
+                  {currency === 'USD' ? 'USD ($)' : 'LKR (Rs.)'}
+                </span>
               </div>
 
               {txCount !== null && (
@@ -365,6 +382,16 @@ const ProfileContent = () => {
                   <span className="font-semibold text-ink">{txCount.toLocaleString()}</span>
                 </div>
               )}
+
+              <div className="flex items-center justify-between text-xs py-1">
+                <span className="text-ink-soft flex items-center gap-1.5">
+                  <Target className="w-3.5 h-3.5 text-brand" />
+                  Active Budget
+                </span>
+                <span className="font-semibold text-ink truncate max-w-[150px] text-right" title={activeBudget ? `${activeBudget.label}: ${formatLKR(activeBudget.amount)}` : 'No budget set'}>
+                  {activeBudget ? activeBudget.label : 'None'}
+                </span>
+              </div>
 
               <div className="flex items-center justify-between text-xs py-1">
                 <span className="text-ink-soft flex items-center gap-1.5">
@@ -390,6 +417,72 @@ const ProfileContent = () => {
 
         {/* ─── RIGHT COLUMN: Stacked Settings Cards ───────────────────────── */}
         <div className="lg:col-span-2 space-y-6">
+          {/* Settings Preview Panel: Active Budget / This Month at a Glance */}
+          <section className="bg-card border border-line rounded-2xl p-6 shadow-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+              <div>
+                <h3 className="font-serif text-lg sm:text-xl font-bold text-ink">
+                  {activeBudget?.periodType === 'custom' ? 'Active budget at a glance' : 'This month at a glance'}
+                </h3>
+                <p className="text-sm text-ink-soft mt-0.5">
+                  {activeBudget
+                    ? `Current active budget threshold for ${activeBudget.label}`
+                    : 'Track your current spending cycle against your limit.'}
+                </p>
+              </div>
+              {activeBudget?.periodType === 'custom' && (
+                <span className="self-start sm:self-auto text-xs bg-info/10 text-info border border-info/20 font-bold px-2.5 py-0.5 rounded-full">
+                  Custom Period
+                </span>
+              )}
+            </div>
+
+            {activeBudget ? (
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3.5 bg-cream-band border border-line rounded-xl text-xs">
+                  <div>
+                    <span className="text-ink-soft block font-medium">Period</span>
+                    <span className="font-bold text-ink text-sm">{activeBudget.label}</span>
+                  </div>
+                  <div>
+                    <span className="text-ink-soft block font-medium">Budget Limit</span>
+                    <span className="font-bold text-ink text-sm">{formatLKR(activeBudget.amount)}</span>
+                  </div>
+                  <div>
+                    <span className="text-ink-soft block font-medium">Spent to Date</span>
+                    <span className="font-bold text-expense text-sm">{formatLKR(activeBudget.spent)}</span>
+                  </div>
+                  <div>
+                    <span className="text-ink-soft block font-medium">Remaining</span>
+                    <span className={`font-bold text-sm ${activeBudget.remaining < 0 ? 'text-expense' : 'text-income'}`}>
+                      {formatLKR(activeBudget.remaining)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="w-full bg-cream-band h-2 rounded-full overflow-hidden border border-line">
+                  <div
+                    className={`h-full rounded-full transition-all duration-500 ${
+                      activeBudget.percent >= 90 ? 'bg-expense' : activeBudget.percent >= 70 ? 'bg-warn' : 'bg-brand'
+                    }`}
+                    style={{ width: `${Math.min(activeBudget.percent, 100)}%` }}
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="p-4 rounded-xl bg-cream-band border border-line flex items-center justify-between">
+                <span className="text-xs text-ink-soft">No active budget set for current period.</span>
+                <button
+                  type="button"
+                  onClick={() => navigate('/budgets')}
+                  className="text-xs font-semibold text-brand hover:text-brand-dark transition cursor-pointer"
+                >
+                  Set budget &rarr;
+                </button>
+              </div>
+            )}
+          </section>
+
           {/* Card 1: Personal Information */}
           <section className="bg-card border border-line rounded-2xl p-6 shadow-xs">
             <div className="mb-5">
@@ -684,15 +777,47 @@ const ProfileContent = () => {
                 </div>
               </div>
 
-              {/* Currency Display */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4">
+              {/* Currency Preference Selector */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t border-line/60">
                 <div>
                   <span className="text-sm font-semibold text-ink block">Base Currency</span>
-                  <span className="text-xs text-ink-soft">All transaction values and metrics are evaluated in LKR.</span>
+                  <span className="text-xs text-ink-soft">
+                    All transaction values and metrics are evaluated in {currency === 'USD' ? 'US Dollar • USD ($)' : 'Sri Lankan Rupee • LKR (Rs.)'}.
+                  </span>
                 </div>
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-cream-band border border-line text-xs font-semibold text-ink select-none">
-                  <span className="w-2 h-2 rounded-full bg-income" />
-                  <span>Sri Lankan Rupee • LKR (Rs.)</span>
+                <div className="flex items-center gap-1.5 p-1 rounded-xl bg-cream-band border border-line w-fit">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCurrency('LKR');
+                      toast.success('Base currency set to Sri Lankan Rupee • LKR (Rs.)');
+                    }}
+                    aria-pressed={currency === 'LKR'}
+                    className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
+                      currency === 'LKR'
+                        ? 'bg-card text-ink shadow-xs border border-line'
+                        : 'text-ink-soft hover:text-ink'
+                    }`}
+                  >
+                    <span className={`w-2 h-2 rounded-full ${currency === 'LKR' ? 'bg-income' : 'bg-ink-soft/40'}`} />
+                    <span>LKR (Rs.)</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCurrency('USD');
+                      toast.success('Base currency set to US Dollar • USD ($)');
+                    }}
+                    aria-pressed={currency === 'USD'}
+                    className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
+                      currency === 'USD'
+                        ? 'bg-card text-ink shadow-xs border border-line'
+                        : 'text-ink-soft hover:text-ink'
+                    }`}
+                  >
+                    <span className={`w-2 h-2 rounded-full ${currency === 'USD' ? 'bg-income' : 'bg-ink-soft/40'}`} />
+                    <span>USD ($)</span>
+                  </button>
                 </div>
               </div>
             </div>

@@ -48,12 +48,15 @@
   - Accessible modal dialogs with auto-focus management and double-submission protection.
   - Categorized using modern Lucide icons (zero emojis) across 15+ standard life categories.
 
-- **Monthly Budget Discipline:**
-  - Set custom target budget amounts per month and year.
-  - Automatic progress indicators with percentage calculations and color-coded status badges:
-    - **Safe** (green, < 75%)
-    - **Approaching Limit** (amber, 75% – 99%)
-    - **Over Budget Warning** (red, >= 100%)
+- **Monthly & Custom Period Budget Discipline:**
+  - Support for traditional **Calendar Month** budgets (1st to end-of-month) and **Custom Period** budgets (e.g. 15 Oct to 14 Nov) for users whose income cycle does not align with the 1st.
+  - Interactive Budget Modal with segmented tab navigation, quick presets ("Salary day" 1–31, "Next 30 days", "This month", "Next month"), and live per-day expenditure estimation.
+  - Strict server-side overlap prevention: forbids overlapping budget intervals while permitting adjacent boundaries, returning informative HTTP 409 conflict notifications.
+  - Automatic progress indicators with percentage calculations and 3-tier threshold warning states:
+    - **Safe** (green, < 70%)
+    - **Approaching Limit / Warning** (amber, 70% – 89%)
+    - **Critical / Over Budget Alert** (red, >= 90% or spent > budget)
+  - Single-pipeline MongoDB `$facet` aggregation computing spent, remaining balance, and days remaining on the server.
   - Accessible custom confirmation dialog (`role="alertdialog"`) for destructive budget deletions.
 
 - **Financial Analytics & Trends:**
@@ -289,10 +292,29 @@ SpendWise provides two enterprise-grade export mechanisms accessible from the **
 ### Budgets (`/api/budgets`)
 | Method | Path | Auth | Description |
 |---|---|---|---|
-| `GET` | `/api/budgets` | Bearer | Retrieve all monthly budgets for authenticated user |
-| `GET` | `/api/budgets/:year/:month` | Bearer | Retrieve budget for specific year and month |
-| `POST` | `/api/budgets` | Bearer | Create or update budget for month/year (upsert) |
-| `DELETE` | `/api/budgets/:id` | Bearer | Delete budget by ID (scoped to authenticated user) |
+| `GET` | `/api/budgets` | Bearer | Retrieve all budgets (calendar-month & custom) for authenticated user with server-side aggregated `spent`, `remaining`, `percent`, `label`, and `daysLeft`. Sorted newest first. |
+| `GET` | `/api/budgets/current` | Bearer | Retrieve the active budget covering today (custom or calendar-month) or `null` if none active. |
+| `GET` | `/api/budgets/:year/:month` | Bearer | Retrieve calendar-month budget for specific year and month |
+| `POST` | `/api/budgets` | Bearer | Create or update budget. Supports calendar-month (`{ month, year, amount }`) and custom period (`{ periodType: "custom", startDate: "YYYY-MM-DD", endDate: "YYYY-MM-DD", amount }`). Enforces overlap prevention (HTTP 409). |
+| `PUT` | `/api/budgets/:id` | Bearer | Update existing budget amount or custom dates with user ownership verification and overlap validation. |
+| `DELETE` | `/api/budgets/:id` | Bearer | Delete budget by ID (scoped strictly to authenticated user) |
+
+### 🗓️ Custom Period Budget Architecture
+SpendWise allows users whose salary or cash-flow cycle does not begin on the 1st of the month (e.g. salary received on the 15th) to define flexible custom periods:
+1. **Date-Only Convention**:
+   - Dates are stored as Date objects at UTC midnight (`00:00:00.000Z`) representing the user's calendar date without time of day.
+   - Transactions are compared inclusively using `transaction.date >= startDate && transaction.date < endDate + 1 day`.
+   - Frontend components send and receive dates strictly in `YYYY-MM-DD` format and format display strings using UTC getters (`timeZone: 'UTC'`), eliminating off-by-one day bugs across varying timezones (e.g. Sri Lanka UTC+5:30 vs. US Pacific UTC-8).
+2. **Overlap Rule**:
+   - A user cannot maintain two budgets whose date periods intersect.
+   - Attempting to establish or update an overlapping budget returns an informative **HTTP 409 Conflict** response (`"This period overlaps your existing budget (15 Oct to 14 Nov 2026). Edit or delete that budget first."`). Adjacent periods (e.g. ending on 14 Nov and starting on 15 Nov) are fully permitted.
+3. **One-Off Idempotent Migration Script**:
+   - To backfill legacy budget documents lacking `periodType`, `startDate`, or `endDate`, run:
+     ```bash
+     npm run migrate:budgets
+     ```
+   - This script backfills fields from existing `month` and `year` values and safely upgrades MongoDB unique index `userId_1_month_1_year_1` to a partial unique index (`partialFilterExpression: { periodType: 'month' }`), while remaining 100% idempotent if executed repeatedly.
+   - Backend reads are also tolerant and derive dates on-the-fly, ensuring unbroken backwards compatibility even before migration execution.
 
 ### Dashboard & Analytics (`/api/dashboard`)
 | Method | Path | Auth | Description |

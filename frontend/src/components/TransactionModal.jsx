@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
-import { toInputDate, EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '../utils/helpers';
+import { toInputDate, EXPENSE_CATEGORIES, INCOME_CATEGORIES, useCurrency } from '../utils/helpers';
 import toast from 'react-hot-toast';
 
 const PAYMENT_METHODS = [
@@ -22,6 +22,7 @@ const TransactionModal = ({ isOpen, onClose, onSave, transaction = null }) => {
     paymentMethod: 'Debit Card',
   });
   const [loading, setLoading] = useState(false);
+  const { symbol } = useCurrency();
   const amountInputRef = useRef(null);
 
   useEffect(() => {
@@ -125,7 +126,9 @@ const TransactionModal = ({ isOpen, onClose, onSave, transaction = null }) => {
 
             {/* Amount */}
             <div className="form-group">
-              <label className="form-label">Amount (Rs.) *</label>
+              <label className="form-label">
+                Amount ({symbol.trim()}) *
+              </label>
               <input
                 ref={amountInputRef}
                 type="number"
