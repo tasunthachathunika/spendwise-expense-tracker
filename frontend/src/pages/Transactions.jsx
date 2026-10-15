@@ -310,6 +310,9 @@ const Transactions = () => {
       pendingDeletesRef.current.delete(txId);
       try {
         await api.delete(`/transactions/${txId}`);
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new Event('spendwise:data-changed'));
+        }
       } catch (err) {
         console.error('Failed to permanently delete transaction:', err);
         toast.error('Failed to delete transaction on server');
@@ -400,6 +403,9 @@ const Transactions = () => {
       setSelectedIds(new Set());
       setIsBulkModalOpen(false);
       fetchTransactions();
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('spendwise:data-changed'));
+      }
     } catch (err) {
       console.error('Bulk delete failed:', err);
       toast.error(err.response?.data?.message || 'Failed to bulk delete transactions');
@@ -420,6 +426,9 @@ const Transactions = () => {
       }
       setIsModalOpen(false);
       fetchTransactions();
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('spendwise:data-changed'));
+      }
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to save transaction');
       throw err;

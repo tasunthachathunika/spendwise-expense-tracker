@@ -7,6 +7,7 @@ const authRoutes = require('./routes/authRoutes');
 const transactionRoutes = require('./routes/transactionRoutes');
 const budgetRoutes = require('./routes/budgetRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
 
 const { authRateLimiter, securityHeaders } = require('./middleware/security');
 
@@ -35,6 +36,7 @@ app.use('/api/auth', authRateLimiter, authRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/budgets', budgetRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // 404 Handler for Unhandled Routes
 app.use((req, res) => {

@@ -155,6 +155,9 @@ const Dashboard = () => {
       setIsTransModalOpen(false);
       setEditingTransaction(null);
       fetchDashboardData();
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('spendwise:data-changed'));
+      }
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to save transaction');
       throw err;
@@ -167,6 +170,9 @@ const Dashboard = () => {
       await api.delete(`/transactions/${id}`);
       toast.success('Transaction deleted');
       fetchDashboardData();
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('spendwise:data-changed'));
+      }
     } catch (err) {
       toast.error('Failed to delete transaction');
     }
@@ -183,6 +189,9 @@ const Dashboard = () => {
       }
       setIsBudgetModalOpen(false);
       fetchDashboardData();
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('spendwise:data-changed'));
+      }
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to update budget');
       throw err;

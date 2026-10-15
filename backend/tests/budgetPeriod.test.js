@@ -52,7 +52,6 @@ describe('SpendWise Budget Period & Custom Period Suite', () => {
       await Transaction.deleteMany({ userId: { $in: [userA._id, userB._id] } });
       await User.deleteMany({ _id: { $in: [userA._id, userB._id] } });
     }
-    await mongoose.connection.close();
   });
 
   test('1. Custom period boundary calculation (15 Oct to 14 Nov, Rs. 150,000)', async () => {

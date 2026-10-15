@@ -212,6 +212,9 @@ const ProfileContent = () => {
         setNameSuccess('Profile name updated successfully.');
         toast.success('Profile updated!');
         setTimeout(() => setNameSuccess(''), 4000);
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new Event('spendwise:data-changed'));
+        }
       }
     } catch (err) {
       const msg = err.response?.data?.message || 'Failed to update name.';

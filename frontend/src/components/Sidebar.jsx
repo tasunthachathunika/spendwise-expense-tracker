@@ -14,6 +14,7 @@ import {
   Moon,
   LogOut,
   X,
+  Bell,
 } from 'lucide-react';
 import SpendWiseLogo from './landing/SpendWiseLogo';
 import { useAuth } from '../context/AuthContext';
@@ -768,6 +769,21 @@ const Sidebar = ({ isOpen, onClose }) => {
               >
                 <User className="w-4 h-4 text-ink-soft" />
                 <span>Profile</span>
+              </button>
+
+              {/* Notifications Menu Item */}
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  setUserMenuOpen(false);
+                  if (isOpen && isMobile) onClose();
+                  navigate('/notifications');
+                }}
+                className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium text-ink-body hover:bg-cream-hover hover:text-ink transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 text-left"
+              >
+                <Bell className="w-4 h-4 text-ink-soft" />
+                <span>Notifications</span>
               </button>
 
               {/* Appearance Theme Toggle */}

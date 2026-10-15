@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Transaction = require('../models/Transaction');
+const { triggerNotificationSync } = require('../services/notificationService');
 
 /**
  * Escapes regex special characters to prevent ReDoS / regex injection.
@@ -286,6 +287,8 @@ const bulkDeleteTransactions = async (req, res) => {
       userId: req.user._id,
     });
 
+    triggerNotificationSync(req.user._id);
+
     res.json({
       success: true,
       message: `Successfully deleted ${result.deletedCount} transaction${result.deletedCount === 1 ? '' : 's'}.`,
@@ -321,6 +324,8 @@ const createTransaction = async (req, res) => {
       paymentMethod: paymentMethod || 'Cash',
       notes: notes ? String(notes).trim().slice(0, 200) : '',
     });
+
+    triggerNotificationSync(req.user._id);
 
     res.status(201).json({ success: true, message: 'Transaction created successfully!', transaction });
   } catch (error) {
@@ -382,6 +387,8 @@ const updateTransaction = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Transaction not found.' });
     }
 
+    triggerNotificationSync(req.user._id);
+
     res.json({ success: true, message: 'Transaction updated successfully!', transaction });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -397,6 +404,8 @@ const deleteTransaction = async (req, res) => {
     if (!transaction) {
       return res.status(404).json({ success: false, message: 'Transaction not found.' });
     }
+    triggerNotificationSync(req.user._id);
+
     res.json({ success: true, message: 'Transaction deleted successfully!' });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

@@ -33,6 +33,11 @@ const getHeaderInfo = (pathname, userName) => {
         title: 'User Profile',
         subtitle: 'View your account credentials and registration details.',
       };
+    case '/notifications':
+      return {
+        title: 'Notifications',
+        subtitle: 'Budget alerts and reminders',
+      };
     default:
       return {
         title: 'SpendWise',

@@ -23,6 +23,22 @@ const userSchema = new mongoose.Schema(
       minlength: [6, 'Password must be at least 6 characters'],
       select: false,
     },
+    warnThreshold: {
+      type: Number,
+      default: 70,
+      min: [1, 'Warning threshold must be at least 1%'],
+      max: [100, 'Warning threshold cannot exceed 100%'],
+    },
+    dangerThreshold: {
+      type: Number,
+      default: 90,
+      min: [1, 'Danger threshold must be at least 1%'],
+      max: [100, 'Danger threshold cannot exceed 100%'],
+    },
+    lastNotificationSyncAt: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,

@@ -1665,6 +1665,24 @@ select:-webkit-autofill:focus {
       transform: none !important;
     }
   }
+  /* Bell Ring Animation */
+  @keyframes bellRing {
+    0%, 100% { transform: rotate(0deg); }
+    20%, 60% { transform: rotate(14deg); }
+    40%, 80% { transform: rotate(-14deg); }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .animate-bell-ring {
+      animation: bellRing 600ms ease-in-out;
+      transform-origin: top center;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .animate-bell-ring {
+      animation: none !important;
+    }
+  }
 }
 
 

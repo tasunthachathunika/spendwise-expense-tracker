@@ -57,6 +57,9 @@ const Budgets = () => {
         toast.success('Budget saved successfully!');
       }
       fetchBudgets();
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('spendwise:data-changed'));
+      }
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to save budget');
       throw err;
@@ -76,6 +79,9 @@ const Budgets = () => {
       setDeleteTargetId(null);
       setIsModalOpen(false);
       fetchBudgets();
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('spendwise:data-changed'));
+      }
     } catch (err) {
       toast.error('Failed to delete budget');
     } finally {

@@ -86,7 +86,6 @@ describe('SpendWise Delete Account & User Isolation Suite', { timeout: 90000 }, 
       await Transaction.deleteMany({ userId: { $in: ids } });
       await User.deleteMany({ _id: { $in: ids } });
     }
-    await mongoose.connection.close();
   });
 
   test('1. Rejects account deletion when password is wrong', async () => {

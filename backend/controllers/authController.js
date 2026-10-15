@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Transaction = require('../models/Transaction');
 const Budget = require('../models/Budget');
+const Notification = require('../models/Notification');
 
 // Generate JWT
 const generateToken = (id) => {
@@ -124,7 +125,7 @@ const getMe = async (req, res) => {
 // @access  Private
 const updateProfile = async (req, res) => {
   try {
-    const { name } = req.body;
+    const { name, warnThreshold, dangerThreshold } = req.body;
 
     if (!name || typeof name !== 'string' || name.trim().length < 2 || name.trim().length > 50) {
       return res.status(400).json({
@@ -139,7 +140,18 @@ const updateProfile = async (req, res) => {
     }
 
     user.name = name.trim();
+    if (typeof warnThreshold === 'number' && warnThreshold >= 1 && warnThreshold <= 100) {
+      user.warnThreshold = warnThreshold;
+    }
+    if (typeof dangerThreshold === 'number' && dangerThreshold >= 1 && dangerThreshold <= 100) {
+      user.dangerThreshold = dangerThreshold;
+    }
+
     await user.save();
+
+    try {
+      require('../services/notificationService').triggerNotificationSync(req.user._id);
+    } catch (e) {}
 
     res.json({
       success: true,
@@ -148,6 +160,8 @@ const updateProfile = async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
+        warnThreshold: user.warnThreshold,
+        dangerThreshold: user.dangerThreshold,
         createdAt: user.createdAt,
       },
     });
@@ -263,11 +277,13 @@ const deleteAccount = async (req, res) => {
       if (session) {
         await Transaction.deleteMany({ userId: req.user._id }).session(session);
         await Budget.deleteMany({ userId: req.user._id }).session(session);
+        await Notification.deleteMany({ userId: req.user._id }).session(session);
         await User.findByIdAndDelete(req.user._id).session(session);
         await session.commitTransaction();
       } else {
         await Transaction.deleteMany({ userId: req.user._id });
         await Budget.deleteMany({ userId: req.user._id });
+        await Notification.deleteMany({ userId: req.user._id });
         await User.findByIdAndDelete(req.user._id);
       }
     } catch (deleteError) {

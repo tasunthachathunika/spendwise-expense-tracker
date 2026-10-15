@@ -422,6 +422,10 @@ const createOrUpdateBudget = async (req, res) => {
         amount: numAmount,
       });
 
+      try {
+        require('../services/notificationService').triggerNotificationSync(req.user._id);
+      } catch (e) {}
+
       return res.status(201).json({
         success: true,
         message: 'Custom budget saved successfully!',
@@ -487,6 +491,10 @@ const createOrUpdateBudget = async (req, res) => {
       },
       { upsert: true, new: true, runValidators: true }
     );
+
+    try {
+      require('../services/notificationService').triggerNotificationSync(req.user._id);
+    } catch (e) {}
 
     res.status(200).json({
       success: true,
@@ -580,6 +588,10 @@ const updateBudget = async (req, res) => {
     await budget.save();
 
     const { startDate, endDate, periodType } = normalizeBudgetDates(budget);
+    try {
+      require('../services/notificationService').triggerNotificationSync(req.user._id);
+    } catch (e) {}
+
     res.json({
       success: true,
       message: 'Budget updated successfully!',
@@ -604,6 +616,10 @@ const deleteBudget = async (req, res) => {
     if (!budget) {
       return res.status(404).json({ success: false, message: 'Budget not found.' });
     }
+    try {
+      require('../services/notificationService').triggerNotificationSync(req.user._id);
+    } catch (e) {}
+
     res.json({ success: true, message: 'Budget deleted successfully!' });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -624,4 +640,5 @@ module.exports = {
   checkBudgetOverlap,
   parseDateOnly,
   toDateString,
+  aggregateBudgetExpenses,
 };

@@ -59,6 +59,22 @@
   - Single-pipeline MongoDB `$facet` aggregation computing spent, remaining balance, and days remaining on the server.
   - Accessible custom confirmation dialog (`role="alertdialog"`) for destructive budget deletions.
 
+- **Intelligent Budget & Threshold Notifications:**
+  - Real data-driven alerts derived strictly from active budgets, configurable thresholds, and recorded transactions (zero fake data).
+  - 5 deterministic notification types:
+    - `budget_warning`: Active budget reaches warn threshold (default 70%).
+    - `budget_critical`: Active budget reaches danger threshold (default 90%).
+    - `budget_exceeded`: Spending exceeds 100% of budget.
+    - `budget_ending`: Budget period ends within 3 days with remaining balance.
+    - `no_budget`: User has recorded transactions this month without setting an active budget.
+  - Deterministic unique compound keys (`{ userId, key }`) guaranteeing zero duplicates upon polling, window focus, or concurrent syncs.
+  - Non-blocking sync triggers after transaction, budget, and threshold changes.
+  - Top bar interactive bell with accurate unread badge (1 to 9+), polite ARIA live region, and micro-animation on new alerts.
+  - Portal-rendered floating popover (`NotificationsPanel`) on desktop with dynamic viewport positioning, edge flipping, and zero clipping by app scrollers.
+  - Mobile bottom sheet with body scroll lock and focus management.
+  - Dedicated `/notifications` page with All/Unread tabs, server-side pagination, mark all as read, and optimistic dismissal.
+  - Strict user data isolation and cascade deletion on permanent account removal.
+
 - **Financial Analytics & Trends:**
   - 6-month historical cash flow trends via Recharts area and bar visualizations.
   - Category-level distribution donut chart with percentages and formatted amounts.

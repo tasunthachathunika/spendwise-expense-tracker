@@ -307,3 +307,92 @@ export const INCOME_CATEGORIES = [
   'Salary', 'Freelance', 'Business', 'Investment', 'Gift',
   'Rental Income', 'Bonus', 'Other',
 ];
+
+/**
+ * Formats a timestamp into a human relative string ("just now", "5m ago", "2h ago", "Yesterday", "3d ago")
+ */
+export const formatRelativeTime = (dateInput) => {
+  if (!dateInput) return '';
+  const date = new Date(dateInput);
+  if (isNaN(date.getTime())) return '';
+
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffSec = Math.floor(diffMs / 1000);
+
+  if (diffSec < 45) return 'Just now';
+  if (diffSec < 3600) {
+    const mins = Math.max(1, Math.floor(diffSec / 60));
+    return `${mins}m ago`;
+  }
+  if (diffSec < 86400) {
+    const hours = Math.floor(diffSec / 3600);
+    return `${hours}h ago`;
+  }
+
+  // Check if yesterday
+  const yesterday = new Date(now);
+  yesterday.setDate(yesterday.getDate() - 1);
+  if (
+    date.getDate() === yesterday.getDate() &&
+    date.getMonth() === yesterday.getMonth() &&
+    date.getFullYear() === yesterday.getFullYear()
+  ) {
+    return 'Yesterday';
+  }
+
+  const days = Math.floor(diffSec / 86400);
+  if (days < 7) {
+    return `${days}d ago`;
+  }
+
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+};
+
+/**
+ * Groups an array of notification objects by 'Today', 'Yesterday', or 'Earlier'
+ */
+export const groupNotificationsByDate = (notifications = []) => {
+  const groups = {
+    Today: [],
+    Yesterday: [],
+    Earlier: [],
+  };
+
+  const now = new Date();
+  const todayDate = now.getDate();
+  const todayMonth = now.getMonth();
+  const todayYear = now.getFullYear();
+
+  const yesterday = new Date(now);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yestDate = yesterday.getDate();
+  const yestMonth = yesterday.getMonth();
+  const yestYear = yesterday.getFullYear();
+
+  for (const notif of notifications) {
+    const d = new Date(notif.createdAt);
+    if (isNaN(d.getTime())) {
+      groups.Earlier.push(notif);
+      continue;
+    }
+
+    if (
+      d.getDate() === todayDate &&
+      d.getMonth() === todayMonth &&
+      d.getFullYear() === todayYear
+    ) {
+      groups.Today.push(notif);
+    } else if (
+      d.getDate() === yestDate &&
+      d.getMonth() === yestMonth &&
+      d.getFullYear() === yestYear
+    ) {
+      groups.Yesterday.push(notif);
+    } else {
+      groups.Earlier.push(notif);
+    }
+  }
+
+  return groups;
+};

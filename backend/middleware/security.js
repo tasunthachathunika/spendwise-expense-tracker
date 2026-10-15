@@ -25,10 +25,27 @@ const deleteAccountRateLimiter = rateLimit({
   },
 });
 
+// Rate limiter for notifications (120 requests per minute)
+const notificationRateLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 120,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'Too many notification requests. Please try again in a moment.',
+  },
+});
+
 // Standard security headers middleware using Helmet
 const securityHeaders = helmet({
   crossOriginEmbedderPolicy: false,
   contentSecurityPolicy: false, // Let frontend handle inline styles and SVGs safely
 });
 
-module.exports = { authRateLimiter, deleteAccountRateLimiter, securityHeaders };
+module.exports = {
+  authRateLimiter,
+  deleteAccountRateLimiter,
+  notificationRateLimiter,
+  securityHeaders,
+};
