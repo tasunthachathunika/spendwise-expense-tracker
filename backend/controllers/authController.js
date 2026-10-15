@@ -1,5 +1,8 @@
+const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const Transaction = require('../models/Transaction');
+const Budget = require('../models/Budget');
 
 // Generate JWT
 const generateToken = (id) => {
@@ -206,4 +209,88 @@ const updatePassword = async (req, res) => {
   }
 };
 
-module.exports = { register, login, getMe, updateProfile, updatePassword };
+// @desc    Permanently delete user account and all owned data
+// @route   DELETE /api/auth/account
+// @access  Private
+const deleteAccount = async (req, res) => {
+  try {
+    const { password, confirmation } = req.body;
+
+    // 1. Validation
+    if (!password || typeof password !== 'string' || !password.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password is required to delete your account.',
+      });
+    }
+
+    if (confirmation !== 'DELETE') {
+      return res.status(400).json({
+        success: false,
+        message: 'Please type DELETE exactly to confirm account deletion.',
+      });
+    }
+
+    // 2. Load user with password hash
+    const user = await User.findById(req.user._id).select('+password');
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found.',
+      });
+    }
+
+    // 3. Verify password
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return res.status(400).json({
+        success: false,
+        message: 'Incorrect password.',
+      });
+    }
+
+    // 4. Atomic delete of all user-owned data in one Mongoose transaction if available
+    let session = null;
+    try {
+      session = await mongoose.startSession();
+      session.startTransaction();
+    } catch (sessionErr) {
+      // Standalone MongoDB without replica set fallback
+      session = null;
+    }
+
+    try {
+      if (session) {
+        await Transaction.deleteMany({ userId: req.user._id }).session(session);
+        await Budget.deleteMany({ userId: req.user._id }).session(session);
+        await User.findByIdAndDelete(req.user._id).session(session);
+        await session.commitTransaction();
+      } else {
+        await Transaction.deleteMany({ userId: req.user._id });
+        await Budget.deleteMany({ userId: req.user._id });
+        await User.findByIdAndDelete(req.user._id);
+      }
+    } catch (deleteError) {
+      if (session) {
+        await session.abortTransaction();
+      }
+      throw deleteError;
+    } finally {
+      if (session) {
+        session.endSession();
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Your account and all data were permanently deleted',
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Server error during account deletion.',
+    });
+  }
+};
+
+module.exports = { register, login, getMe, updateProfile, updatePassword, deleteAccount };

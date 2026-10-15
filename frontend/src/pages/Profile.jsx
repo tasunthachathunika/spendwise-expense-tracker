@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import {
   User,
   Mail,
@@ -18,6 +18,10 @@ import {
   CheckCircle2,
   AlertCircle,
   RefreshCw,
+  TriangleAlert,
+  Trash2,
+  X,
+  Download,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -120,6 +124,18 @@ const ProfileContent = () => {
   const [passwordSaving, setPasswordSaving] = useState(false);
   const [passwordSuccess, setPasswordSuccess] = useState('');
   const [passwordError, setPasswordError] = useState('');
+
+  // Delete Account Dialog State
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [deletePassword, setDeletePassword] = useState('');
+  const [showDeletePassword, setShowDeletePassword] = useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
+
+  const deleteTriggerRef = useRef(null);
+  const deletePasswordRef = useRef(null);
+  const deleteDialogRef = useRef(null);
 
   // Fetch initial profile & stats from real APIs
   const fetchProfileData = async () => {
@@ -264,6 +280,106 @@ const ProfileContent = () => {
     toast.success('Signed out successfully.');
     navigate('/login');
   };
+
+  // Lock body scroll and set initial focus when delete dialog opens
+  useEffect(() => {
+    if (isDeleteDialogOpen) {
+      document.body.style.overflow = 'hidden';
+      const timer = setTimeout(() => {
+        deletePasswordRef.current?.focus();
+      }, 50);
+
+      const handleKeyDown = (e) => {
+        if (e.key === 'Escape' && !isDeleting) {
+          e.preventDefault();
+          closeDeleteDialog();
+          return;
+        }
+
+        // Focus trap
+        if (e.key === 'Tab' && deleteDialogRef.current) {
+          const focusableElements = deleteDialogRef.current.querySelectorAll(
+            'button:not([disabled]), input:not([disabled]), a[href]:not([disabled])'
+          );
+          if (focusableElements.length > 0) {
+            const first = focusableElements[0];
+            const last = focusableElements[focusableElements.length - 1];
+
+            if (e.shiftKey && document.activeElement === first) {
+              e.preventDefault();
+              last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+              e.preventDefault();
+              first.focus();
+            }
+          }
+        }
+      };
+
+      window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        clearTimeout(timer);
+        window.removeEventListener('keydown', handleKeyDown);
+        document.body.style.overflow = '';
+      };
+    }
+  }, [isDeleteDialogOpen, isDeleting]);
+
+  const openDeleteDialog = () => {
+    setDeletePassword('');
+    setShowDeletePassword(false);
+    setDeleteConfirmation('');
+    setDeleteError('');
+    setIsDeleteDialogOpen(true);
+  };
+
+  const closeDeleteDialog = () => {
+    if (isDeleting) return;
+    setIsDeleteDialogOpen(false);
+    setDeletePassword('');
+    setDeleteConfirmation('');
+    setDeleteError('');
+    // Restore focus to delete trigger button
+    setTimeout(() => {
+      deleteTriggerRef.current?.focus();
+    }, 50);
+  };
+
+  const handleConfirmDeleteAccount = async (e) => {
+    if (e) e.preventDefault();
+    if (deleteConfirmation !== 'DELETE' || !deletePassword.trim()) return;
+
+    setIsDeleting(true);
+    setDeleteError('');
+
+    try {
+      const res = await api.delete('/auth/account', {
+        data: {
+          password: deletePassword,
+          confirmation: deleteConfirmation,
+        },
+      });
+
+      if (res.data?.success) {
+        sessionStorage.setItem(
+          'sw_account_deleted_toast',
+          'Your account and all associated data have been permanently deleted.'
+        );
+        closeDeleteDialog();
+        logout();
+        navigate('/', { replace: true });
+      } else {
+        setDeleteError(res.data?.message || 'Failed to delete account.');
+      }
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Server error while deleting account. Please try again.';
+      setDeleteError(msg);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const isDeleteValid = deletePassword.trim().length > 0 && deleteConfirmation === 'DELETE';
 
   // Loading skeleton state
   if (profileLoading && !user) {
@@ -842,8 +958,250 @@ const ProfileContent = () => {
               </button>
             </div>
           </section>
+
+          {/* Card 5: Danger Zone */}
+          <section
+            aria-labelledby="danger-zone-heading"
+            className="rounded-2xl border border-expense/30 bg-expense/5 p-5 lg:p-6 transition-colors shadow-xs"
+          >
+            {/* Header Row */}
+            <div className="flex items-center gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-expense/10 text-expense border border-expense/20 flex items-center justify-center flex-shrink-0">
+                <TriangleAlert className="w-5 h-5 stroke-[2.2]" />
+              </div>
+              <div>
+                <h3 id="danger-zone-heading" className="font-serif text-lg sm:text-xl font-bold text-expense tracking-tight">
+                  Danger zone
+                </h3>
+                <p className="text-sm text-ink-soft mt-0.5">
+                  Permanent actions that cannot be undone.
+                </p>
+              </div>
+            </div>
+
+            {/* Action Row */}
+            <div className="border-t border-expense/20 mt-4 pt-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="max-w-xl">
+                <h4 className="text-sm font-semibold text-ink">
+                  Delete account
+                </h4>
+                <p className="text-sm text-ink-body mt-0.5 leading-relaxed">
+                  Permanently delete your account, transactions, budgets and settings. This action cannot be undone.
+                </p>
+              </div>
+              <button
+                ref={deleteTriggerRef}
+                type="button"
+                onClick={openDeleteDialog}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-card text-expense border border-expense/40 hover:bg-expense hover:text-white hover:border-expense hover:shadow-md hover:shadow-expense/20 focus-visible:ring-2 focus-visible:ring-expense/40 active:scale-[0.98] transition-all duration-200 cursor-pointer w-full md:w-auto flex-shrink-0"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span>Delete account</span>
+              </button>
+            </div>
+          </section>
         </div>
       </div>
+
+      {/* ─── Confirmation Dialog (role="alertdialog") ───────────────────── */}
+      {isDeleteDialogOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-ink/50 backdrop-blur-xs flex items-center justify-center p-4 max-sm:items-end max-sm:p-0 animate-in fade-in duration-150"
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !isDeleting) {
+              closeDeleteDialog();
+            }
+          }}
+          role="presentation"
+        >
+          <div
+            ref={deleteDialogRef}
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="delete-account-title"
+            aria-describedby="delete-account-desc"
+            className="bg-card border border-line rounded-2xl sm:rounded-3xl shadow-2xl max-w-md w-full p-6 sm:p-7 max-h-[90vh] max-sm:rounded-b-none max-sm:max-h-[92vh] overflow-y-auto relative animate-in zoom-in-95 duration-150 motion-reduce:animate-none"
+          >
+            {/* Close X Button */}
+            <button
+              type="button"
+              onClick={closeDeleteDialog}
+              disabled={isDeleting}
+              aria-label="Close"
+              className="absolute top-5 right-5 w-8 h-8 rounded-xl bg-cream-band text-ink-soft hover:text-ink hover:bg-cream-hover flex items-center justify-center border border-line transition cursor-pointer disabled:opacity-50"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            {/* Header */}
+            <div className="w-12 h-12 rounded-2xl bg-expense/10 text-expense border border-expense/20 flex items-center justify-center flex-shrink-0 mb-4 shadow-2xs">
+              <TriangleAlert className="w-6 h-6 stroke-[2.2]" />
+            </div>
+
+            <h3
+              id="delete-account-title"
+              className="font-serif text-xl sm:text-2xl font-bold text-ink tracking-tight"
+            >
+              Delete your account?
+            </h3>
+
+            <p
+              id="delete-account-desc"
+              className="text-sm text-ink-body mt-2 leading-relaxed"
+            >
+              This will permanently delete your account and all of your data. This cannot be undone.
+            </p>
+
+            {/* What will be deleted List */}
+            <div className="mt-4 p-3.5 rounded-xl bg-cream-band border border-line space-y-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-ink-soft block">
+                What will be deleted
+              </span>
+              <ul className="space-y-1.5 text-xs text-ink-body">
+                <li className="flex items-center gap-2">
+                  <User className="w-3.5 h-3.5 text-expense flex-shrink-0" />
+                  <span>Your profile and login credentials</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Receipt className="w-3.5 h-3.5 text-expense flex-shrink-0" />
+                  <span>
+                    All income and expense transactions
+                    {typeof txCount === 'number' ? ` (${txCount.toLocaleString()} recorded)` : ''}
+                  </span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Target className="w-3.5 h-3.5 text-expense flex-shrink-0" />
+                  <span>All monthly budgets, custom periods and preferences</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Tip Row: Export Advice */}
+            <div className="rounded-xl bg-info/10 border border-info/20 p-3 mt-3 flex items-start gap-2.5 text-xs text-ink-body">
+              <Download className="w-4 h-4 text-info flex-shrink-0 mt-0.5" />
+              <div>
+                <span className="text-ink font-semibold block">Want a copy first?</span>
+                <span>Export your transactions as CSV or PDF before deleting.</span>
+                <Link
+                  to="/transactions"
+                  onClick={closeDeleteDialog}
+                  className="font-semibold text-info hover:underline block mt-1"
+                >
+                  Go to Transactions Ledger &rarr;
+                </Link>
+              </div>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleConfirmDeleteAccount} className="mt-4 space-y-3.5">
+              {/* Password Field */}
+              <div>
+                <label
+                  htmlFor="delete-password"
+                  className="block text-xs font-bold uppercase tracking-wider text-ink mb-1.5"
+                >
+                  Enter your password to confirm
+                </label>
+                <div className="relative">
+                  <Lock className="w-4 h-4 text-ink-soft absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <input
+                    id="delete-password"
+                    ref={deletePasswordRef}
+                    type={showDeletePassword ? 'text' : 'password'}
+                    autoComplete="current-password"
+                    disabled={isDeleting}
+                    value={deletePassword}
+                    onChange={(e) => {
+                      setDeletePassword(e.target.value);
+                      setDeleteError('');
+                    }}
+                    placeholder="••••••••"
+                    className="w-full bg-card border border-line rounded-xl py-2.5 pl-10 pr-10 text-sm text-ink focus:ring-2 focus:ring-expense/30 focus:border-expense outline-none transition disabled:opacity-50"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowDeletePassword(!showDeletePassword)}
+                    aria-label={showDeletePassword ? 'Hide password' : 'Show password'}
+                    tabIndex={-1}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-soft hover:text-ink transition cursor-pointer"
+                  >
+                    {showDeletePassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Confirmation Text Field */}
+              <div>
+                <label
+                  htmlFor="delete-confirm"
+                  className="block text-xs font-bold uppercase tracking-wider text-ink mb-1.5"
+                >
+                  Type{' '}
+                  <span className="font-mono font-bold bg-cream-band border border-line px-1.5 py-0.5 rounded text-xs text-ink">
+                    DELETE
+                  </span>{' '}
+                  to confirm
+                </label>
+                <input
+                  id="delete-confirm"
+                  type="text"
+                  autoComplete="off"
+                  autoCapitalize="off"
+                  spellCheck={false}
+                  disabled={isDeleting}
+                  value={deleteConfirmation}
+                  onChange={(e) => {
+                    setDeleteConfirmation(e.target.value);
+                    setDeleteError('');
+                  }}
+                  placeholder="DELETE"
+                  className="w-full bg-card border border-line rounded-xl py-2.5 px-3 text-sm text-ink font-mono focus:ring-2 focus:ring-expense/30 focus:border-expense outline-none transition disabled:opacity-50"
+                />
+              </div>
+
+              {/* Error Banner */}
+              {deleteError && (
+                <div
+                  role="alert"
+                  className="bg-expense/10 border border-expense/30 text-expense rounded-xl p-3 text-xs sm:text-sm flex items-start gap-2.5 mt-2"
+                >
+                  <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                  <span className="leading-snug">{deleteError}</span>
+                </div>
+              )}
+
+              {/* Buttons Footer */}
+              <div className="pt-4 border-t border-line flex flex-col-reverse sm:flex-row items-center justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={closeDeleteDialog}
+                  disabled={isDeleting}
+                  className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-line bg-card hover:bg-cream-hover text-ink text-sm font-semibold transition cursor-pointer disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={!isDeleteValid || isDeleting}
+                  className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-expense text-white hover:opacity-90 font-semibold text-sm transition shadow-md shadow-expense/20 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isDeleting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Deleting...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="w-4 h-4" />
+                      <span>Delete account</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

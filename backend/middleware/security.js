@@ -13,10 +13,22 @@ const authRateLimiter = rateLimit({
   },
 });
 
+// Rate limiter for account deletion (strict 5 attempts per 15 minutes)
+const deleteAccountRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'Too many account deletion attempts. Please try again after 15 minutes.',
+  },
+});
+
 // Standard security headers middleware using Helmet
 const securityHeaders = helmet({
   crossOriginEmbedderPolicy: false,
   contentSecurityPolicy: false, // Let frontend handle inline styles and SVGs safely
 });
 
-module.exports = { authRateLimiter, securityHeaders };
+module.exports = { authRateLimiter, deleteAccountRateLimiter, securityHeaders };

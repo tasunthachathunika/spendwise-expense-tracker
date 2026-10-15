@@ -20,12 +20,12 @@ const protect = async (req, res, next) => {
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Get user from DB (without password)
-    const user = await User.findById(decoded.id).select('-password');
+    // Confirm user still exists in DB
+    const user = await User.findById(decoded.id).select('_id name email');
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: 'Token is invalid. User not found.',
+        message: 'User no longer exists',
       });
     }
 
