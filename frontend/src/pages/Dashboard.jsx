@@ -263,51 +263,66 @@ const Dashboard = () => {
           <StatCardSkeleton />
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5">
           {/* Total Income */}
           <StatCard
             type="income"
-            label="Total Income"
+            label="Total Income (All Time)"
             amount={summary.totalIncome}
-            badgeText={summary.monthlyIncome > 0 ? "Active" : "Logged"}
-            badgePositive={true}
-            subtitle={summary.monthlyIncome > 0 ? `This month: +${formatCurrency(summary.monthlyIncome)}` : "All-time credited"}
+            caption={
+              summary.monthlyIncome > 0
+                ? `${selectedPeriod.label.split(' ')[0]}: +${formatCurrency(summary.monthlyIncome)}`
+                : `No credits in ${selectedPeriod.label.split(' ')[0]}`
+            }
+            delayIndex={0}
           />
 
           {/* Total Expenses */}
           <StatCard
             type="expense"
-            label="Total Expenses"
+            label="Total Expenses (All Time)"
             amount={summary.totalExpenses}
-            badgeText={summary.monthlyExpenses > 0 ? "Active" : "Logged"}
-            badgePositive={false}
-            subtitle={summary.monthlyExpenses > 0 ? `This month: -${formatCurrency(summary.monthlyExpenses)}` : "All-time debited"}
+            caption={
+              summary.monthlyExpenses > 0
+                ? `${selectedPeriod.label.split(' ')[0]}: -${formatCurrency(summary.monthlyExpenses)}`
+                : `No debits in ${selectedPeriod.label.split(' ')[0]}`
+            }
+            delayIndex={1}
           />
 
-          {/* Net Balance (Info / Sky highlight) */}
+          {/* Net Balance */}
           <StatCard
             type="balance"
-            label="Net Balance"
+            label="Net Balance (All Time)"
             amount={summary.balance}
-            badgeText={summary.balance >= 0 ? "Surplus" : "Deficit"}
-            badgePositive={summary.balance >= 0}
-            subtitle={summary.balance >= 0 ? "Positive liquidity" : "Expenses exceed income"}
+            caption={
+              summary.balance > 0
+                ? 'All-time net savings'
+                : summary.balance < 0
+                ? 'All-time net deficit'
+                : summary.totalIncome > 0 || summary.totalExpenses > 0
+                ? 'All-time balanced'
+                : 'No transactions recorded'
+            }
+            delayIndex={2}
           />
 
           {/* Budget Target (Monthly or Active Custom) */}
           <StatCard
             type="budget"
-            label={summary.budgetPeriodType === 'custom' ? "Active Budget" : "Monthly Budget"}
+            label={summary.budgetPeriodType === 'custom' ? 'Active Budget' : 'Monthly Budget'}
             amount={summary.budgetAmount}
-            badgeText={summary.budgetAmount > 0 ? `${summary.budgetUsagePercent}% used` : "Not Set"}
-            badgePositive={summary.budgetRemaining >= 0}
-            subtitle={
+            budgetData={{
+              spent: summary.budgetSpent,
+              percent: summary.budgetUsagePercent,
+            }}
+            caption={
               summary.budgetAmount > 0
-                ? summary.budgetPeriodLabel
-                  ? `${summary.budgetPeriodLabel} · Rem: ${formatCurrency(summary.budgetRemaining)}`
-                  : `Remaining: ${formatCurrency(summary.budgetRemaining)}`
-                : "No limit set"
+                ? `${formatCurrency(summary.budgetSpent)} of ${formatCurrency(summary.budgetAmount)}`
+                : 'No spending limit set'
             }
+            onSetBudget={() => setIsBudgetModalOpen(true)}
+            delayIndex={3}
           />
         </div>
       )}

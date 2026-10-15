@@ -18,19 +18,23 @@ const CustomBarTooltip = ({ active, payload, label }) => {
     const net = income - expense;
 
     return (
-      <div className="bg-bg-card border border-line rounded-xl p-3 shadow-xl text-xs space-y-1.5 min-w-[140px]">
-        <p className="font-bold text-ink border-b border-line pb-1">{label}</p>
+      <div className="bg-card border border-line rounded-xl p-3.5 shadow-xl text-xs space-y-1.5 min-w-[150px]">
+        <p className="font-bold text-ink border-b border-line pb-1.5">{label}</p>
         <div className="flex justify-between items-center text-income">
-          <span>Income:</span>
-          <span className="font-mono font-bold">+{formatCurrency(income)}</span>
+          <span className="font-medium">Income:</span>
+          <span className="font-sans font-bold tabular-nums">+{formatCurrency(income)}</span>
         </div>
         <div className="flex justify-between items-center text-expense">
-          <span>Expense:</span>
-          <span className="font-mono font-bold">-{formatCurrency(expense)}</span>
+          <span className="font-medium">Expense:</span>
+          <span className="font-sans font-bold tabular-nums">-{formatCurrency(expense)}</span>
         </div>
-        <div className="flex justify-between items-center pt-1 border-t border-line text-ink-soft">
-          <span>Net Savings:</span>
-          <span className={`font-mono font-bold ${net >= 0 ? 'text-income' : 'text-expense'}`}>
+        <div className="flex justify-between items-center pt-1.5 border-t border-line text-ink-soft">
+          <span className="font-medium">Net Margin:</span>
+          <span
+            className={`font-sans font-bold tabular-nums ${
+              net >= 0 ? 'text-income' : 'text-expense'
+            }`}
+          >
             {net >= 0 ? `+${formatCurrency(net)}` : `-${formatCurrency(Math.abs(net))}`}
           </span>
         </div>
@@ -45,30 +49,44 @@ const CashFlowBarChart = ({ data = [] }) => {
   const chartData = hasData ? data : [];
 
   return (
-    <div className="bg-bg-card border border-line rounded-2xl p-6 shadow-sm flex flex-col justify-between h-full">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
-        <div>
-          <h3 className="text-base font-bold text-ink">Cash Flow Analysis (Last 6 Months)</h3>
-          <p className="text-xs text-ink-soft">Monthly comparisons: Income (Emerald) vs Expense (Rose)</p>
+    <div className="dash-card flex flex-col justify-between h-full shadow-xs animate-dash-fade">
+      {/* Header Row */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-info/10 border border-info/20 text-info flex items-center justify-center flex-shrink-0 shadow-2xs">
+            <BarChart3 className="w-4 h-4 stroke-[2.2]" />
+          </div>
+          <div>
+            <h3 className="font-serif text-lg font-bold text-ink tracking-tight">
+              Cash Flow Analysis (Last 6 Months)
+            </h3>
+            <p className="text-xs text-ink-soft">Monthly income and expenses</p>
+          </div>
         </div>
+
+        {/* Legend */}
         <div className="flex items-center gap-4 text-xs font-semibold">
           <span className="flex items-center gap-1.5 text-income">
-            <span className="w-2.5 h-2.5 rounded-sm bg-income"></span> Income
+            <span className="w-2.5 h-2.5 rounded-sm bg-income flex-shrink-0" />
+            <span>Income</span>
           </span>
           <span className="flex items-center gap-1.5 text-expense">
-            <span className="w-2.5 h-2.5 rounded-sm bg-expense"></span> Expense
+            <span className="w-2.5 h-2.5 rounded-sm bg-expense flex-shrink-0" />
+            <span>Expense</span>
           </span>
         </div>
       </div>
 
       {!hasData ? (
         <div className="h-56 flex flex-col items-center justify-center text-center p-6 my-auto">
-          <div className="w-12 h-12 rounded-2xl bg-cream-band border border-line flex items-center justify-center text-ink-soft mb-3">
-            <BarChart3 className="w-5 h-5 text-ink-soft" />
+          <div className="w-12 h-12 rounded-2xl bg-brand-soft border border-brand/20 text-brand flex items-center justify-center mb-3 shadow-2xs">
+            <BarChart3 className="w-6 h-6 stroke-[2]" />
           </div>
-          <h4 className="text-sm font-bold text-ink">No cash flow trend yet</h4>
-          <p className="text-xs text-ink-soft max-w-xs mt-1">
-            Cash flow comparisons will automatically build over time as you log transactions.
+          <h4 className="font-serif text-base font-bold text-ink">
+            No cash flow trend recorded yet
+          </h4>
+          <p className="text-xs text-ink-soft max-w-xs mt-1 leading-relaxed">
+            Multi-month cash flow trends will automatically materialize as transactions accumulate.
           </p>
         </div>
       ) : (
@@ -77,16 +95,20 @@ const CashFlowBarChart = ({ data = [] }) => {
           <div className="w-full h-56 pt-2">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(120, 113, 108, 0.2)" vertical={false} />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="rgb(var(--line))"
+                  vertical={false}
+                />
                 <XAxis
                   dataKey="month"
-                  stroke="#7a7263"
+                  stroke="rgb(var(--ink-soft))"
                   fontSize={11}
                   tickLine={false}
-                  axisLine={{ stroke: 'rgba(120, 113, 108, 0.2)' }}
+                  axisLine={{ stroke: 'rgb(var(--line))' }}
                 />
                 <YAxis
-                  stroke="#7a7263"
+                  stroke="rgb(var(--ink-soft))"
                   fontSize={10}
                   tickLine={false}
                   axisLine={false}
@@ -96,23 +118,23 @@ const CashFlowBarChart = ({ data = [] }) => {
                 <Bar
                   dataKey="income"
                   name="Income"
-                  fill="var(--income, #15803d)"
-                  radius={[4, 4, 0, 0]}
+                  fill="rgb(var(--income))"
+                  radius={[6, 6, 0, 0]}
                   maxBarSize={28}
                 />
                 <Bar
                   dataKey="expense"
                   name="Expense"
-                  fill="var(--expense, #dc2626)"
-                  radius={[4, 4, 0, 0]}
+                  fill="rgb(var(--expense))"
+                  radius={[6, 6, 0, 0]}
                   maxBarSize={28}
                 />
               </BarChart>
             </ResponsiveContainer>
           </div>
 
-          <p className="text-xs text-ink-soft text-center pt-3 border-t border-line mt-2">
-            Consistently maintaining a positive net cash flow surplus.
+          <p className="text-xs text-ink-soft text-center pt-3 border-t border-line/60 mt-2">
+            Evaluated across verified historical monthly transaction logs.
           </p>
         </>
       )}

@@ -1405,3 +1405,267 @@ select:-webkit-autofill:focus {
   transition: background-color 9999s ease-in-out 0s;
 }
 
+/* ─── Shared Layout & Security Section Utilities ─────────────────── */
+.container-page {
+  width: 100%;
+  max-width: 80rem; /* max-w-7xl */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+@media (min-width: 640px) {
+  .container-page {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+@media (min-width: 1024px) {
+  .container-page {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* Glass Card with solid fallbacks */
+.security-glass-card,
+.feature-glass-card {
+  background-color: rgb(var(--card) / 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  .security-glass-card,
+  .feature-glass-card {
+    background-color: rgb(var(--card)) !important;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .security-glass-card,
+  .feature-glass-card {
+    background-color: rgb(var(--card)) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+
+/* Dotted grid pattern for background fallback */
+.security-dotted-grid,
+.features-dotted-grid {
+  background-image: radial-gradient(circle, rgb(var(--line)) 1.5px, transparent 1.5px);
+  background-size: 24px 24px;
+  mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, black 20%, transparent 85%);
+  -webkit-mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, black 20%, transparent 85%);
+}
+
+/* Shimmer animation for bcrypt hash visual */
+@keyframes hashShimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animate-hash-shimmer {
+    animation: hashShimmer 2.8s ease-in-out infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-hash-shimmer {
+    display: none !important;
+  }
+}
+
+/* ─── Dashboard Fintech Card Design System ───────────────────────── */
+@layer components {
+  /* Neutral Dashboard Card */
+  .dash-card {
+    position: relative;
+    background-color: rgb(var(--card));
+    border: 1px solid rgb(var(--line));
+    border-radius: 1rem; /* rounded-2xl */
+    padding: 1.25rem; /* p-5 */
+    transition: transform 250ms cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 250ms cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 250ms cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 1px 3px 0 rgb(var(--ink) / 0.03), 0 1px 2px -1px rgb(var(--ink) / 0.03);
+  }
+
+  @media (min-width: 1024px) {
+    .dash-card {
+      padding: 1.5rem; /* lg:p-6 */
+    }
+  }
+
+  @media (hover: hover) {
+    .dash-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgb(var(--ink) / 0.06), 0 8px 10px -6px rgb(var(--ink) / 0.04);
+      border-color: rgb(var(--line-light));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dash-card:hover {
+      transform: none !important;
+    }
+  }
+
+  /* KPI Card Base with Dynamic --accent Token */
+  .kpi-card {
+    position: relative;
+    overflow: hidden;
+    background-color: rgb(var(--card));
+    border: 1px solid rgb(var(--line));
+    border-radius: 0.875rem;
+    padding: 0.875rem 1rem;
+    transition: transform 250ms cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 250ms cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 250ms cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 1px 2px rgb(var(--ink) / 0.04), 0 8px 24px rgb(var(--ink) / 0.06);
+  }
+
+  @media (min-width: 1024px) {
+    .kpi-card {
+      padding: 1rem 1.125rem;
+    }
+  }
+
+  /* 3px Accent Bar Across Top Edge */
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background-color: rgb(var(--accent));
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* Soft Corner Wash Behind Content */
+  .kpi-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgb(var(--accent) / 0.08), transparent 55%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  @media (hover: hover) {
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      border-color: rgb(var(--accent) / 0.35);
+      box-shadow: 0 1px 2px rgb(var(--ink) / 0.04), 0 10px 28px rgb(var(--accent) / 0.14);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .kpi-card:hover {
+      transform: none !important;
+    }
+  }
+
+  /* Dark Mode KPI Card Styling */
+  .dark .kpi-card {
+    border-color: rgb(var(--accent) / 0.30);
+    box-shadow: 0 0 0 1px rgb(var(--accent) / 0.12), 0 8px 28px rgb(var(--accent) / 0.10);
+  }
+
+  .dark .kpi-card::before {
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.04);
+  }
+
+  .dark .kpi-card::after {
+    background: linear-gradient(135deg, rgb(var(--accent) / 0.10), transparent 60%);
+  }
+
+  @media (hover: hover) {
+    .dark .kpi-card:hover {
+      border-color: rgb(var(--accent) / 0.50);
+      box-shadow: 0 0 0 1px rgb(var(--accent) / 0.20), 0 10px 32px rgb(var(--accent) / 0.18);
+    }
+  }
+
+  /* KPI Modifiers */
+  .kpi-income {
+    --accent: var(--income);
+  }
+  .kpi-expense {
+    --accent: var(--expense);
+  }
+  .kpi-balance {
+    --accent: var(--info);
+  }
+  .kpi-budget-ok {
+    --accent: var(--income);
+  }
+  .kpi-budget-warn {
+    --accent: var(--warn);
+  }
+  .kpi-budget-danger {
+    --accent: var(--expense);
+  }
+
+  /* 34px Themed Icon Tile */
+  .kpi-icon-tile {
+    width: 2.125rem; /* 34px */
+    height: 2.125rem;
+    border-radius: 0.625rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(var(--accent) / 0.12);
+    border: 1px solid rgb(var(--accent) / 0.25);
+    color: rgb(var(--accent));
+    flex-shrink: 0;
+    transition: transform 250ms ease;
+  }
+
+  .kpi-card:hover .kpi-icon-tile {
+    transform: scale(1.05);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .kpi-card:hover .kpi-icon-tile {
+      transform: none !important;
+    }
+  }
+
+  /* Staggered Card Fade-Up Animation */
+  @keyframes cardFadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .animate-dash-fade {
+      animation: cardFadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-dash-fade {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+}
+
+
+

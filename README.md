@@ -68,7 +68,15 @@
   - Account overview showing member registration tenure, active monthly budget, and transaction counts.
   - Profile name update with length validation (2 to 50 characters).
   - Secure password modification requiring current password verification and minimum 6-character complexity.
+  - Multi-currency preference selector allowing users to switch base currency between Sri Lankan Rupee (`LKR • Rs.`) and US Dollar (`USD • $`), updating formatting across all views reactively.
   - Theme toggle selector preserving user preference in `localStorage`.
+
+- **Fintech Features & Security Showcase:**
+  - Landing page Core Features section with full-bleed fintech 3D visual background assets (`features-bg.webp`, `features-bg-dark.webp`), `.feature-glass-card` styling, accent washes, and zero-dependency SVG/CSS fallback.
+  - 6 glass-style cards with visual stages: transactions tracking with tabular-nums, budget progress with 3-tier threshold indicators (`getBudgetStatus`), live SVG donut & bars charts, verified category chips, highlighted search filters, and an interactive light/dark theme switch.
+  - "Also included" feature chips for CSV/PDF export, server pagination, instant undo delete, and 3-tier alert thresholds.
+  - Landing page Security section with full-bleed frosted-glass background assets (`security-bg.webp`, `security-bg-dark.webp`) and zero-dependency SVG/CSS dotted grid fallback.
+  - 4 clean glass-style security cards for JWT authentication, 12-round bcrypt password hashing, Express protected routes, and strict server-side validation.
 
 ---
 
