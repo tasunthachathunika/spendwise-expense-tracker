@@ -113,6 +113,19 @@ const Transactions = () => {
     setSearchInput(searchFilter);
   }, [searchFilter]);
 
+  // Open modal if ?new=1 query param is present from quick action, then strip param
+  useEffect(() => {
+    if (searchParams.get('new') === '1') {
+      setSelectedTx(null);
+      setIsModalOpen(true);
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev);
+        next.delete('new');
+        return next;
+      }, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
+
   // Debounce search input (400ms)
   useEffect(() => {
     const handler = setTimeout(() => {
