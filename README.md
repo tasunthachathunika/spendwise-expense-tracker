@@ -451,5 +451,5 @@ npm run build
 - **Module:** Full-Stack Web Application Development (Individual Assignment)
 - **Team / Identifier:** Team 405
 - **Deadline:** October 16, 2026 — 3:00 PM
-- **Author:** Chathunika Tasuntha
+- **Author:** Tasuntha Chathunika
 - **Repository:** [https://github.com/tasunthachathunika/spendwise-expense-tracker](https://github.com/tasunthachathunika/spendwise-expense-tracker)

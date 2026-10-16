@@ -1,7 +1,7 @@
 # SpendWise — Demonstration Video Script (3 to 5 Minutes)
 
 **Target Duration:** 4 minutes 30 seconds  
-**Presenter:** Chathunika Tasuntha (Team 405)  
+**Presenter:** Tasuntha Chathunika (Team 405)  
 **Resolution:** 1440 × 900 (High-definition, 60fps recommended)  
 **Pre-recording Preparation:**
 - Backend running on `http://localhost:5000`

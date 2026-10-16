@@ -1,6 +1,6 @@
 # SpendWise — Project Submission Document
 
-**Name:** Chathunika Tasuntha  
+**Name:** Tasuntha Chathunika  
 **GitHub Repository:** [https://github.com/tasunthachathunika/spendwise-expense-tracker](https://github.com/tasunthachathunika/spendwise-expense-tracker)  
 **Demo Video Link:** [https://drive.google.com/file/d/your-public-google-drive-demo-video-id/view?usp=sharing](https://drive.google.com/file/d/your-public-google-drive-demo-video-id/view?usp=sharing)  
 
