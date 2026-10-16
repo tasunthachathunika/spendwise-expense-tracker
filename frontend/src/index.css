@@ -1832,7 +1832,7 @@ select:-webkit-autofill:focus {
 
 @media (hover: hover) and (pointer: fine) {
   .navbar-logo-link:hover svg {
-    transform: scale(1.04) rotate(-3deg);
+    transform: scale(1.04);
   }
 }
 
