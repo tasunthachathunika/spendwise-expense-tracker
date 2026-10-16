@@ -192,9 +192,9 @@ const Navbar = () => {
             className="relative flex items-center gap-1 p-1"
             aria-label="Main navigation"
           >
-            {/* Sliding Pill Highlight Element */}
+            {/* Sliding Pill Highlight Element with Theme Colors & Glow */}
             <div
-              className="absolute pointer-events-none rounded-lg bg-card/90 dark:bg-card/80 border border-line shadow-2xs transition-[transform,width,height,opacity] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+              className="absolute pointer-events-none rounded-lg bg-gradient-to-r from-brand/[0.12] via-amber-500/[0.16] to-brand/[0.12] dark:from-brand/[0.18] dark:via-amber-500/[0.24] dark:to-brand/[0.18] border border-brand/35 dark:border-brand/45 shadow-[0_2px_14px_rgba(234,88,12,0.20)] dark:shadow-[0_2px_16px_rgba(234,88,12,0.30)] backdrop-blur-xs transition-[transform,width,height,opacity] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
               style={{
                 transform: `translate3d(${pillStyle.x}px, ${pillStyle.y}px, 0)`,
                 width: `${pillStyle.width}px`,
@@ -214,18 +214,20 @@ const Navbar = () => {
                   onMouseEnter={(e) => handleLinkMouseEnter(e.currentTarget)}
                   onFocus={(e) => handleLinkFocus(e.currentTarget)}
                   aria-current={isActive ? 'location' : undefined}
-                  className={`relative z-10 whitespace-nowrap shrink-0 inline-flex items-center justify-center h-10 px-3.5 lg:px-2.5 xl:px-3.5 rounded-lg text-sm font-medium leading-none transition-colors duration-200 cursor-pointer active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-cream ${
+                  className={`relative z-10 whitespace-nowrap shrink-0 inline-flex items-center justify-center h-10 px-3.5 lg:px-2.5 xl:px-3.5 rounded-lg text-sm font-medium leading-none transition-all duration-200 cursor-pointer active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-cream ${
                     isActive
                       ? 'text-brand font-semibold'
-                      : 'text-ink-body hover-fine:text-ink'
+                      : 'text-ink-body hover-fine:text-brand dark:hover-fine:text-brand-light'
                   }`}
                 >
-                  <span>{item.label}</span>
+                  <span className="transition-transform duration-200 hover-fine:scale-[1.02] motion-reduce:transform-none">
+                    {item.label}
+                  </span>
 
-                  {/* 2.5px Rounded Active Indicator Gradient Underline with soft glow */}
+                  {/* 2.5px Rounded Active Indicator Gradient Underline with warm glow */}
                   <span
-                    className={`absolute bottom-1 left-3 right-3 h-[2.5px] bg-gradient-to-r from-brand to-amber-500 rounded-full transition-transform duration-250 ease-out origin-center pointer-events-none motion-reduce:transition-none ${
-                      isActive ? 'scale-x-100 opacity-100 shadow-[0_1px_5px_rgba(234,88,12,0.45)]' : 'scale-x-0 opacity-0'
+                    className={`absolute bottom-1 left-3 right-3 h-[2.5px] bg-gradient-to-r from-brand via-orange-500 to-amber-500 rounded-full transition-transform duration-250 ease-out origin-center pointer-events-none motion-reduce:transition-none ${
+                      isActive ? 'scale-x-100 opacity-100 shadow-[0_1px_6px_rgba(234,88,12,0.55)]' : 'scale-x-0 opacity-0'
                     }`}
                     aria-hidden="true"
                   />
@@ -361,10 +363,10 @@ const Navbar = () => {
                       type="button"
                       onClick={() => scrollToSection(item.id)}
                       aria-current={isActive ? 'location' : undefined}
-                      className={`w-full text-left py-3 px-3.5 rounded-xl text-base font-medium transition-colors cursor-pointer active:scale-[0.99] ${
+                      className={`w-full text-left py-3 px-3.5 rounded-xl text-base font-medium transition-all cursor-pointer active:scale-[0.99] ${
                         isActive
-                          ? 'bg-brand-soft text-brand font-semibold'
-                          : 'text-ink-body active:bg-cream-hover'
+                          ? 'bg-gradient-to-r from-brand/15 to-amber-500/15 text-brand font-semibold border border-brand/25 shadow-2xs'
+                          : 'text-ink-body active:bg-brand-soft/50 active:text-brand'
                       }`}
                     >
                       {item.label}
