@@ -103,26 +103,26 @@ const ThemeToggle = ({ className = '', isNavbarVisible = true }) => {
         aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
         aria-pressed={isDark}
         aria-describedby={showTooltip ? tooltipId : undefined}
-        className={`relative w-10 h-10 shrink-0 rounded-xl border border-line bg-card/70 text-ink flex items-center justify-center transition-all duration-200 cursor-pointer shadow-xs hover-fine:border-ink-soft/40 hover-fine:bg-cream-hover hover-fine:text-ink active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-cream ${className}`}
+        className={`group/theme relative w-10 h-10 shrink-0 rounded-xl border border-line bg-card/80 dark:bg-card/90 text-ink flex items-center justify-center transition-all duration-200 cursor-pointer shadow-xs hover-fine:border-brand/40 hover-fine:bg-card hover-fine:shadow-sm active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-cream ${className}`}
       >
         <div className="relative w-5 h-5 flex items-center justify-center overflow-hidden pointer-events-none">
-          {/* Sun Icon (displayed in dark mode to switch to light) */}
+          {/* Sun Icon (displayed in dark mode with luminous warm amber gold) */}
           <Sun
-            className={`w-5 h-5 text-ink absolute transition-all duration-300 transform motion-reduce:transition-none motion-reduce:transform-none ${
+            className={`w-5 h-5 text-amber-400 absolute transition-all duration-300 transform motion-reduce:transition-none motion-reduce:transform-none drop-shadow-[0_0_6px_rgba(251,191,36,0.45)] ${
               isDark
                 ? 'opacity-100 rotate-0 scale-100'
                 : 'opacity-0 -rotate-90 scale-60 pointer-events-none'
             }`}
-            strokeWidth={2}
+            strokeWidth={2.2}
           />
-          {/* Moon Icon (displayed in light mode to switch to dark) */}
+          {/* Moon Icon (displayed in light mode with vibrant brand warm amber) */}
           <Moon
-            className={`w-4.5 h-4.5 text-ink absolute transition-all duration-300 transform motion-reduce:transition-none motion-reduce:transform-none ${
+            className={`w-4.5 h-4.5 text-brand absolute transition-all duration-300 transform motion-reduce:transition-none motion-reduce:transform-none drop-shadow-[0_0_4px_rgba(234,88,12,0.3)] ${
               isDark
                 ? 'opacity-0 rotate-90 scale-60 pointer-events-none'
                 : 'opacity-100 rotate-0 scale-100'
             }`}
-            strokeWidth={2}
+            strokeWidth={2.2}
           />
         </div>
       </button>

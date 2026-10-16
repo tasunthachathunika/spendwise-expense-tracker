@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, Menu, X } from 'lucide-react';
+import { ArrowRight, Menu, X, LogIn } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useScrollDirection } from '../../hooks/useScrollDirection';
 import { useProximity } from '../../hooks/useProximity';
@@ -194,7 +194,7 @@ const Navbar = () => {
           >
             {/* Sliding Pill Highlight Element */}
             <div
-              className="absolute pointer-events-none rounded-lg bg-cream-hover dark:bg-card/60 border border-line/60 transition-[transform,width,height,opacity] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+              className="absolute pointer-events-none rounded-lg bg-card/90 dark:bg-card/80 border border-line shadow-2xs transition-[transform,width,height,opacity] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
               style={{
                 transform: `translate3d(${pillStyle.x}px, ${pillStyle.y}px, 0)`,
                 width: `${pillStyle.width}px`,
@@ -222,10 +222,10 @@ const Navbar = () => {
                 >
                   <span>{item.label}</span>
 
-                  {/* 2px Rounded Active Indicator Underline */}
+                  {/* 2.5px Rounded Active Indicator Gradient Underline with soft glow */}
                   <span
-                    className={`absolute bottom-1 left-3 right-3 h-[2px] bg-brand rounded-full transition-transform duration-250 ease-out origin-center pointer-events-none motion-reduce:transition-none ${
-                      isActive ? 'scale-x-100 opacity-100' : 'scale-x-0 opacity-0'
+                    className={`absolute bottom-1 left-3 right-3 h-[2.5px] bg-gradient-to-r from-brand to-amber-500 rounded-full transition-transform duration-250 ease-out origin-center pointer-events-none motion-reduce:transition-none ${
+                      isActive ? 'scale-x-100 opacity-100 shadow-[0_1px_5px_rgba(234,88,12,0.45)]' : 'scale-x-0 opacity-0'
                     }`}
                     aria-hidden="true"
                   />
@@ -236,7 +236,7 @@ const Navbar = () => {
         </div>
 
         {/* Right Column: Desktop Action Buttons (All h-10 matching nav line) */}
-        <div className="hidden lg:flex items-center justify-end gap-2 shrink-0 min-w-0">
+        <div className="hidden lg:flex items-center justify-end gap-2.5 shrink-0 min-w-0">
           <ThemeToggle isNavbarVisible={shouldShow} />
 
           {isAuthenticated ? (
@@ -247,27 +247,28 @@ const Navbar = () => {
                 transform: 'translate3d(var(--tx, 0), var(--ty, 0), 0)',
                 transition: 'transform 150ms cubic-bezier(0.2, 0, 0, 1), background-color 200ms ease, box-shadow 200ms ease',
               }}
-              className="group/cta relative overflow-hidden isolate h-10 px-5 rounded-xl bg-brand hover-fine:bg-brand-dark text-white font-semibold text-sm shadow-sm shadow-brand/25 hover-fine:shadow-md hover-fine:shadow-brand/30 hover-fine:-translate-y-px active:translate-y-0 active:scale-[0.98] inline-flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-cream"
+              className="group/cta relative overflow-hidden isolate h-10 px-5 rounded-xl bg-gradient-to-r from-brand via-orange-500 to-amber-500 hover-fine:from-brand-dark hover-fine:via-brand hover-fine:to-amber-600 text-white font-semibold text-sm shadow-[0_4px_14px_rgba(234,88,12,0.35)] hover-fine:shadow-[0_6px_22px_rgba(234,88,12,0.45)] hover-fine:-translate-y-px active:translate-y-0 active:scale-[0.98] ring-1 ring-inset ring-white/20 inline-flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-cream"
             >
               {/* Soft cursor-aware spotlight radial highlight */}
               <div
                 className="pointer-events-none absolute inset-0 rounded-xl transition-opacity duration-200"
                 style={{
                   opacity: 'var(--spotlight-opacity, 0)',
-                  background: 'radial-gradient(120px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, 0.22), transparent 60%)',
+                  background: 'radial-gradient(120px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, 0.28), transparent 60%)',
                 }}
                 aria-hidden="true"
               />
               <span className="relative z-10">Go to Dashboard</span>
-              <ArrowRight className="relative z-10 w-4 h-4 stroke-[2.5] transition-transform duration-200 hover-fine:group-hover/cta:translate-x-0.5 motion-reduce:transform-none" />
+              <ArrowRight className="relative z-10 w-4 h-4 stroke-[2.5] transition-transform duration-200 hover-fine:group-hover/cta:translate-x-1 motion-reduce:transform-none" />
             </button>
           ) : (
             <>
               <Link
                 to="/login"
-                className="h-10 px-3.5 inline-flex items-center justify-center rounded-lg text-sm font-medium text-ink transition-colors duration-200 cursor-pointer hover-fine:bg-cream-hover dark:hover-fine:bg-card/60 active:scale-[0.97] whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-cream"
+                className="group/signin h-10 px-4 inline-flex items-center justify-center gap-2 rounded-xl border border-line bg-card/80 dark:bg-card/90 text-sm font-semibold text-ink shadow-xs hover-fine:border-brand/40 hover-fine:bg-card hover-fine:text-brand hover-fine:shadow-sm hover-fine:-translate-y-px active:translate-y-0 active:scale-[0.98] transition-all duration-200 cursor-pointer whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-cream"
               >
-                Sign In
+                <LogIn className="w-4 h-4 text-ink-soft group-hover/signin:text-brand transition-colors stroke-[2.2]" />
+                <span>Sign In</span>
               </Link>
               <Link
                 ref={ctaRef}
@@ -276,19 +277,19 @@ const Navbar = () => {
                   transform: 'translate3d(var(--tx, 0), var(--ty, 0), 0)',
                   transition: 'transform 150ms cubic-bezier(0.2, 0, 0, 1), background-color 200ms ease, box-shadow 200ms ease',
                 }}
-                className="group/cta relative overflow-hidden isolate h-10 px-5 rounded-xl bg-brand hover-fine:bg-brand-dark text-white font-semibold text-sm shadow-sm shadow-brand/25 hover-fine:shadow-md hover-fine:shadow-brand/30 hover-fine:-translate-y-px active:translate-y-0 active:scale-[0.98] inline-flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-cream"
+                className="group/cta relative overflow-hidden isolate h-10 px-5 rounded-xl bg-gradient-to-r from-brand via-orange-500 to-amber-500 hover-fine:from-brand-dark hover-fine:via-brand hover-fine:to-amber-600 text-white font-semibold text-sm shadow-[0_4px_14px_rgba(234,88,12,0.35)] hover-fine:shadow-[0_6px_22px_rgba(234,88,12,0.45)] hover-fine:-translate-y-px active:translate-y-0 active:scale-[0.98] ring-1 ring-inset ring-white/20 inline-flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-cream"
               >
                 {/* Soft cursor-aware spotlight radial highlight */}
                 <div
                   className="pointer-events-none absolute inset-0 rounded-xl transition-opacity duration-200"
                   style={{
                     opacity: 'var(--spotlight-opacity, 0)',
-                    background: 'radial-gradient(120px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, 0.22), transparent 60%)',
+                    background: 'radial-gradient(120px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, 0.28), transparent 60%)',
                   }}
                   aria-hidden="true"
                 />
                 <span className="relative z-10">Get Started Free</span>
-                <ArrowRight className="relative z-10 w-4 h-4 stroke-[2.5] transition-transform duration-200 hover-fine:group-hover/cta:translate-x-0.5 motion-reduce:transform-none" />
+                <ArrowRight className="relative z-10 w-4 h-4 stroke-[2.5] transition-transform duration-200 hover-fine:group-hover/cta:translate-x-1 motion-reduce:transform-none" />
               </Link>
             </>
           )}
@@ -379,7 +380,7 @@ const Navbar = () => {
                       setMobileMenuOpen(false);
                       navigate('/dashboard');
                     }}
-                    className="w-full py-3 rounded-xl bg-brand text-white text-sm font-semibold shadow-sm shadow-brand/25 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98] transition-all"
+                    className="w-full py-3 rounded-xl bg-gradient-to-r from-brand via-orange-500 to-amber-500 text-white text-sm font-semibold shadow-md shadow-brand/30 flex items-center justify-center gap-2 cursor-pointer ring-1 ring-inset ring-white/20 active:scale-[0.98] transition-all"
                   >
                     <span>Go to Dashboard</span>
                     <ArrowRight className="w-4 h-4 stroke-[2.5]" />
@@ -389,14 +390,15 @@ const Navbar = () => {
                     <Link
                       to="/login"
                       onClick={() => setMobileMenuOpen(false)}
-                      className="w-full text-center py-3 rounded-xl border border-line bg-card/70 text-sm font-semibold text-ink active:bg-cream-hover active:scale-[0.98] transition-all"
+                      className="w-full text-center py-3 rounded-xl border border-line bg-card/90 text-sm font-semibold text-ink shadow-xs hover:border-brand/40 hover:text-brand flex items-center justify-center gap-2 active:bg-cream-hover active:scale-[0.98] transition-all"
                     >
-                      Sign In
+                      <LogIn className="w-4 h-4 text-brand stroke-[2.2]" />
+                      <span>Sign In</span>
                     </Link>
                     <Link
                       to="/register"
                       onClick={() => setMobileMenuOpen(false)}
-                      className="w-full text-center py-3 rounded-xl bg-brand text-white text-sm font-semibold shadow-sm shadow-brand/25 flex items-center justify-center gap-2 active:scale-[0.98] transition-all"
+                      className="w-full text-center py-3 rounded-xl bg-gradient-to-r from-brand via-orange-500 to-amber-500 text-white text-sm font-semibold shadow-md shadow-brand/30 flex items-center justify-center gap-2 ring-1 ring-inset ring-white/20 active:scale-[0.98] transition-all"
                     >
                       <span>Get Started Free</span>
                       <ArrowRight className="w-4 h-4 stroke-[2.5]" />
