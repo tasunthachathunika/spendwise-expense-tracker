@@ -164,11 +164,10 @@ const Navbar = () => {
   return (
     <header
       ref={headerRef}
-      className={`sticky top-0 z-50 w-full h-16 border-b transition-[transform,background-color,border-color,box-shadow,backdrop-filter] duration-300 ease-out will-change-transform motion-reduce:transition-none focus-within:translate-y-0 ${
-        shouldShow
+      className={`sticky top-0 z-50 w-full h-16 border-b transition-[transform,background-color,border-color,box-shadow,backdrop-filter] duration-300 ease-out will-change-transform motion-reduce:transition-none focus-within:translate-y-0 ${shouldShow
           ? 'translate-y-0'
           : '-translate-y-full pointer-events-none focus-within:pointer-events-auto'
-      } ${isScrolled ? 'navbar-glass-scrolled' : 'navbar-glass-top'}`}
+        } ${isScrolled ? 'navbar-glass-scrolled' : 'navbar-glass-top'}`}
     >
       {/* 3-Column Grid: min-w-0 on side columns, center column sized auto so it never shrinks or wraps */}
       <div className="container-page h-full grid grid-cols-2 lg:grid-cols-[1fr_auto_1fr] items-center">
@@ -214,11 +213,10 @@ const Navbar = () => {
                   onMouseEnter={(e) => handleLinkMouseEnter(e.currentTarget)}
                   onFocus={(e) => handleLinkFocus(e.currentTarget)}
                   aria-current={isActive ? 'location' : undefined}
-                  className={`relative z-10 whitespace-nowrap shrink-0 inline-flex items-center justify-center h-10 px-3.5 lg:px-2.5 xl:px-3.5 rounded-lg text-sm font-medium leading-none transition-all duration-200 cursor-pointer active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-cream ${
-                    isActive
+                  className={`relative z-10 whitespace-nowrap shrink-0 inline-flex items-center justify-center h-10 px-3.5 lg:px-2.5 xl:px-3.5 rounded-lg text-sm font-medium leading-none transition-all duration-200 cursor-pointer active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-cream ${isActive
                       ? 'text-brand font-semibold'
                       : 'text-ink-body hover-fine:text-brand dark:hover-fine:text-brand-light'
-                  }`}
+                    }`}
                 >
                   <span className="transition-transform duration-200 hover-fine:scale-[1.02] motion-reduce:transform-none">
                     {item.label}
@@ -226,9 +224,8 @@ const Navbar = () => {
 
                   {/* 2.5px Rounded Active Indicator Gradient Underline with warm glow */}
                   <span
-                    className={`absolute bottom-1 left-3 right-3 h-[2.5px] bg-gradient-to-r from-brand via-orange-500 to-amber-500 rounded-full transition-transform duration-250 ease-out origin-center pointer-events-none motion-reduce:transition-none ${
-                      isActive ? 'scale-x-100 opacity-100 shadow-[0_1px_6px_rgba(234,88,12,0.55)]' : 'scale-x-0 opacity-0'
-                    }`}
+                    className={`absolute bottom-1 left-3 right-3 h-[2.5px] bg-gradient-to-r from-brand via-orange-500 to-amber-500 rounded-full transition-transform duration-250 ease-out origin-center pointer-events-none motion-reduce:transition-none ${isActive ? 'scale-x-100 opacity-100 shadow-[0_1px_6px_rgba(234,88,12,0.55)]' : 'scale-x-0 opacity-0'
+                      }`}
                     aria-hidden="true"
                   />
                 </button>
@@ -310,18 +307,16 @@ const Navbar = () => {
           >
             <div className="relative w-5 h-5 flex items-center justify-center overflow-hidden pointer-events-none">
               <Menu
-                className={`w-5 h-5 absolute transition-all duration-200 motion-reduce:transition-none transform ${
-                  mobileMenuOpen
+                className={`w-5 h-5 absolute transition-all duration-200 motion-reduce:transition-none transform ${mobileMenuOpen
                     ? 'opacity-0 rotate-90 scale-75 pointer-events-none'
                     : 'opacity-100 rotate-0 scale-100'
-                }`}
+                  }`}
               />
               <X
-                className={`w-5 h-5 absolute transition-all duration-200 motion-reduce:transition-none transform ${
-                  mobileMenuOpen
+                className={`w-5 h-5 absolute transition-all duration-200 motion-reduce:transition-none transform ${mobileMenuOpen
                     ? 'opacity-100 rotate-0 scale-100'
                     : 'opacity-0 -rotate-90 scale-75 pointer-events-none'
-                }`}
+                  }`}
               />
             </div>
           </button>
@@ -363,11 +358,10 @@ const Navbar = () => {
                       type="button"
                       onClick={() => scrollToSection(item.id)}
                       aria-current={isActive ? 'location' : undefined}
-                      className={`w-full text-left py-3 px-3.5 rounded-xl text-base font-medium transition-all cursor-pointer active:scale-[0.99] ${
-                        isActive
+                      className={`w-full text-left py-3 px-3.5 rounded-xl text-base font-medium transition-all cursor-pointer active:scale-[0.99] ${isActive
                           ? 'bg-gradient-to-r from-brand/15 to-amber-500/15 text-brand font-semibold border border-brand/25 shadow-2xs'
                           : 'text-ink-body active:bg-brand-soft/50 active:text-brand'
-                      }`}
+                        }`}
                     >
                       {item.label}
                     </button>
