@@ -349,7 +349,7 @@ const Navbar = () => {
           />
 
           {/* Menu panel sliding down from under the bar */}
-          <div className="absolute top-16 left-0 right-0 z-50 bg-cream/95 dark:bg-card/95 backdrop-blur-xl border-b border-line shadow-lg transform transition-all duration-200 ease-out animate-in fade-in slide-in-from-top-2 motion-reduce:transform-none motion-reduce:transition-none">
+          <div className="mobile-nav-panel absolute top-16 left-0 right-0 z-50 bg-cream/95 dark:bg-card/95 backdrop-blur-xl border-b border-line transform transition-all duration-200 ease-out animate-in fade-in slide-in-from-top-2 motion-reduce:transform-none motion-reduce:transition-none">
             <div className="container-page py-6 space-y-5">
               <nav className="flex flex-col space-y-1" aria-label="Mobile navigation">
                 {NAV_ITEMS.map((item) => {

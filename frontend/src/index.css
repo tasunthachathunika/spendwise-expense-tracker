@@ -1749,10 +1749,24 @@ select:-webkit-autofill:focus {
   box-shadow: 0 1px 0 rgb(var(--line) / 0.5), 0 8px 24px -12px rgb(var(--ink) / 0.12);
 }
 
+.dark .navbar-glass-top {
+  background-color: rgb(var(--cream) / 0.7);
+  border-bottom-color: transparent;
+  box-shadow: none;
+}
+
 .dark .navbar-glass-scrolled {
   background-color: rgb(var(--cream) / 0.8);
   border-bottom-color: rgb(var(--line));
-  box-shadow: none;
+  box-shadow: 0 1px 0 rgb(var(--line) / 0.5), 0 8px 24px -12px rgba(0, 0, 0, 0.4);
+}
+
+.mobile-nav-panel {
+  box-shadow: 0 12px 32px -8px rgb(var(--ink) / 0.12);
+}
+
+.dark .mobile-nav-panel {
+  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.5);
 }
 
 /* Fallback for browsers without backdrop-filter support */
