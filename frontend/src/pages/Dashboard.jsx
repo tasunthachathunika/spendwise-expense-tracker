@@ -283,8 +283,8 @@ const Dashboard = () => {
             amount={summary.totalIncome}
             caption={
               summary.monthlyIncome > 0
-                ? `${selectedPeriod.label.split(' ')[0]}: +${formatCurrency(summary.monthlyIncome)}`
-                : `No credits in ${selectedPeriod.label.split(' ')[0]}`
+                ? `${selectedPeriod?.label?.split(' ')?.[0] || 'This Month'}: +${formatCurrency(summary.monthlyIncome)}`
+                : `No credits in ${selectedPeriod?.label?.split(' ')?.[0] || 'This Month'}`
             }
             delayIndex={0}
           />
@@ -296,8 +296,8 @@ const Dashboard = () => {
             amount={summary.totalExpenses}
             caption={
               summary.monthlyExpenses > 0
-                ? `${selectedPeriod.label.split(' ')[0]}: -${formatCurrency(summary.monthlyExpenses)}`
-                : `No debits in ${selectedPeriod.label.split(' ')[0]}`
+                ? `${selectedPeriod?.label?.split(' ')?.[0] || 'This Month'}: -${formatCurrency(summary.monthlyExpenses)}`
+                : `No debits in ${selectedPeriod?.label?.split(' ')?.[0] || 'This Month'}`
             }
             delayIndex={1}
           />
@@ -359,7 +359,7 @@ const Dashboard = () => {
           ) : (
             <CategoryDonutChart
               data={categoryData}
-              monthName={selectedPeriod.label.split(' ')[0]}
+              monthName={selectedPeriod?.label?.split(' ')?.[0] || 'This Month'}
             />
           )}
         </div>
