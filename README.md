@@ -17,6 +17,10 @@
   <img src="https://img.shields.io/badge/Currency-LKR%20(Rs.)-ea580c" alt="Currency LKR" />
 </p>
 
+<p align="center">
+  <img src="docs/screenshots/dashboard.png" alt="SpendWise Financial Dashboard Preview" width="95%" />
+</p>
+
 ---
 
 ## 📖 Overview
@@ -354,40 +358,52 @@ SpendWise allows users whose salary or cash-flow cycle does not begin on the 1st
 
 ---
 
-## 📸 Essential Screenshots
+## 📸 Application Showcase
 
-| View | Light Theme | Dark Theme |
-|---|---|---|
-| **Landing Hero** | ![Landing Hero](docs/screenshots/landing-hero.png) | — |
-| **Financial Dashboard** | ![Dashboard](docs/screenshots/dashboard.png) | ![Dark Mode Dashboard](docs/screenshots/dark-mode.png) |
-| **Transaction Ledger** | ![Transactions](docs/screenshots/transactions.png) | — |
-| **Budget Discipline** | ![Budgets](docs/screenshots/budgets.png) | — |
-| **Cash Flow Analytics** | ![Analytics](docs/screenshots/analytics.png) | — |
+### 1. Modern Fintech Landing Page (`Light Mode`)
+> High-converting value proposition, real-time statistics preview, feature showcase, and fast onboarding.
+
+<p align="center">
+  <img src="docs/screenshots/landing-hero.png" alt="SpendWise Landing Page" width="100%" />
+</p>
+
+### 2. Financial Dashboard Overview (`Light Mode`)
+> Real-time financial summary cards (Income, Expenses, Net Balance, Budget), budget status bar, and cash flow breakdowns.
+
+<p align="center">
+  <img src="docs/screenshots/dashboard.png" alt="SpendWise Financial Dashboard" width="100%" />
+</p>
+
+### 3. Transactions Ledger with Multi-Format Export (`Warm Dark Theme`)
+> Complete transaction ledger with multi-filter engine, search, Lucide category badges, and Excel-ready CSV / publication-grade PDF export dropdown.
+
+<p align="center">
+  <img src="docs/screenshots/transactions.png" alt="SpendWise Transactions Ledger with Export" width="100%" />
+</p>
+
+### 4. Monthly & Custom Period Budget Discipline (`Light Mode`)
+> Proactive 3-tier threshold indicators (Safe, Warning, Critical) with remaining days and usage tracking.
+
+<p align="center">
+  <img src="docs/screenshots/budgets.png" alt="SpendWise Budget Management" width="100%" />
+</p>
+
+### 5. Cash Flow Analytics & Visual Trends (`Light Mode`)
+> Visual performance metrics for category distribution via interactive donut chart and monthly cash flow comparisons.
+
+<p align="center">
+  <img src="docs/screenshots/analytics.png" alt="SpendWise Financial Analytics" width="100%" />
+</p>
 
 ---
 
-## 📷 Screenshot Capture Checklist (1440 × 900)
+## 📷 Screenshot Status Checklist
 
-When capturing evaluation screenshots for submission, use a browser window resized to **1440 × 900 px** and follow these specifications:
-
-- [ ] **1. Landing Page (`docs/screenshots/landing-hero.png`)**:
-  - URL: `http://localhost:5173/landing` (Light Mode).
-  - Capture hero banner, statistics badges, and feature cards.
-- [ ] **2. Financial Dashboard (`docs/screenshots/dashboard.png`)**:
-  - URL: `http://localhost:5173/dashboard` (Light Mode, seeded account).
-  - Capture 4 stat cards, budget progress bar, donut chart, cash flow bars, and recent transactions.
-- [ ] **3. Transactions Ledger (`docs/screenshots/transactions.png`)**:
-  - URL: `http://localhost:5173/transactions` (Light Mode).
-  - Capture active search filter, category badge column with Lucide icons, and pagination controls.
-- [ ] **4. Budget Management (`docs/screenshots/budgets.png`)**:
-  - URL: `http://localhost:5173/budgets` (Light Mode).
-  - Capture monthly budget cards showing spent vs limit, percentage bar, and warning tags.
-- [ ] **5. Cash Flow Analytics (`docs/screenshots/analytics.png`)**:
-  - URL: `http://localhost:5173/analytics` (Light Mode).
-  - Capture monthly income vs expense bar chart and category breakdown donut chart.
-- [ ] **6. Warm Dark Theme Preview (`docs/screenshots/dark-mode.png`)**:
-  - URL: `http://localhost:5173/dashboard` (Dark Mode enabled via top-right theme toggle).
-  - Demonstrate warm obsidian dark background, high-contrast typography, and glowing stat borders.
+- [x] **1. Landing Page (`docs/screenshots/landing-hero.png`)**: Hero banner, value proposition, and authentic typography.
+- [x] **2. Financial Dashboard (`docs/screenshots/dashboard.png`)**: Real-time summary cards, budget status, and cash flow overview.
+- [x] **3. Transactions Ledger & Dark Theme (`docs/screenshots/transactions.png` / `docs/screenshots/dark-mode.png`)**: Dark theme ledger with active export dropdown menu.
+- [x] **4. Budget Management (`docs/screenshots/budgets.png`)**: Monthly and custom period budget cards with 3-tier threshold indicators.
+- [x] **5. Cash Flow Analytics (`docs/screenshots/analytics.png`)**: Expense breakdown donut chart and monthly income vs expense bars.
 
 ---
 
